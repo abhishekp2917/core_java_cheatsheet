@@ -1,0 +1,1203 @@
+*   What is the use of constructors ?
+
+>>  Constructors are used to initialize instance variables at the time of object 
+    creation. 
+    
+    Let say we have a class Student which has instance variables as 'name'
+    and 'rollNumber'. If we don't initialize these variables at the time of creation 
+    then all the Student object will be created with same variables value.
+
+    We can set the proper value of each object even after creation of the object, but
+    this will lead to code redundancy. That's why for code reuseablity, we use
+    constructors.
+
+    (1) Instance variables initialization without constructors :
+
+        In the below example we didn't use any constructor and initialized the Student 
+        object after its creation.
+
+        But we have to repeat the code for initialization of instance variables every 
+        time we create the object of the Student class.
+         
+        ```
+        class Student {
+
+            String name;
+            int rollNumber;
+        }
+
+        public class Demo {
+
+            public static void main(String[] args) {
+
+                Student s1 = new Student();
+                s1.name = "Sanjana";
+                s1.rollNumber = 20;
+
+                Student s2 = new Student();
+                s2.name = "Yash";
+                s2.rollNumber = 17;
+            }
+        }
+        ```
+
+        In the below example we didn't use any constructor and initialized the Student 
+        object inside instance block.
+
+        By initializing instance variables inside instance block we avoided code 
+        redundancy but now all the created Student object will have same property
+        which doesn't make any sense.
+
+        ```
+        class Student {
+
+            String name;
+            int rollNumber;
+
+            {
+                name = "Sanjana";
+                rollNumber = 20;
+            }
+        }
+
+        public class Demo {
+
+            public static void main(String[] args) {
+
+                Student s1 = new Student();
+
+                Student s2 = new Student();
+            }
+        }
+        ```
+    
+    (2) Instance variables initialization using constructors :
+
+        In this example we use constructor to initialize Student object instance 
+        variables due to which we have to write the initialization code only once inside    
+        constructor and thus program length reduced.
+
+        ```
+        class Student {
+
+            String name;
+            int rollNumber;
+
+            Student(String name, int rollNumber) {
+                this.name = name;
+                this.rollNumber = rollNumber;
+            }
+        }
+
+        public class Demo {
+
+            public static void main(String[] args) {
+
+                Student s1 = new Student("Sanjana", 20);
+
+                Student s2 = new Student("Yash", 17);
+            }
+        }
+        ```
+________________________________________________________________________________________
+
+*   Difference between constructor and Instance block ?
+
+>>              Constructor                         Instance block
+                                        |
+    The main purpose of a constructor   |   The main purpose of instance block is to 
+    is initialization of an object      |   perform any activity other than 
+                                        |   initialization at the time of object
+                                        |   creation
+                                        |
+    Constructor will be executed after  |   All the instance block is always executed
+    execution instance block            |   before execution of constructor
+                                        |
+                                        |
+    At the time of object creation,     |   At the time of object creation, we can 
+    always only one constructor will be |   execute any number of instance block
+    executed                            |
+                                        |
+________________________________________________________________________________________
+
+*   What are the rules related to the constructor constructor ?
+
+>>  Below are the rules related to constructor :
+
+    (1) Name of the class and name of the constructor must be matched.
+
+        Valid Constructor :
+
+            ```
+            class Test {
+
+                // valid constructor
+                Test() {
+
+                }
+            }
+            ```
+        
+        Invalid Constructor :
+
+            ```
+            class Test {
+
+                // invalid constructor
+                test() {
+
+                }
+            }
+            ```
+
+    (2) Return type concept not applicable for constructor even 'void' also. In case we 
+        provide return type to the constructor, comipler will treate it as normal method
+        with name similar to class name. 
+
+        This approach won't give compile time error as it is legal to have method name
+        same as class name.
+
+        Constructor :
+
+            ```
+            class Test {
+
+                // constructor
+                Test() {
+
+                }
+            }
+            ```
+        
+        Normal method and not constructor :
+
+            ```
+            class Test {
+
+                // normal method but not constructor
+                void Test() {
+
+                }
+            }
+            ```
+
+    (3) Only applicable modifiers for constructors are 'public', 'private', 'protected'
+        and 'default'.
+
+        Valid Constructor :
+
+            (1) Constructor with modifier as 'public'
+
+                ```
+                class Test {
+
+                    // valid constructor
+                    Public Test() {
+
+                    }
+                }
+                ```
+            
+            (2) Constructor with modifier as 'private'
+
+                ```
+                class Test {
+
+                    // valid constructor
+                    private Test() {
+
+                    }
+                }
+                ```
+
+            (3) Constructor with modifier as 'protected'
+
+                ```
+                class Test {
+
+                    // valid constructor
+                    protected Test() {
+
+                    }
+                }
+                ```
+            
+            (4) Constructor with modifier as 'default'
+
+                ```
+                class Test {
+
+                    // valid constructor
+                    Test() {
+
+                    }
+                }
+                ```
+________________________________________________________________________________________
+
+*   What is default constructor ?
+
+>>  Constructor generated by compiler at the time of compilation is called default
+    constructor.
+
+________________________________________________________________________________________
+
+*   Who is responsible to generate default constructor ?
+
+>>  CompIler is responsible to generate default constructor.
+
+________________________________________________________________________________________
+
+*  Will compiler always generate default constructor ?
+
+>>  No, compiler will generate default constructor if and only if an explicit 
+    constructor is not defined in that class, else compiler will always generate
+    default constructor.
+
+    Hence, every class in java has constructor either default constructor generated 
+    by compiler or customized constructor provided bt programmer.
+
+________________________________________________________________________________________
+
+*   What is prototype of default constructor ?
+
+>>  Below are the some features of default constructor generated by compiler :
+
+    (1) Default constructor is always no argument type constructor.
+
+    (2) Access modifiers of default constructor is same as its class access modifier 
+        i.e. either 'default' or 'public'.
+
+    (3) Default constructor contains only one line i.e. 
+
+        ```
+        super();
+        ```
+        this is a call to parent class constructor.
+    
+    For example :
+
+    (1) Class with 'default' access modifier :
+
+        ```
+        class Test {
+
+            // default constructor generated by compiler
+            Test() {
+
+                super();
+            }
+        }
+        ```
+    
+    (2) Class with 'public' access modifier :
+
+        ```
+        public class Test {
+
+            // default constructor generated by compiler
+            public Test() {
+
+                super();
+            }
+        }
+        ```
+________________________________________________________________________________________
+
+*   What are the cases in which compiler will and won't generate default constructor ?
+
+>>  Below are the cases in which compiler will generate default constructor :
+
+    (1) Class with 'default' access modifier and no explicit constructor :
+
+        Programmer's code :
+
+            ```
+            class Test {
+
+            }
+            ```
+
+        Compiler's code :
+
+            ```
+            class Test {
+
+                // default constructor generated by compiler with 'default' access modifier
+                Test() {
+
+                    super();
+                }
+            }
+            ```
+
+    (2) Class with 'public' access modifier and no explicit constructor :
+
+        Programmer's code :
+
+            ```
+            public class Test {
+
+            }
+            ```
+
+        Compiler's code :
+
+            ```
+            public class Test {
+
+                // default constructor generated by compiler with 'public' access modifier
+                public Test() {
+
+                    super();
+                }
+            }
+            ```
+
+    (3) Class with method with name similar to class name and void return type and no 
+        explicit constructor :
+
+        Programmer's code :
+
+            ```
+            class Test {
+
+                void Test() {
+
+                }
+            }
+            ```
+
+        Compiler's code :
+
+            ```
+            class Test {
+
+                // default constructor generated by compiler with 'default' access modifier
+                Test() {
+
+                    super();
+                }
+
+                void Test() {
+
+                }
+            }
+            ```
+
+    (4) Class having explicit constructor with no 'super()' or 'this()' at first line
+        inside constructor :
+
+        Programmer's code :
+
+            ```
+            class Test {
+
+                Test() {
+
+                }
+            }
+            ```
+
+        Compiler's code :
+
+            ```
+            class Test {
+
+                // 'super()' added by the compiler inside explicit constructor
+                Test() {
+
+                    super();
+                }
+            }
+            ```
+
+    (5) Class having explicit constructor with 'super()' at first line inside 
+        constructor :
+
+        Programmer's code :
+
+            ```
+            class Test {
+
+                Test(int i) {
+
+                    super();
+                }
+            }
+            ```
+
+        Compiler's code :
+
+            ```
+            class Test {
+
+                // compiler won't generate or add anything as proper constructor is provided
+                Test(int i) {
+
+                    super();
+                }
+            }
+            ```
+    
+    (6) Class having multiple explicit constructor with no 'super()' at first line 
+        inside one of the constructor :
+
+        Programmer's code :
+
+            ```
+            class Test {
+
+                Test(int i) {
+
+                }
+
+                Test() {
+
+                    super();
+                }
+            }
+            ```
+
+        Compiler's code :
+
+            ```
+            class Test {
+
+                // 'super()' added by the compiler inside explicit constructor
+                Test(int i) {
+
+                    super();
+                }
+
+                // compiler won't generate or add anything as proper constructor is provided
+                Test() {
+
+                    super();
+                }
+            }
+            ```
+________________________________________________________________________________________
+
+*   Where we can use 'super()' and 'this()' ?
+
+>>  We can use 'super()' and 'this()' only inside a constructor and also at first
+    line inside constructor
+
+________________________________________________________________________________________
+
+*   Can we use both 'super()' and 'this()' inside constructor simultaneously ?
+
+>>  No, we can't use 'super()' and 'this()' inside constructor simultaneously because
+    both should be at the first line inside constructor and we can't use both
+    in the same line. 
+
+________________________________________________________________________________________
+
+*   Which are valid and invalid use of 'super()' and 'this()' ?
+
+>>  Below are valid use of 'super()' and 'this()' :
+
+    (1) Using 'super()' at first line inside constructor :
+
+        ```
+        class Test {
+
+            Test() {
+
+                super();
+            }
+        }
+        ```
+    
+    (2) Using 'this()' at first line inside constructor :
+
+        ```
+        class Test {
+
+            Test() {
+
+                this();
+            }
+        }
+        ```
+
+    (3) Using 'super()' at first line followed by some statement inside constructor :
+
+        ```
+        class Test {
+
+            Test() {
+
+                super();
+                System.out.println("Constructor");
+            }
+        }
+        ```
+    
+    (4) Using 'this()' at first line followed by some statement inside constructor : 
+
+        ```
+        class Test {
+
+            Test() {
+
+                this();
+                System.out.println("Constructor");
+            }
+        }
+        ```
+
+    Below are invalid use of 'super()' and 'this()' :
+
+    (1) Using 'super()' after some statement inside constructor :
+
+        ```
+        class Test {
+
+            Test() {
+
+                System.out.println("Constructor");
+                super();
+            }
+        }
+        ```
+    
+    (2) Using 'this()' after some statement inside constructor :
+
+        ```
+        class Test {
+
+            Test() {
+
+                System.out.println("Constructor");
+                this();
+            }
+        }
+        ```
+
+    (3) Using both 'this()' and 'super()' inside constructor :
+
+        ```
+        class Test {
+
+            Test() {
+
+                super();
+                this();
+            }
+        }
+        ```
+    
+    (4) Using 'super()' anywhere other than inside constructor : 
+
+        ```
+        class Test {
+
+            void Test() {
+
+                super();
+            }
+        }
+        ```
+    
+    (5) Using 'this()' anywhere other than inside constructor : 
+
+        ```
+        class Test {
+
+            void Test() {
+
+                this();
+            }
+        }
+        ```
+________________________________________________________________________________________
+
+*   What is the difference between 'super()' or 'this()' and 'super' or 'this' ?
+
+>>          super(), this()                             super, this
+                                        |
+    These are use to call parent class  |   These are keywords use to refer parent    
+    constructor (using super()) and     |   (using super) and current (using this) class
+    current class constructor (using    |   instance members.
+    this()). Hence, these are           |
+    constructor calls.                  |
+                                        |
+    These can be used only inside       |   These can be used anywhere except inside
+    constructor and also only at first  |   static area
+    line                                |
+                                        |
+    These can be used only once inside  |   These can be used any number of time
+    a constructor                       |
+                                        |
+    We can't use both of these          |   We can use both of these simultaneously
+    simultaneously                      |
+                                        |
+________________________________________________________________________________________
+
+*   Is overloading concept applicable to constructor or not ? Why ?
+
+>>  Yes, constructor overloading is applicable. 
+
+    Overloading of constructor is usefull because if there is a class which has whole 
+    lot of attributes which we want to initialize, but there is a possiblity that 
+    at the time of creating the object we may or may not want to initialize some of 
+    the instance variables. 
+    
+    In that case we must have different possible combination of constructor available
+    so that we can initialize instance variables accordingly. 
+
+    For example :
+
+    ```
+    public class Test {
+
+        double x = 10;
+        
+        // no argument constructor
+        Test() {
+            this(10);
+            System.out.println("no argument constructor");
+        }
+
+        // constructor with 'int' argument constructor
+        Test(int i) {
+            this(10.0);
+            this.x = i;
+            System.out.println("int argument constructor");
+        }
+
+        // constructor with 'double' argument constructor
+        Test(double d) {
+            this.x = d;
+            System.out.println("double argument constructor");
+        }
+
+        public static void main(String[] args) {
+
+            // constructor overloading example
+
+            // creating Test object which will call no argument Test constructor
+            Test t1 = new Test();
+
+            // creating Test object which will call 'int' argument Test constructor
+            Test t2 = new Test(20);
+
+            // creating Test object which will call 'double' argument Test constructor
+            Test t3 = new Test(30.0);
+        }
+    }
+    ```
+________________________________________________________________________________________ 
+
+*   Is inheritance concept applicable for constructor ?
+
+>>  There is no such concept of constructor inheritance in java. But child class can
+    use parent class constructor through 'super()'.
+
+    ```
+    class Parent {
+
+        // Parent class constructor with int argument
+        Parent(int i) {
+
+        }
+    }
+
+    class Child extends Parent {
+
+        // Child class constructor with no argument
+        Child() {
+
+            // calling parent class constructor with int argument 
+            super(10);
+        }
+    }
+    ```
+________________________________________________________________________________________
+
+*   Is overriding concept applicable for constructor ?
+
+>>  Since, there is no concept of inheritance in context of constructor, constructor
+    overriding in not applicable in java.
+
+________________________________________________________________________________________
+
+*   Can Abstract class and Interfaces contain constructor ?
+
+>>  An Abstract class can contain constructor because Abstract class can have instance 
+    variable but Interfaces can't contain constructor because in Interfaces all the
+    variables are 'public', 'static' and 'final' by default.
+
+________________________________________________________________________________________
+
+*   Can we make recursive calls to methods and constructor ?
+
+>>  We can make recursive calls to method, this won't give compile time error but
+    will give StackOverflowException.
+
+    But we can't make recursive calls in respect to constructor as this will give
+    compiler time error
+
+    For example :
+
+    Valid recursive calls :
+
+        Here method1 is calling method2 and method2 is calling method1 which creates
+        recursive calls and will leads to StackOverflowException but won't give
+        compile time error. 
+
+        ```
+        public class Demo1 {
+        
+            public static void main(String[] args) {
+                
+                // calling static method which will give StackOverflowException
+                method1();
+            }
+
+            // static method method1() which calls static method2()
+            public static void method1() {
+                method2();
+            }
+
+            // static method method2() which calls static method1() for creating recursive calls
+            public static void method2() {
+                method1();
+            }
+        }
+        ```
+
+    Invalid recursive calls :
+
+        Here, no-argument constructor is calling int-argument constructor which will
+        create recursive calls to constructor. But this will give compile time error
+
+        ```
+        class Test {
+
+            // recursive calls of constructor is not valid and will give compile time eror
+
+            // no argument constructor
+            Test() {
+
+                // calling int argument constructor 
+                this(10);
+            }
+
+            // int argument constructor
+            Test(int i) {
+
+                // calling no argument constructor
+                this();
+            }
+        }
+        ```
+________________________________________________________________________________________
+
+*   Is it necessary for child class to call parent class constructor ?
+
+>>  If parent class constructors is of argument type and there is no no-argument 
+    type constructor in parent class, then child class constructor must call any
+    of the parent class constructor else it will give compile time error.
+
+    It is highly recommended to add no-argument constructor in every class if there 
+    is atleast one argument constructor so that even if child class doesn't calls
+    parent class constructor, compiler will call no-argument type parent constructor 
+    using 'super()'.
+
+________________________________________________________________________________________
+
+*   Which are valid and invalid code related to parent-child constructor calls ?
+
+>>  Below are the valid code :
+
+    (1) 
+
+        ```
+        class Parent {
+
+            Parent() {
+
+            }
+        }
+
+        class Child extends Parent {
+
+            Child() {
+
+            }
+        }
+        ```
+    
+    (2) 
+
+        ```
+        class Parent {
+
+            Parent(int i) {
+
+            }
+        }
+
+        class Child extends Parent {
+
+            Child() {
+                
+                super(10);
+            }
+        }
+        ```
+
+    (3) 
+
+        ```
+        class Parent {
+
+            Parent(int i) {
+
+            }
+
+            Parent() {
+
+            }
+        }
+
+        class Child extends Parent {
+
+            Child() {
+                
+            }
+        }
+        ```
+
+    (4) 
+
+        ```
+        class Parent {
+
+            Parent(int i) {
+
+            }
+
+            Parent() {
+                
+            }
+        }
+
+        class Child extends Parent {
+
+            Child() {
+                
+                super(10);
+            }
+        }
+        ```
+
+    (5) 
+
+        ```
+        class Parent {
+
+            Parent(int i) {
+
+            }
+
+            Parent() {
+                
+            }
+        }
+
+        class Child extends Parent {
+
+            Child() {
+                
+                super();
+            }
+        }
+        ```
+
+    (6) 
+
+        ```
+        class Parent {
+
+            Parent(int... i) {
+
+            }
+        }
+
+        class Child extends Parent {
+
+            Child() {
+
+            }
+        }
+        ```
+    
+    Below are the invalid code :
+
+    (1) 
+
+        ```
+        class Parent {
+
+            Parent(int i) {
+
+            }
+        }
+
+        class Child extends Parent {
+
+            Child() {
+
+            }
+        }
+        ```
+    
+    (2) 
+
+        ```
+        class Parent {
+
+            Parent(int i) {
+
+            }
+        }
+
+        class Child extends Parent {
+
+            Child() {
+                
+                super(10.0);
+            }
+        }
+        ```
+
+    (3) 
+
+        ```
+        class Parent {
+
+            Parent(int i) {
+
+            }
+
+            Parent(double d) {
+
+            }
+        }
+
+        class Child extends Parent {
+
+            Child() {
+                
+            }
+        }
+        ```
+________________________________________________________________________________________
+
+*   If parent class constructor throws Checked Exception then how can child 
+    constructor handle it ?
+
+>>  If parent class constructor throws Checked Exception then child class should
+    also throw same Checked Exception or its parent but can't handle it using
+    try-catch block because first line in constructor must be either 'super()'
+    or 'this()'.
+
+    For example :
+
+    Let say parent class constructor throws IOException (Checked Exception) then
+    child class must throw same or its parent Exception.
+
+    ```
+    class Parent {
+
+        Parent() throws IOException {
+
+        }
+    }
+
+    class Child extends Parent {
+
+        Child() throws IOException {
+
+            super();
+        }
+    }
+    ```
+________________________________________________________________________________________
+
+*   Which of the following constructor calls are valid and invalid based on 
+    Exception thrown by parent constructor ?
+
+>>  Below are the valid constructor calls based on Exception thrown by parent 
+    constructor :
+
+    (1) Parent constructor throws IOException (Checked Exception) 
+        Child throws IOException (Checked Exception) 
+
+        ```
+        class Parent {
+
+            Parent(int i) throws IOException {
+
+            }
+        }
+
+        class Child extends Parent {
+
+            Child() throws IOException {
+
+                super(10);
+            }
+        }
+        ```
+    
+    (2) Parent constructor throws IOException (Checked Exception)
+        Child throws IOException (Checked Exception)  
+
+        ```
+        class Parent {
+
+            Parent(int i) throws IOException {
+
+            }
+        }
+
+        class Child extends Parent {
+
+            Child() throws Exception {
+
+                super(10);
+            }
+        }
+        ```
+    
+    (3) Parent constructor throws IOException (Checked Exception)
+        Child throws IOException (Checked Exception) and InterruptedException
+
+        ```
+        class Parent {
+
+            Parent(int i) throws IOException {
+
+            }
+        }
+
+        class Child extends Parent {
+
+            Child() throws InterruptedException, IOException {
+
+                super(10);
+            }
+        }
+        ```
+    
+    (4) Parent constructor throws RuntimeException (Unchecked Exception)
+        Child doesn't throws any Exception
+
+        ```
+        class Parent {
+
+            Parent(int i) throws RuntimeException {
+
+            }
+        }
+
+        class Child extends Parent {
+
+            Child() {
+
+                super(10);
+            }
+        }
+        ```
+    
+    (5) Parent constructor throws RuntimeException (Unchecked Exception)
+        Child throws IOException (Checked Exception)
+
+        ```
+        class Parent {
+
+            Parent(int i) throws RuntimeException {
+
+            }
+        }
+
+        class Child extends Parent {
+
+            Child() throws IOException {
+
+                super(10);
+            }
+        }
+        ```
+    
+    Below are the invalid constructor calls based on Exception thrown by parent 
+    constructor :
+
+    (1) Parent constructor throws IOException (Checked Exception) 
+        Child doesn't throws any Exception
+
+        ```
+        class Parent {
+
+            Parent() throws IOException {
+
+            }
+        }
+
+        class Child extends Parent {
+
+            Child() {
+
+            }
+        }
+        ```
+    
+    (2) Parent constructor throws IOException (Checked Exception)
+        Child throws InteruptedException (Checked Exception)  
+
+        ```
+        class Parent {
+
+            Parent(int i) throws IOException {
+
+            }
+        }
+
+        class Child extends Parent {
+
+            Child() throws InteruptedException {
+
+                super(10);
+            }
+        }
+        ```
+    
+    (3) Parent constructor throws IOException (Checked Exception)
+        Child uses try-catch block to handle Exception 
+
+        ```
+        class Parent {
+
+            Parent(int i) throws IOException {
+
+            }
+        }
+
+        class Child extends Parent {
+
+            Child() {
+
+                try{
+                    super(10);
+                }
+                catch(Exception e) {
+
+                }
+            }
+        }
+        ```

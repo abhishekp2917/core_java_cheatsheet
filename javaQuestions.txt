@@ -1,0 +1,66 @@
+*   What is the role of 'new' keyword and constructor ?
+
+>>  The 'new' keyword is used to create new object while constructor is used to initialize the
+    new created object.
+
+______________________________________________________________________________________________
+
+*   Whenever we are creating child class object whether parent class object will be created or 
+    not ?
+
+>>  No, parent object will not be created and one can verify by using 'this.hashcode()'
+    statement inside both parent and child class constructor which will return same value.
+
+______________________________________________________________________________________________
+
+*   Whenever we are creating child class object what is the need of executing parent class
+    constructor ?
+
+>>  Parent class constructor is executed to initialize parent class properties which are 
+    accessible by child class object.
+
+______________________________________________________________________________________________
+
+*   Anyway we cannot create abstract class object then what is the need of  abstract class 
+    constructor ?
+
+>>  Though we cannot create object of abstract class but since abstract class can contain 
+    properties. So, to initialize these properties abstract class need a constructor.
+
+______________________________________________________________________________________________
+
+*   One cannot create object of abstract class as well as interface, then why abstract class 
+    can contain constructor by interface can't ?
+
+>>  In interface all the properties are public, static and final by default due to which there 
+    is no need of constructor as one cannot change final properties. But abstract class
+    can contain non-static and non-final properties and to initialize those properties there
+    is a need of constructor.
+
+
+______________________________________________________________________________________________
+
+*   Can we replace interface with abstract class ?
+
+>>  If all the methods in a class is abstract, then one can use abstract class instead of
+    interface but its is highly recommended to use interface is such senario.
+
+    REASONs :
+
+        I we use interface instead of abstract in this case, then we can implement interface 
+        and can extend other class as well. But if we use abstract class then we cannot extend 
+        abstract class as well as other class since there is no concept of multiple
+        inheritance in java.
+
+        Interface doesn't have constructor, therefore while creating child class object only
+        child class constructor will be executed. But if we use abstract class the while
+        creating child class object parent abstract class constructor will also be executed
+        which will increase the execution time unneccesarily.
+
+______________________________________________________________________________________________
+
+
+
+
+
+

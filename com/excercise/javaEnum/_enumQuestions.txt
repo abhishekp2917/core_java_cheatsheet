@@ -1,0 +1,172 @@
+*   How is the hierarchy of 'Enum' ?
+
+>>                  Object                  Comparable         Serializable
+                  (abstract)              (interface)         (interface)
+                      |                         |                 |
+                      |                         |                 |
+                java.lang.Enum (class) ____________________________
+                      |
+                      |
+                  enum (datatype)
+
+________________________________________________________________________________________
+
+*   How is enum is implemented internally ?
+
+>>  let say enum datatype of 'Caste' is declared like below code snipet:
+
+    ```
+    enum Caste{
+        Brahmin,
+        Kshatriya,
+        Vaishya,
+        Sudra;
+    }
+    ```
+
+    Then internally, class named 'Caste' is created with properties name of type 'Caste' is
+    declared with variable name similar to values of enum datatype of 'Caste'. This variables 
+    are assigned objects of type 'Caste'.
+
+
+    ```
+    class Caste{
+        Caste Brahmin = new Caste();
+        Caste Kshatriya = new Caste();
+        Caste Vaishya = new Caste();
+        Caste Sudra = new Caste();
+    }
+    ```
+    
+_________________________________________________________________________________________
+
+*   What is default access modifier of enum datatype ?
+
+>>  'enum' class is final by default but we can't decalare it final explicitly.  
+
+_________________________________________________________________________________________
+
+*   What are the valid access modifiers for enum datatype declared outside a class ?
+
+>>  access modifiers        other class             enum
+
+  * public                  valid                   valid
+    private                 invalid                 invalid
+    protected               invalid                 invalid
+  * default                 valid                   valid
+    final                   valid                   invalid
+    static                  invalid                 invalid
+    abstract                valid                   invalid
+  * strictfp                valid                   valid
+
+_________________________________________________________________________________________
+
+*   What are the valid access modifiers for enum datatype declared inside a class ?
+
+>>  access modifiers        other class             enum
+
+  * public                  valid                   valid
+  * private                 valid                   valid
+  * protected               valid                   valid
+  * default                 valid                   valid
+    final                   valid                   invalid
+  * static                  valid                   valid
+    abstract                valid                   invalid
+  * strictfp                valid                   valid
+
+________________________________________________________________________________________
+
+*   What is the parent class of any enum ?
+
+>>  every enum in java is direct child class of 'java.lang.enum' or we can say, every
+   enum extends 'java.lang.enum' implicitly.
+
+________________________________________________________________________________________
+
+*   Why one enum cannot extends other enum or class ?
+
+>>  every enum extends 'java.lang.enum' by default and since there is no concept of
+    multiple inheritance, one enum cannot extends any other enum or class. Moreover, even 
+    one cannot extends 'java.lang.enum' explicitly.
+
+________________________________________________________________________________________
+
+*   Can a class extend enum ?
+
+>>  every enum is 'final' by default and thus enum cannot be extended.
+
+________________________________________________________________________________________
+
+*   Can enum implements an interface ?
+
+>>  java supports class to implement multiple interface. Thus, any enum can implement
+    any number of interface.
+
+________________________________________________________________________________________
+
+*   What is 'values' method and in which class it is present ?
+
+>>  'values' is a static method which returns array of all the values of enum. This is 
+    method is not present in any class, instead it comes implicitly with 'enum' keyword.
+
+________________________________________________________________________________________
+
+*   What is 'ordinal' method and in which class it is present ?
+
+>>  'ordinal' method returns the 0-indexed order of enum values. This method is 
+    present in 'java.lang.Enum'.
+
+________________________________________________________________________________________
+
+*   What are type of values that can be stored in enum ?
+
+>>  in enum along with constants, one can store methods, variables, constructor etc.
+    Hence, java enum is more powerfull than old languages enum. Moreover, we can declare
+    'main' method and can run enum class directly from command prompt.
+
+________________________________________________________________________________________
+
+*   Can we add constant after methods in enum ?
+
+>>  it is compulsary that list of constant must be declared before methods in enum and must
+    ends with semicolon in case of enum having methods/constructor along with constants in
+    enum. Moreover, a semicolon is mandatory even if enum contains methods only.
+
+________________________________________________________________________________________
+
+*   How many time enum constructor will be executed if we create assign enum value to a
+    variable ?
+
+>>  since all enum constants are static, all enum constant will be created at the time of 
+    class loading and as all constant holds enum object, enum constructor will be executed
+    'n' number of time where 'n' is number of enum constant present is enum.
+
+________________________________________________________________________________________
+
+*   Can we declare enum object explicitly ?
+
+>>  we can't decalare enum object explicitly and hence, we can't assign new object to current
+    enum constant.
+
+________________________________________________________________________________________
+
+*   What are the methods that is valid for enum constants ?
+
+>>  since enum constants are object only, any method which is valid for objects are valid for 
+    enum constants.
+
+________________________________________________________________________________________
+
+*   How we can import enum constants from other package to current package and use it class
+    name as well as without class name ?
+
+>>  to use enum constants with class name, one can use normal import like
+    'package.<enum class>'/ 'package.*' and to use enum constants without class name, static import is
+    required like 'package.<enum class>.<enum constant>'/ 'package.<enum class>.*'.
+
+________________________________________________________________________________________
+
+*   What is the differnce between 'enum' and 'Enum' ?
+
+>>  'enum' is a keyword to declare enum constants while 'Enum' is a class  which is extended
+    by all enum.

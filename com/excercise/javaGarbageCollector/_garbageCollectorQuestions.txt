@@ -1,0 +1,173 @@
+*   What is Garbage Collector ?
+
+>>  In a program, when an object is created a memory is allocated in heap to store that 
+    object with a refernce link to it. But when that object got dereferenced, that object
+    becomes irrelevant or waste and must be removed.
+
+    If waste objects aren't removed, then at some point of time JVM will get out of memory.
+    To avoid such cases it is highly recommended to destory that object.
+
+    To perform such operation, JVM handover the responsibility to Garbage Collector to destory
+    the waste objects and freeup the memory. It is programmers responsibility to make the
+    unwanted object eligible for Garbage Collection.
+
+________________________________________________________________________________________________
+
+*   What are different ways through which one can make object eligible for Garbage Collection ?
+
+>>  below are the four ways to make objects eligible for Garbage Collection :
+
+    (1) Nullifying the refernce variable :
+
+        Once there is no need of object, by assigning the null value to refernce variable will 
+        make object previously refered by refernce variable eligible for Garbage Collection.
+
+        ```
+        // creating an object
+
+        Object obj = new Object();
+
+        // nullifying the refernce variable
+        // this will make 1 object eligible for Garbage Collection
+        
+        obj = null;
+        ```
+
+    (2) Reassigining the refernce variable :
+
+        Once there is no need of object, by reassigning a value to refernce variable will 
+        make object previously refered by refernce variable eligible for Garbage Collection.
+
+        ```
+        // creating an object
+
+        Object obj = new Object();
+
+        // reassigning the refernce variable with new String object
+        // this will make Object class object eligible for Garbage Collection
+        
+        obj = new String("Hello World");
+        ```
+
+    (3) Creating object inside a method :
+
+        If we create object inside a method, then after execution of the method, all the method 
+        that has local refernce will be eligible for Garbage Collection.
+
+        ```
+        public void method1(){
+
+            // creating locally referenced String object 
+            String s = new String("Hello World");
+            .
+            .
+        }
+        // after method1() String method referenced locally inside method1() will be eligible 
+        // for Garbage Collection
+        ```
+
+    (4) Island of Isolation :
+
+        below is an example of island of isolation :
+
+        ```
+        class Test{
+
+            public Test t;
+
+            public static void main(String[] args){
+
+                // creating 3 objects
+                Test obj1 = new Test();
+
+                Test obj2 = new Test();
+
+                Test obj3 = new Test();
+
+                // adding refernce variable for all the objects
+                obj1.t = obj2;
+                obj2.t = obj3;
+                obj3.t = obj1;
+
+                // nullifying refernce variable to make island of isolation
+                obj1 = null;
+                obj2 = null;
+                obj3 = null;
+            }
+        }
+        ```
+  
+________________________________________________________________________________________________
+
+*   How to explicitly call Garbage Collector and destroy the non-referenced object ?
+
+>>  One cannot force Garbage Collector to destroy the non-referenced object but surely can
+    request Garbage Collector to destory it, but it is not certain whether the Garbage
+    Collector will destory that object or not. But most of the time Garbage Collector 
+    destorys the object by running another 'Thread' and destroying some of the waste objects
+    to freeup the space.
+
+________________________________________________________________________________________________
+
+*   What are different ways to request Garbage Collector ?
+
+>>  below are the ways to request Garbage Collector :
+
+    (1) by using 'Runtime' object 'gc()' method :
+
+        Runtime class has a method to interact with the JVM. It is a singleton class i.e.
+        one can create only one object of such class.
+
+        To create object of Runtime class, one has to use 'getRuntime()' static method which
+        returns Runtime object. Use this object to interact with JVM and request for Garbage
+        Collection.
+
+        ```
+        // creating Runtime object
+        Runtime r = Runtime.getRuntime();
+
+        // Runtime method to get info about total memory space
+        int total = r.totalMemory();
+
+        // Runtime method to get info about free memory space
+        int free = r.freeMemory();
+
+        // Runtime method to request for Garbage Collection
+        r.gc();
+        ```
+
+    (2) by using 'System.gc()' method :
+
+        'gc()' is a static method of class System which internally calls Runtime object 'gc()'
+        method to request for Grabage Collection.
+
+        ```
+        // gc() method implementation in System class
+        public static void gc() {
+            Runtime.getRuntime().gc();
+        }
+        ```
+
+        below is the way to call gc() method of System class :
+
+        ```
+        System.gc();
+        ```
+
+        It is mostly used way but the previous way is highly recommended
+
+________________________________________________________________________________________________
+
+*   What is finalize ?
+
+>>  It is a method which is present in Object class which is called by Garbage Collector 
+    before destroying the objects. One has to override this method in current class so that
+    whenever Garbage Collector is about to destroy the object, it will execute the Finalize 
+    method.
+
+________________________________________________________________________________________________
+
+*   Can we call finalize method explicitly ?
+
+>>  Yes, we can but it won't destroy the object but it will act as a normal method.
+

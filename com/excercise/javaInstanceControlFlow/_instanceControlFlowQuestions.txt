@@ -1,0 +1,669 @@
+*   In which order instance control flows in java ?
+
+>>  Whenever we create instance of java class, then instance control flows in below 
+    given order :
+
+    (1) Identification of instance members from top to bottom
+
+    (2) Execution of instance variable assignments and instance block form top to bottom
+
+    (3) Execution of constructor
+
+______________________________________________________________________________________
+
+*   How many times does execution of instance variable assignments, instance block and
+    constructor happens ?
+
+>>  Execution of instance variable assignments, instance block and constructor happens 
+    Whenever we create instance (Object) of that class. If we don't create any object 
+    of that class then JVM will not even identify the instance members.
+
+______________________________________________________________________________________
+
+*   If we execute a java class, then which control flow will be executed first ?
+
+>>  If we execute a java class, then at first static control flow will be executed 
+    for one time and then if in that static control flow we are creating an object
+    then instance control flow will be executed.
+
+______________________________________________________________________________________
+
+*   Along with the class whose object we are creating, which other classes instance 
+    blocks will be executed ?
+
+>>  Let say there is a class 'A' whose child is 'B' and whose child is 'C', then if we 
+    create object of class 'A' then only class 'A' instance block and constructor will 
+    be executed.
+    
+    If we create object of class 'B' then class 'A' and class 'B' instance blocks and 
+    constructor will be executed. 
+
+    If we create object of class 'C' then class 'A', class 'B' and 'C' instance blocks
+    and constructor will be executed. 
+
+______________________________________________________________________________________
+
+*   In what order given java class will be executed ?
+
+>>  ```
+    public class Test {
+
+        int i = 10;
+
+        {
+            System.out.println(i);
+
+            System.out.println("First instance block");
+        }
+
+        Test() {
+
+            System.out.println("Constructor");
+        }
+
+        public static void main(String[] args) {
+
+            Test t = new Test();
+
+            System.out.println("Main method");
+        }
+
+        public void method1() {
+
+            System.out.println(j);
+        }
+
+        {
+            method1();
+
+            System.out.println("Second instance block");
+        }
+
+        int j = 20;
+    }
+    ```
+
+    In below order given java class will be executed :
+
+    (a) Identification of static members from top to bottom :
+
+        (1) First main method will be indentified by JVM
+
+    (b) Execution of static variable assignments and static block form top to bottom :
+
+        Since there is no static block and static variable, this step will not be 
+        executed in this case
+
+    (c) Execution of main method :
+
+        (2) At last JVM will execute main method.
+
+            First Test class object will be created wHICH will initiate instance control
+            flow of Test class
+            
+            Next JVM will print "Main method"
+
+            ```
+            public static void main(String[] args) {
+
+                Test t = new Test();
+
+                System.out.println("Main method");
+            }
+            ```
+        
+    (d) Identification of instance members from top to bottom :
+
+        (3) JVM will identify below instance variable and will assign default value to 
+            it (i = 0). Currently this variable is in Read Indirect Write only (RIWO) 
+            mode
+
+            ```
+            int i = 10;
+            ```
+
+        (4) Then below instance block will be indentified by JVM
+
+            ```
+            {
+                System.out.println(i);
+
+                System.out.println("First instance block");
+            }
+            ```
+
+        (5) Then constructor method will be indentified by JVM
+
+        (6) Then instance method 'method1()' will be indentified by JVM
+
+        (7) Then below instance block will be indentified by JVM
+
+            ```
+            {
+                method1();
+
+                System.out.println("Second instance block");
+            }
+            ```
+
+        (8) Then JVM will identify below instance variable and will assign default 
+            value to it (j = 0). Currently this variable is in Read Indirect Write Only 
+            (RIWO) mode
+
+            ```
+            int j = 20;
+            ```
+
+    (e) Execution of instance variable assignments and instance block form top to 
+        bottom :
+
+        (9) JVM will initialize below instance variable with original value (i = 10). 
+            Now this variable is in Read Write Only (RWO) mode
+
+            ```
+            int i = 10;
+            ```
+
+        (10) Then JVM will execute below instance block in which first it will print 
+            value of instance variable 'i' i.e. i = 10. Next it will print 
+            "First instance block" 
+
+            ```
+            {
+                System.out.println(i);
+
+                System.out.println("First instance block");
+            }
+            ```
+
+        (11) Then JVM will execute below instance block in which first method1() will
+            be executed which will print value of variable 'j' which is j = 0 because
+            original value of 'j' has not been initialized yet. Next JVM will print 
+            "Second instance block"
+
+            ```
+            {
+                method1();
+
+                System.out.println("Second instance block");
+            }
+            ```
+
+        (12) Then JVM will initialize below instance variable with original value 
+            (j = 20). Now this variable is in Read Write Only (RWO) mode
+
+            ```
+            int j = 20;
+            ```
+
+    (3) Execution of constructor :
+
+        (13) At last JVM will execute the constructor which will print "Constructor"
+
+            ```
+            Test() {
+
+                System.out.println("Constructor");
+            }
+            ```
+
+
+    Output of entire Test class will be :
+
+        ```
+        10
+        First instance block
+        0
+        Second instance block 
+        Constructor
+        Main method
+        ```
+______________________________________________________________________________________
+
+*   What is importance of instance block ?
+
+>>  Instance block is executed at the time of object creation. Hence, if we want to 
+    perform any operation at that time we have to define that operation inside
+    instance block.
+
+    For example :
+
+    If we want to increment the count of object that has been created uptill now or 
+    we want to send some data to database Whenever we create a new object, then 
+    we must define such operation inside instance block. 
+
+    We can define these operations inside constructor as well but since, for a class
+    multiple constructor is valid, we will have to write code for these operations 
+    inside each constructor which will violate DRY principle.
+    
+______________________________________________________________________________________
+
+*   Which are valid and invalid java class based on instance control flow ?
+
+>>  Below are the valid java class based on static control flow :
+
+    (1) Output : 10
+
+        ```
+        class Test {
+
+            int x = 10;
+
+            {
+                System.out.println(x);
+            }
+
+            public static void main(String[] args) {
+
+                Test t = new Test();
+            }
+        }
+
+        ```
+    
+    (2) Output : 10
+
+        ```
+        class Test {
+
+            int x = 10;
+
+            {
+                System.out.println(this.x);
+            }
+
+            public static void main(String[] args) {
+
+                Test t = new Test();
+            }
+        }
+
+        ```
+    
+    (3) Output : 10
+
+        ```
+        class Test {
+
+            {
+                method1();
+            }
+
+            public void method1() {
+
+                System.out.println(x);
+            }
+
+            public static void main(String[] args) {
+                
+                Test t = new Test();
+            }
+
+            int x = 10;
+        }
+
+        ```
+    
+    (4) Output : 10
+
+        ```
+        class Test {
+
+            {
+               System.out.println(this.x); 
+            }
+
+            public static void main(String[] args) {
+                
+                Test t = new Test();
+            }
+
+            int x = 10;
+        }
+
+        ```
+    
+    Below are the invalid java class based on static control flow :
+    
+    (4) This will give compile time error because we are reading instance variable 'x'
+        directly in instance block even though instance variable 'x' is in Read Indirect 
+        Write Only mode
+
+        ```
+        class Test {
+
+            {
+                System.out.println(x);
+            }
+
+            public static void main(String[] args) {
+                
+            }
+
+            int x = 10;
+        }
+
+        ```
+    
+        ```
+        class Test {
+
+            {
+                System.out.println(x);
+            }
+
+            public static void main(String[] args) {
+                
+                Test t = new Test();
+            }
+
+            int x = 10;
+        }
+
+        ```
+
+______________________________________________________________________________________
+
+*   In what order given java class (Child class) will be executed ?
+
+>>  ```
+    public class Parent {
+
+        int i = 100;
+
+        {
+            System.out.println(i);
+
+            System.out.println("Parent instance block");
+        }
+
+        Parent() {
+
+            System.out.println("Parent constructor");
+        }
+
+        public static void main(String[] args) {
+
+            Parent p = new Parent();
+
+            p.method1();
+
+            System.out.println("Parent main method");
+        }
+
+        public void method1() {
+
+            System.out.println(j);
+        }
+
+        int j = 200;
+    }
+
+    public class Child extends Parent {
+
+        int x = 10;
+
+        {
+            System.out.println(this.y);
+
+            System.out.println("Child first instance block");
+        }
+
+        Child() {
+
+            System.out.println("Child constructor");
+        }
+
+        public static void main(String[] args) {
+
+            Child c = new Child();
+
+            c.method2();
+
+            System.out.println("Child main method");
+        }
+
+        private void method2() {
+
+            System.out.println(y);
+        }
+
+        {
+            method2();
+
+            System.out.println("Child second instance block");
+        }
+
+        int y = 20;
+    }
+    ```
+
+    In below order given java class will be executed :
+
+    (a) Identification of static members of Parent class from top to bottom :
+
+        (1) At first static main method will be indentified by JVM
+
+    (b) Identification of static members of Child class from top to bottom :
+
+        (2) At first static main method will be indentified by JVM
+
+    (c) Execution of static variable assignments and static block of Parent class 
+        form top to bottom :
+
+        Since there is no static block and static variable, this step will not be 
+        executed in this case
+    
+    (d) Execution of static variable assignments and static block of Child class 
+        form top to bottom :
+
+        Since there is no static block and static variable, this step will not be 
+        executed in this case
+
+    (e) Execution of Child class main method :
+
+        (19) JVM will execute Child class main method. 
+            
+            In which first JVM will create Child class object with Child type 
+            reference. Before creating this object, Parent class instance control flow 
+            and Child class instance control flow will happen (From step-20 onwards)
+
+            Next JVM will execute Child class method 'method2()' which will print value
+            of instance variable 'y' which is y = 20.
+            
+            At last JVM will print "Child main method"
+
+            ```
+            public static void main(String[] args) {
+
+                Child c = new Child();
+
+                c.method2();
+
+                System.out.println("Child main method");
+            }
+            ```
+    
+    (f) Identification of instance members of Parent class from top to bottom :
+
+        (20) JVM will identify below instance variable and will assign default value to 
+            it (i = 0). Currently this variable is in Read Indirect Write only (RIWO) 
+            mode
+
+            ```
+            int i = 100;
+            ```
+
+        (21) Then below instance block will be indentified by JVM
+
+            ```
+            {
+                System.out.println(i);
+
+                System.out.println("Parent instance block");
+            }
+            ```
+
+        (22) Then constructor will be indentified by JVM
+
+        (23) Then instance method 'method1()' will be indentified by JVM
+
+        (24) Then JVM will identify below instance variable and will assign default 
+            value to it (j = 0). Currently this variable is in Read Indirect Write Only 
+            (RIWO) mode
+
+            ```
+            int j = 200;
+            ```
+    (g) Identification of instance members of Child class from top to bottom :
+
+        (25) JVM will identify below instance variable and will assign default value to 
+            it (x = 0). Currently this variable is in Read Indirect Write only (RIWO) 
+            mode
+
+            ```
+            int x = 10;
+            ```
+
+        (21) Then below instance block will be indentified by JVM
+
+            ```
+            {
+                System.out.println(this.y);
+
+                System.out.println("Child instance block");
+            }
+            ```
+
+        (22) Then constructor will be indentified by JVM
+
+        (23) Then instance method 'method2()' will be indentified by JVM
+
+        (24) Then JVM will identify below instance variable and will assign default 
+            value to it (j = 0). Currently this variable is in Read Indirect Write Only 
+            (RIWO) mode
+
+            ```
+            int y = 20;
+            ```
+
+    (h) Execution of instance variable assignments and instance block of Parent class
+        form top to bottom :
+
+        (25) JVM will initialize below instance variable with original value (i = 10). 
+            Now this variable is in Read Write Only (RWO) mode
+
+            ```
+            int i = 10;
+            ```
+
+        (26) Then JVM will execute below instance block in which first it will print 
+            value of instance variable 'i' i.e. i = 10. Next it will print 
+            "Parent instance block" 
+
+            ```
+            {
+                System.out.println(i);
+
+                System.out.println("Parent instance block");
+            }
+            ```
+
+        (27) Then JVM will initialize below instance variable with original value 
+            (j = 200). Now this variable is in Read Write Only (RWO) mode
+
+            ```
+            int j = 200;
+            ```
+        
+    (i) Execution of Parent class constructor :
+
+        (28) JVM will execute the constructor which will print "Parent Constructor"
+
+            ```
+            Parent () {
+
+                System.out.println("Parent constructor");
+            }
+            ```
+    
+    (j) Execution of instance variable assignments and instance block of Child class 
+        form top to bottom :
+
+        (29) JVM will initialize below instance variable with original value (x = 10). 
+            Now this variable is in Read Write Only (RWO) mode
+
+            ```
+            int x = 10;
+            ```
+
+        (30) Then JVM will execute below instance block in which first it will print 
+            value of instance variable 'y' i.e. y = 0 as 'y' has not been  initialized 
+            yet and this statement won't give compile time error because we are reading
+            this instance variable value Indirectly. 
+            
+            Next it will print "Child first instance block" 
+
+            ```
+            {
+                System.out.println(this.y);
+
+                System.out.println("Child first instance block");
+            }
+            ```
+        
+        (31) Then JVM will execute below instance block in which first method1() will
+            be executed which will print value of variable 'y' which is y = 0 because
+            original value of 'y' has not been initialized yet. 
+            
+            Next JVM will print "Child second instance block"
+
+            ```
+            {
+                method1();
+
+                System.out.println("Child second instance block");
+            }
+            ```
+
+        (32) Then JVM will initialize below instance variable with original value 
+            (y = 20). Now this variable is in Read Write Only (RWO) mode
+
+            ```
+            int y = 20;
+            ```
+    
+    (k) Execution of Child class constructor :
+
+        (33) JVM will execute the constructor which will print "Child Constructor"
+
+            ```
+            Child () {
+
+                System.out.println("Child constructor");
+            }
+            ```
+
+    Output of entire Child class will be :
+
+        ```
+        100
+        Parent instance block
+        Parent constructor
+        0
+        Child first instance block
+        0
+        Child second instance block
+        Child constructor
+        20
+        Child main method
+        ```
+______________________________________________________________________________________
+
+*   Can we use non static members inside static members ?
+
+>>  No, we can't access non static members inside static members because non static 
+    members are not being identified by JVM when static members are being executed due 
+    to which it will give compile time error.
+
+        

@@ -1,0 +1,117 @@
+*   What is polymorphism ?
+
+>>  Method having one name but multiple forms is the concept of polymorphism.
+
+    For example:
+
+    Method overloading :
+
+        Method name is same but we can apply different types of arguments is called
+        method overloading.
+    
+    Method overriding :
+
+        Method signature is same but in parent class one type of implementation and 
+        in child class another type of implementation is called method overriding.
+    
+    Method hiding :
+
+        Static method with same signature but in parent class one type of 
+        implementation and in child class another type of implementation is called 
+        method hiding.
+
+______________________________________________________________________________________
+
+*   What is method signature in java ?
+
+>>  Method name along with the argument types is called method signature.
+    
+    For example :
+
+    let say we have a below methods
+
+    ``` 
+    public void add(int a, float b) {
+
+    }
+
+    public void add(float a, int b) {
+
+    }
+    ```
+    then its method signature are 'add(int, float)' and 'add(float, int)'.
+
+______________________________________________________________________________________
+
+*   What is significance of method signature ?
+
+>>  Compiler uses method signature to resolve method calls
+
+______________________________________________________________________________________
+
+*   Can we have methods with same method signature with different access modifiers
+    in same class ?
+
+>>  No, we can't have methods with same method signature in same class.
+
+______________________________________________________________________________________
+
+*   What is difference between Method Overloading and Method Overriding ?
+
+>>          Method Overloading                          Method Overriding
+                                        
+    Method name must be same            |   Method name must be same
+                                        |
+                                        |
+    Argument types must be different    |   Argument types must be different including
+    (atleast order of arguments must be |   order of arguments
+    different)                          |   
+                                        |
+                                        |
+    Method signature must be different  |   Method signature must be same
+                                        |
+                                        |
+    There is no restrictions for        |   Method return type must be same as 
+    method return type                  |   overriden method type or it must be child
+                                        |   of overriden method return type
+                                        |
+                                        |
+    private, static and final methods   |   private, static and final methods can't be
+    can be overloaded                   |   overriden
+                                        |
+                                        |
+    There is no restrictions for        |   Scope of overriding method must not be
+    method access modifiers             |   reduced. If we want to then we can 
+                                        |   increase the scope of overriding method
+                                        |
+                                        |
+    There is no restrictions for        |   If overriding method throws any Checked 
+    throws class                        |   Exception then overriden method should
+                                        |   throw same Checked Exception or parent 
+                                        |   Checked Exception
+                                        |
+                                        |
+    Method resolution is done by        |   Method resolution is done by JVM based 
+    compiler based on reference type    |   on runtime object
+                                        |
+                                        |
+    It is also known as compile time    |   It is also known as runtime polymorphism
+    polymorphism or static polymorphism |   or static polymorphism or late binding
+    or early binding                    | 
+                                        |
+                                
+______________________________________________________________________________________
+
+*   What is the advantage of parent reference holding child type object ?
+
+>>  The advantage of this approach is that if we don't know the runtime type of 
+    object then we can hold that object using parent reference so that if at 
+    runtime whatever child object we get, we can hold that using parent reference.
+
+    But main disadvantage of this approach is that by this approach we can called
+    only parent methods and can't call child specific methods.
+
+______________________________________________________________________________________
+
+*   
+

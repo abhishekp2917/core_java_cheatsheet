@@ -1,0 +1,1334 @@
+*   What is an Exception ?
+
+>>  an unexpected and unwanted event that disturbs normal flow of program is nothing
+    but exception and it is highly recommended to handle Exception. For e.g FileNotFound, 
+    ArithmeticException etc.
+
+_________________________________________________________________________________________
+
+*   What is Exception handling ?
+
+>>  Exception handling means having an alternate way to continue the normal flow of the 
+    rest of the program. For e.g. our programming requirement is to read data from remote
+    server and at run time if database is not available, then our program should not be 
+    terminated abruptly and we must provide alternate way to continue the rest of the 
+    program. 
+
+_________________________________________________________________________________________
+
+*   What happens when an Exception occurs ?
+
+>>  Whenever Exception occurs inside any method, following process are excecuted :
+
+
+    The method in which Exception occured will create an object of type Exception having
+    information of Exception name, Exception description and path of Exception. This object 
+    will be handovered to JVM.
+
+    Once JVM gets the Exception object, it will check whether the method in which 
+    Exception occured has any way to handle that Exception.
+
+    If that method doesn't have any way to handle that Exception, JVM will terminate the 
+    rest of the code in that method (abnormal termination) and wil remove that method
+    from the exceution stack and control will now goes to the method which called this 
+    method or the method which is at the top of the excecution stack.
+
+    Now JVM will check the current method (method at the top of the excecution stack) 
+    whether this method has any way to handle the Exception or not. If that method also
+    doesn't have the Exception handling code, then JVM will terminate the rest of the code
+    (abnormal termination) of current method and will remove this method from the 
+    excecution stack.
+
+    This process will continue till the control goes to the main method. If even main 
+    method doesn't have the Exception handling codde then JVM will terminate the main 
+    method and will remove it from the stack and will call the 'Default Exception Handler'.
+
+    'Default Exception Handler' will destroy the current thread excecution stack and will
+    console the Exception object information which was created earlier.
+
+_________________________________________________________________________________________
+
+*   What is difference between Exception and Error ?
+
+>>              Exception                                       Error
+
+    
+    Exceptions occurs due the error in  |   Errors occurs due to lack of system resources
+    program                             |
+                                        |
+    Exceptions are recoverable i.e. one |   Errors are not recoverable and one can not  
+    can and must handle Exception so    |   handle Errors
+    that program doesn't terminate      |
+    abnormally                          |
+                                        |
+    e.g :                               |   e.g :
+                                        |                               
+    ArithmeticException                 |   EOFError
+    ArrayIndexOutOfBoundException       |   OutOfMemoryError
+    FileNotFoundException               |   StackOverflowError
+
+_________________________________________________________________________________________
+
+*   Can we handle Errors using try catch block ?
+
+>>  Yes, we can handle Errors using try catch block but it is not recommended to handle
+    Errors.
+    
+_________________________________________________________________________________________
+                              
+*  Exception and Errors hierarchy.
+
+>>
+                                Object (class)
+                                      |
+                                      |
+                                Throwable (class)
+                                      |
+                                      |
+                                Exception (class)
+                                      |
+    __________________________________|____________________________________________________________
+    |            |             |             |             |             |            |           |
+    |            |             |             |             |             |            |           |
+Runtime     ClassNot      Illegal     Instantiation  Interrupted     NoSuch      CloneNot       IOException
+Exception   Found         Access      Exception      Exception       Method      Supported      (class)
+(class)     Exception     Exception   (class)        (class)         Exception   Exception
+    |       (class)       (class)                                    (class)     (class)
+    |
+    |_____________________________________________________________________________________________________________
+    |            |             |             |             |             |            |             |            |    
+    |            |             |             |             |             |            |             |            |
+IndexOut      Illegal     Arithmetic       Array         Class       Illegal        Negative      Null         Security
+OfBound       Argument    Exception        Store         Cast        MonitorState   ArraySize     Pointer      Exception
+Exception     Exception   (class)          Exception     Exception   Exception      Exception     Exception    (class)
+(class)       (class)                      (class)       (class)     (class)        (class)       (class)                         
+    |            |
+    |            |___________________________________________
+    |            |                                          |
+    |            |                                          |
+    |       IllegalThreadStateException (class)      NumberFormatException (class)
+    |                    
+    |_________________________________________
+    |                                        |    
+    |                                        |
+ArrayIndexOutOfBoundException (class)     StringIndexOutOfBoundException (class)
+
+
+
+                                Object (class)
+                                      |
+                                      |
+                                Throwable (class)
+                                      |
+                                      |
+                                Error (class)
+                                      |
+    __________________________________|_____________________________________________
+    |                         |                          |                         |
+    |                         |                          |                         |
+LinkageError        VirtualMachineError             AWTError                ThreadDeath
+(class)             (abstract)                      (class)                 (class)
+    |                         |
+    |     ____________________|___________________________________________
+    |     |                   |                     |                    |
+    |     |                   |                     |                    |
+    |  InternalError    OutOfMemoryError      StackOverflowError    UnkownError             
+    |  (class)          (class)               (class)               (class)
+    |
+    |_________________________________________________________________________________
+    |               |                |               |               |               |    
+    |               |                |               |               |               |         
+Incompatible    Class               Class        NoClassDef      Unsatisfied    VerifyError
+ClassChange     Circularity         Format       FoundError      LinkError      (class) 
+Error           Error               Error        (class)         (class) 
+(class)         (class)             (class)                                 
+    |
+    |                              
+    |_________________________________________________________________________________
+    |                   |                   |                   |                    |           
+    |                   |                   |                   |                    |                
+AbstractMethod      IllegalAccess       Instantiation       NoSuchField       NoSuchMethod
+Error               Error               Error               Error             Error
+(class)             (class)             (class)             (class)           (class)   
+
+_________________________________________________________________________________________
+
+*   What is difference between Checked and Unchecked Exception ?
+
+>>              Checked                                         Unchecked
+                                        |
+                                        |
+    Checked Exceptions are those        |   Unchecked Exceptions are those Exception which
+    Exceptions which are checked by     |   are not checked by complier at the complie time
+    compiler and must be handled        |   and complier won't give complie time error if
+    either by using try and catch or    |   this Exception hasn't been handled.
+    by using 'throws' keyword otherwise |
+    code will give compile time error   |
+                                        |
+    RuntimeException and its child      |   Except Unchecked Exception classes, all the 
+    classes, Error and its child        |   classes are Checked Exceptions
+    classes are Unchecked Exceptions    |
+                                        |
+    e.g :                               |   e.g :
+                                        |   
+    FileNotFoundException               |   ArithmeticException
+                                        |   NullPointerException
+
+_________________________________________________________________________________________
+
+*   What is difference between Fully Checked and Partially Checked Exception ?  
+
+>>          Fully Checked                                Partially Unchecked
+                                        |
+    A Checked Exception is said to be   |   A Checked Exception is said to be Partially 
+    Fully Checked if and only if all    |   Checked if and only if some of its child 
+    its child clases are also checked   |   classes are unchecked
+                                        | 
+    e.g :                               |   e.g :
+                                        |   
+    IOException                         |   Exception
+    InterruptedException                |   Throwable
+
+_________________________________________________________________________________________
+
+*   What are the different methods to console Exception ?
+
+>>  let say below is the code for catch block
+
+    ```
+    catch(Exception e){
+
+        // Exception handling code
+    }
+    ```
+
+    then, following ways can be used to console Exception
+
+    (1) below statement will print Exception name and Exception description :
+        ```
+        System.out.println(e);
+        System.out.println(e.toString());
+        ```
+
+    (2) below statement will print only Exception description :
+        ```
+        System.out.println(exception.getMessage());
+        ```
+
+    (3) below statement will print entire Exception info including Exception location :
+        ```
+        exception.printStackTrace();
+        ```
+
+_________________________________________________________________________________________
+ 
+*   What is the diffrence between final, finally and finalize ?
+
+>>          final                           finally                        finalize    
+                               |                                |
+    'final' is a keyword which |   'finally' is a keyword used  |   'finalize' is a method 
+    is used as an access       |   along with 'try' and 'catch' |   which is invoked by 
+    modifier for classes so    |   for cleanup purpose of the   |   Garbage Collector 
+    that other classes can't   |   code in 'try' block like     |   before destroying the
+    extend it, for variables   |   closing the file, closing    |   non-referenced object
+    to make them constant and  |   the database connection etc  |   for the cleanup purpose
+    for methods to prevent     |                                |   like closing the 
+    them form being            |                                |   database connection
+    overriden by child classes |                                |   associated with the
+                               |                                |   object etc
+
+_________________________________________________________________________________________
+
+*   What are valid try, catch and finally cases ?
+
+>>  Below are the valid try, catch and finally block syntax :
+
+    (1) simple try catch block :
+
+        ```
+        try{
+            Exception raising code
+            .
+            .
+        }
+        catch(<Exception> e){
+            Exception handling code
+            .
+            .
+        }
+        ```
+    
+    (2) try with multiple catch block :
+
+        ```
+        try{
+            Exception raising code
+            .
+            .
+        }
+        catch(<Exception1> e){
+            Exception1 handling code
+            .
+            .
+        }
+        catch(<Exception2> e){
+            Exception2 handling code
+            .
+            .
+        }
+        ```
+
+    (3) try with catch and finally block :
+
+       ```
+        try{
+            Exception raising code
+            .
+            .
+        }
+        catch(<Exception> e){
+            Exception handling code
+            .
+            .
+        }
+        finally{
+            Finally block code
+            .
+            .
+        }
+        ```
+
+    (4) try with only finally block :
+
+        ```
+        try{
+            Exception raising code
+            .
+            .
+        }
+        finally{
+            Finally block code
+            .
+            .
+        }
+        ```
+    (5) try catch block with another try catch block inside try block :
+
+        ```
+        try{
+            Exception raising code
+            .
+            .
+            try{
+                Exception raising code
+                .
+                .
+                
+            }
+            catch(<Exception1> e){
+                Exception1 handling code
+                .
+                .
+            }
+            .
+            .
+        }
+        catch(<Exception1> e){
+            Exception1 handling code
+            .
+            .
+        }
+        ```
+    
+    (6) try catch block with another try catch block inside catch block :
+
+        ```
+        try{
+            Exception raising code
+            .
+            .
+        }
+        catch(<Exception1> e){
+            Exception1 handling code
+            .
+            .
+            try{
+                Exception raising code
+                .
+                .
+            }
+            catch(<Exception2> e){
+                Exception2 handling code
+                .
+                .
+            }
+            .
+            .
+        }
+        ```
+    
+    (7) try catch finally block with another try catch block inside finally block :
+
+        ```
+        try{
+            Exception raising code
+            .
+            .
+        }
+        catch(<Exception1> e){
+            Exception1 handling code
+            .
+            .
+        }
+        finally{
+            Finally block code
+            .
+            .
+            try{
+                Exception raising code
+                .
+                .
+            }
+            catch(<Exception1> e){
+                Exception1 handling code
+                .
+                .
+            }
+            .
+            .
+        }
+        ```
+    
+    (8) try catch block with another try finally block inside try block :
+        ```
+        try{
+            Exception raising code
+            .
+            .
+            try{
+                Exception raising code
+                .
+                .
+            }
+            finally{
+                Finally block code
+                .
+                .
+            }
+            .
+            .
+        }
+        catch(<Exception1> e){
+            Exception1 handling code
+            .
+            .
+        }
+        ```
+
+    (9) try catch block with another try finally block inside catch block :
+
+        ```
+        try{
+            Exception raising code
+            .
+            .
+        }
+        catch(<Exception1> e){
+            Exception1 handling code
+            .
+            .
+            try{
+                Exception raising code
+                .
+                .
+            }
+            finally{
+                Finally block code
+                .
+                .
+            }
+            .
+            .
+        }
+        ```
+    
+    (10) try finally block after try catch block :
+
+        ```
+        try{
+            Exception raising code
+            .
+            .
+        }
+        catch(<Exception1> e){
+            Exception1 handling code
+            .
+            .
+        }
+        try{
+            Exception raising code
+            .
+            .
+        }
+        finally{
+            Finally block code
+            .
+            .
+        }
+        ```
+    
+    Below are the invalid try, catch and finally block syntax :
+
+    (1) try with multiple catch block handling same Exception :
+    
+        compiler message : Exception1 has already been caught
+
+        ```
+        try{
+            Exception raising code
+            .
+            .
+        }
+        catch(<Exception1> e){
+            Exception1 handling code
+            .
+            .
+        }
+        catch(<Exception1> e){
+            Exception2 handling code
+            .
+            .
+        }
+        ```
+
+    (2) try block with no catch or finally block :
+    
+        compiler message : try without catch or finally
+
+        ```
+        try{
+            Exception raising code
+            .
+            .
+        }
+        ```
+
+    (3) catch block with no try block :
+    
+        compiler message : catch without try
+
+        ```
+        catch(<Exception1> e){
+            Exception1 handling code
+            .
+            .
+        }
+        ```
+
+    (4) finally block with no try block :
+    
+        compiler message : finally without try
+    
+        ```
+        finally{
+            Finally block code
+            .
+            .
+        }
+        ```
+    
+    (5) catch block after finally block :
+
+        compiler message : catch without try
+    
+        ```
+        try{
+            Exception raising code
+            .
+            .
+        }
+        finally{
+            Finally block code
+            .
+            .
+        }
+        catch(<Exception1> e){
+            Exception1 handling code
+            .
+            .
+        }
+        ```
+    
+    (6) try catch block with only try block inside try block : 
+
+        complier message : try without catch or finally
+
+        ```
+        try{
+            Exception raising code
+            .
+            .
+            try{
+                Exception raising code
+                .
+                .
+            }
+            .
+            .
+        }
+        catch(<Exception1> e){
+            Exception1 handling code
+            .
+            .
+        }
+        ```
+    
+    (7) try catch finally block with only finally block inside finally block :
+        
+        complier message : finally without try
+        
+        ```
+        try{
+            Exception raising code
+            .
+            .
+        }
+        catch(<Exception1> e){
+            Exception1 handling code
+            .
+            .
+        }
+        finally{
+            Finally block code
+            .
+            .
+            finally{
+                Finally block code
+                .
+                .
+            }
+        }
+        ```
+    
+    (8) try catch block with only finally block inside catch block :
+        
+        complier message : finally without try
+
+        ```
+        try{
+            Exception raising code
+            .
+            .
+        }
+        catch(<Exception1> e){
+            Exception1 handling code
+            .
+            .
+            finally{
+                Finally block code
+                .
+                .
+            }
+            .
+            .
+        }
+        ```
+
+    (9) try catch with multiple finally block :
+        
+        complier message : finally without try
+
+        ```
+        try{
+            Exception raising code
+            .
+            .
+        }
+        catch(<Exception1> e){
+            Exception1 handling code
+            .
+            .
+        }
+        finally{
+            Finally block code
+            .
+            .
+        }
+        finally{
+            Finally block code
+            .
+            .
+        }
+        ```
+    
+    (10) try without curly braces :
+
+        complier message : syntax error
+     
+        ```
+        try
+            System.out.println("Statement1);
+        catch(<Exception1> e){
+            Exception1 handling code
+            .
+            .
+        }
+        finally{
+            Finally block code
+            .
+            .
+        }
+        ```
+    
+    (11) catch without curly braces :
+
+        complier message : syntax error
+     
+        ```
+        try{
+
+        }
+        catch(<Exception1> e)
+            System.out.println("Statement1);
+        finally{
+            Finally block code
+            .
+            .
+        }
+        ```
+
+    (12) finally without curly braces :
+
+        complier message : syntax error
+     
+        ```
+        try{
+
+        }
+        catch(<Exception1> e){
+
+        }
+        finally
+            System.out.println("Statement1);
+
+        ```
+
+    (13) handling Fully Checked Exception for no Checked Exception in try block :
+
+        ```
+        try{
+
+            // no Checked Exception
+        }
+        catch(<Fully Checked Exception> e){
+
+        }
+        ```
+
+_________________________________________________________________________________________
+
+*   What is 'throw' ?
+
+>>  'throw' is a keyword which is use to send Exception object to JVM which will raise
+    Exception at that line of Exception object type. Mostly, it is used to send user
+    defined Exception to JVM. One can send any object to JVM if that object is a 
+    'throwable' object.
+
+_________________________________________________________________________________________
+
+*   What are valid and invalid 'throw' cases ? 
+
+>>  below are the valid 'throw' keyword cases :
+
+    (1) throwing Unchecked Exception and not handling it :
+
+        ```
+        .
+        .
+        throw new RuntimeException();
+        .
+        .
+        ```
+
+    (2) throwing child class of Unchecked Exception and not handling it :
+
+        ```
+        .
+        .
+        throw new ArrayIndexOutOfBoundException();
+        .
+        .
+        ```
+
+    (3) throwing Unchecked Error and not handling it :
+
+        ```
+        .
+        .
+        throw new Error();
+        .
+        .
+        ```
+
+    (4) throwing child class of Unchecked Error and not handling it :
+
+        ```
+        .
+        .
+        throw new OutOfMemoryError();
+        .
+        .
+        ```
+
+    (5) throwing one type of Checked Exception and handling its parent class Exception :
+
+        ```
+        .
+        .
+        try{
+
+            throw new RuntimeException();
+        }
+        catch(Exception e){
+
+            // Exception handling code
+        }
+        .
+        .
+        ```
+    
+    below are the invalid 'throw' keyword usage :
+
+    (1) throwing Checked Exception and not handling it :
+
+        ```
+        .
+        .
+        throw new InterruptedException();
+        .
+        .
+        ```
+
+    (2) throwing partially Checked Exception and not handling it :
+
+        ```
+        .
+        .
+        throw new Exception();
+        .
+        .
+        ```
+
+    (3) throwing one type of Checked Exception and handling other type of Checked Exception/ Unchecked Exception :
+
+        ```
+        .
+        .
+        try{
+
+            throw new IOException();
+        }
+        catch(InterruptedException e){
+
+            // InterruptedException handling code
+        }
+        .
+        .
+        ```
+
+    (4) throwing Checked Exception and handling its child class Exception :
+
+        ```
+        .
+        .
+        try{
+
+            throw new Exception();
+
+        }
+        catch(InterruptedException e){
+
+            // InterruptedException handling code
+        }
+        .
+        .
+        ```
+_________________________________________________________________________________________
+
+*   What is 'throws' ?
+
+>>  'throws' is a keyword which is use to delegate the Exception handling 
+    responsibility to the caller method.
+
+    it is required only for Checked Exception and for Unchecked Exception, using of 'throws'
+    keyword is not mandatory. One can use 'throws' keyword for Unchecked Exception as well 
+    but it is not recommended.
+
+    'throws' keyword is use only to convience the compiler and will not prevent method from 
+    being terminated abnormally at runtime and one have to use try-catch block to avoid it.
+
+_________________________________________________________________________________________
+
+*   What are the valid and invalid 'throws' cases ?
+
+>>  below are the valid 'throws' keyword cases :
+
+    (1) delegating Checked Exception to caller method for Checked Exception raised in current method :
+
+        ```
+        .
+        .
+        public void method1() throws InterruptedException {
+
+            throw new InterruptedException();
+        }
+        .
+        .
+        ```
+
+    (2) delegating Checked Exception parent to caller method for Checked Exception raised in current method :
+
+        ```
+        .
+        .
+        public void method1() throws Exception {
+
+            throw new InterruptedException();
+        }
+        .
+        .
+        ```
+    
+    (3) delegating Checked Exception to caller method for Unchecked Exception raised in current method :
+
+        ```
+        .
+        .
+        public void method1() throws InterruptedException {
+
+            throw new ArrayIndexOutOfBoundException();
+        }
+        .
+        .
+        ```
+    
+    (4) delegating Checked Exception to caller method for Error raised in current method :
+
+        ```
+        .
+        .
+        public void method1() throws InterruptedException {
+
+            throw new Error();
+        }
+        .
+        .
+        ```
+    
+    (5) delegating Unchecked Exception parent to caller method for Unchecked Exception raised in current method :
+
+        ```
+        .
+        .
+        public void method1() throws RuntimeException {
+
+            throw new ArrayIndexOutOfBoundException();
+        }
+        .
+        .
+        ```
+    
+    (6) delegating Exception for Unchecked Exception raised in class constructor :
+
+        ```
+        .
+        .
+        class Test{
+
+            Test() throws InterruptedException {
+
+                 throw new InterruptedException();
+            }
+        }  
+        .
+        .
+        ```
+    
+    (7) delegating Checked/Unchecked Exception for no Exception inside method :
+
+         ```
+        .
+        .
+        public void method1() throws InterruptedException {
+
+            // no Exception inside method
+        }
+        .
+        .
+        public void method2() throws Exception {
+
+            // no Exception inside method
+        }
+        .
+        .
+        public void method3() throws ArrayIndexOutOfBoundException {
+
+            // no Exception inside method
+        }
+        ```
+    
+    (7) delegating class of Throwable type for Exception child of class or no Exception inside method :
+
+         ```
+        .
+        .
+        class Test extends Exception{
+            .
+            .
+            public void method1() throws Test {
+
+                throw new IOException();
+            }
+            .
+            .
+        }
+        .
+        .
+        ```
+    
+    below are the invalid 'throws' keyword cases :
+
+    (1) delegating Checked Exception which is child class or not of the type of what raised inside method :
+
+        ```
+        .
+        .
+        public void method2() throws InterruptedException {
+
+            throw new Exception();
+        }
+        .
+        .
+        public void method1() throws IOException {
+
+            throw new InterruptedException();
+        }
+        .
+        .
+        ```
+
+    (2) delegating Unchecked Exception for Checked Exception raised inside method :
+
+        ```
+        .
+        .
+        public void method1() throws RuntimeException {
+
+            throw new IOException();
+        }
+        .
+        .
+        ```
+    
+    (3) delegating class which is not of Throwable type for method/constructor raising/not raising any kind of Exception:
+
+        ```
+        class Test{
+
+            .
+            .
+            public void method1() throws Test {
+
+                throw new IOException();
+            }
+            .
+            .
+        }
+        ```
+
+_________________________________________________________________________________________
+
+*   How to define customize Exception ?
+
+>>  use below reference to create customiized Exception :
+
+    to create customized exception, one has to extends any throwable type exception and 
+    declare constructor for receiving exception description
+
+    it is recommended to extend RuntimeException as it is an Unchecked Exception due to which
+    while throwing customized exception, compiler won't give compilation error for not
+    handling thrown exception as only Checked Exception is required to be handled. 
+
+    ```
+    class UnderAgeException extends RuntimeException{
+
+        // customized exception constructor
+        UnderAgeException(String exceptionDescription){
+
+            // Calling parent method constructor 
+            super(exceptionDescription)
+        }
+
+    }
+    ```
+
+_________________________________________________________________________________________
+
+*   Which are top most occured Exceptions ?
+
+>>  below are the top most occured JVM exception :
+
+    (1) ArrayIndexOutOfBoundException :
+
+        Hierarchy :
+                    Throwable
+                        |
+                    Exception
+                        |
+                    RuntimeException
+                        |
+                    IndexOutOfBoundException
+                        |
+                    ArrayIndexOutOfBoundException
+        
+        Example :
+
+            ```
+            .
+            .
+            int[] array = {1, 2};
+
+            // exception raising statement 
+            // accessing index of array which is out of range
+            System.out.println(arr[3]); 
+            .
+            .
+            ```
+
+    (2) NullPointerException :
+
+        Hierarchy :
+                    Throwable
+                        |
+                    Exception
+                        |
+                    RuntimeException
+                        |
+                    NullPointerException
+        
+        Example :
+
+            ```
+            .
+            .
+            // creating String var and initializing it with null
+            String s = null;
+            
+            // exception raising statement 
+            // accessing null property is not allowed
+            System.out.println(null.length); 
+            .
+            .
+            ```
+        
+    (3) ClassCastException :
+
+        Hierarchy :
+                    Throwable
+                        |
+                    Exception
+                        |
+                    RuntimeException
+                        |
+                    ClassCastException
+        
+        Example :
+
+            ```
+            .
+            .
+            // creating 'Object' object
+            Object obj = new Object();
+            
+            // exception raising statement 
+            // casting 'Object' object to 'String' object which is not allowed
+            // parent object cannot be casted to child object
+            obj = (String) obj; 
+            .
+            .
+            ```
+        
+    (4) StackOverflowError :
+
+        Hierarchy :
+                    Throwable
+                        |
+                    Error
+                        |
+                    VirtualMachineError
+                        |
+                    StackOverflowError
+        
+        Example :
+
+            ```
+            .
+            .
+            public static void method1(){
+                // calling method2
+                method2();
+            }
+
+            public static void method2(){
+                // calling method1 which will again call method2 and this cycle will continue
+                // this will create infinite loop and eventually result in
+                // StackOverflowError
+                method1();
+            }
+            .
+            .
+            ```
+
+    below are the top most occured programatic exception :
+    
+    (5) NumberFormatException :
+
+        Hierarchy :
+                    Throwable
+                        |
+                    Exception
+                        |
+                    RuntimeException
+                        |
+                    IllegalArgumentException
+                        |
+                    NumberFormatException
+        
+        Example :
+
+            ```
+            .
+            .
+            // passing illegal argument to Integer.parseInt() method
+            // expected argument is '10' instead of 'ten'
+            int num = Integer.parseInt("ten");
+            .
+            .
+            ```
+    
+    (6) AssertionError :
+
+        Hierarchy :
+                    Throwable
+                        |
+                    Error
+                        |
+                    AssertionError
+        
+        Example :
+
+            ```
+            .
+            .
+            int x = 10;
+
+            // this statement will raise AssertionError as condition is false
+            assert(x>20);
+            .
+            .
+            ```
+
+_________________________________________________________________________________________
+
+*   What is 'try with resources' concept ?
+
+>>  This concept was introduced in JAVA 1.7 version.
+
+    Before 1.7 version, whenever a resource is opened inside try block, that has to be closed
+    inside finally block which resulted in lengthy and complex code
+
+    After try with resources in 1.7 version, one doesn't have to close the resources inside
+    finally block as when the code reaches the end of try block, all the opened resources
+    get close explicitly. This results in short and readable code.
+
+    _________________________________________________________________________________________
+    |   NOTE :                                                                              |
+    |                                                                                       |                
+    |   All the resources which are opened as a part of try block must be                   |
+    |   'AutoCloseable' type i.e; all the resources class must implements                   |
+    |   'java.lang.AutoCloseable' interface.                                                |
+    |                                                                                       |
+    |   AutoCloseable came in 1.7v and contains only one method i.e. 'public void close()'  |
+    |                                                                                       |
+    |   All resources refernce variable are explicitly final and hence, one can't perform   |
+    |   reassignment of reference variable inside try block                                 |
+    _________________________________________________________________________________________
+
+    ```
+    try(<open resources here>){
+        .
+        .
+        .
+        // opened resouces will get close explicitly
+    }
+    catch(<exception name> e){
+        // handle exception
+    }
+    // no need of finally block
+    ```
+
+_________________________________________________________________________________________
+
+*   What is 'multi-catch' concept ?
+
+>>  This concept was introduced in 1.7v
+
+    Before this concept, if one have to handle different exceptions in an exactly similar
+    way, then it has to done by using multiple catch block with same handling code which makes 
+    the code lengthy and complicated.
+
+    After this concept, if one has to provide exactly similar handling code for different
+    exceptions, then it can be accomplished by using a single catch only. This makes the code
+    shorter and more readable.
+
+    _________________________________________________________________________________________
+    |   NOTE :                                                                              |
+    |                                                                                       |                
+    |   There shouldn't be any relation between exceptions in multi-catch                   |                                                          |
+    _________________________________________________________________________________________
+
+    ```
+    try{
+        // exception raising code
+    }
+    catch(exception1 | exception2 |...| exceptionN e){
+        // same exception handling code for different exception
+    }
+    ```
+
+_________________________________________________________________________________________
+
+*   What is Exception Propagation ?
+
+>>  If an exception raised inside a method and hasn't been handled by that method, then that
+    exception object will be propagated to the caller which is known as Exception Propagation.
+
+_________________________________________________________________________________________
+
+*   What is Exception Rethrowing ?
+
+>>  To convert one Exception into another Exception, one can throw new Exception while handling 
+    prevoius Exception which is known as Exception Rethrowing.
+
+    ```
+    try{
+        int a = 10/0;
+    }
+    // handling ArithmeticException
+    catch(ArithmeticException e){
+        // throwing NullPointerException to convert ArithmeticException
+        throw new NullPointerException();
+    }
+    ```
+
+        

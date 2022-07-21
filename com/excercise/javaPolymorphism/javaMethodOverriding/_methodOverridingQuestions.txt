@@ -1,0 +1,297 @@
+*   What is method overriding ?
+
+>>  When Child class provides its own implementation for inherited method from Parent 
+    class, such concept is called method overriding or runtime polymorphism or 
+    late binding.
+
+    Here parent class method which is overriden is called overriden method and child 
+    class method which overrides overriden method is called overriding method.
+
+______________________________________________________________________________________
+
+*   In method overriding, on what basis method is resolved ?
+
+>>  In method overriding, method resolution is done at runtime based on runtime
+    object and not based on object reference type.
+
+    First compiler checks whether method called from the reference type is present
+    in that reference type class or not. If it is present then at runtime JVM will
+    check whether reference is holding its own object or child object. 
+
+    If the object is of its own type then JVM will execute parent reference method.
+
+    If the object is of child type then JVM will check whether that method has been 
+    overriden by the child or not. If there is overriding method then JVM will
+    execute overriding method else it will execute parent method only 
+
+______________________________________________________________________________________
+
+*   What is the rule related to method signature in method overriding ?
+
+>>  In method overriding, method signature must be same unlike method overloading
+    where method signature must be different.
+
+______________________________________________________________________________________
+
+*   What is the rule related to return type in method overriding ?
+
+>>  In method overriding, return type of overriding method must be similar to 
+    overriden method's return type.
+    
+    But this rule is applicable until 1.4 version only and from 1.5 version onwards
+    overriding method return type can also be child of overriden method's return type.
+
+    For example if return type of overriden method is Object, then return type of 
+    overriding method must be of Object type or child of Object type like String, 
+    Integer, Throwable, Exception execute
+
+    But for primitive data type like byte, short, char, int, float, long, double and
+    boolean, overriding method return type must me similar to overriden method 
+    return type.
+
+    For example if return type of overriden method is int, then return type of 
+    overriding method must be int.
+
+______________________________________________________________________________________
+
+*   Method with which modifers can't be overriden ?
+
+>>  private:
+
+        If parent method is declared as private then method overriding that method in 
+        child class is not applicable as this method is not available to child method.
+        If we try to define a method with method signature, return type and private
+        access modifers similar to parent class in child class, it won't give any 
+        compile time error but this will not be considered as method overriding.
+
+    final :
+
+        If parent method is declared as final then we can't override that method in 
+        child class as final method can't be redefined. If we try to override that 
+        method in child class, it will give compile time error.
+
+        But vice-versa is possible i.e, if parent method is declared as non final then 
+        we can override that method in child class as final method.
+
+______________________________________________________________________________________
+
+*   What is the rule related to access modifers in method overriding ?
+
+>>  While overriding parent class method in child class, the scope of method shouldn't
+    be reduced. We can increase the scope of overriden method in child class but can't
+    reduce it.
+
+    For example,
+
+    (Overriden)             (Overriding)
+
+    'default'       ==>>    'default', 'protected' and 'public' is allowed.
+
+    'protected'     ==>>    'protected' and 'public' is allowed.
+
+    'public'        ==>>    'public' is allowed.
+
+
+    This is because, if outside package or module is using a non overriden method 
+    using child class object and then at later stage we override that method in child
+    class by reducing its scope then due to polymorphism, consumer of that method
+    which has child class object will be forced to invoke overriding method. But since
+    overriding method scope has been reduced it won't be visible to them which will
+    result in compile time error.
+
+______________________________________________________________________________________
+
+*   What are the rules related to other modifers in method overriding ? 
+
+>>  abstract:
+
+        If overriden method is abstract then overriding method can be non abstract and
+        vice-vera is also true.
+
+    strictfp:
+
+        If overriden method is strictfp then overriding method can be non strictfp and
+        vice-vera is also true.
+
+    synchronized:
+
+        If overriden method is synchronized then overriding method can be non 
+        synchronized and vice-vera is also true.
+    
+    native:
+
+        If overriden method is native then overriding method can be non native and 
+        vice-vera is also true.
+    
+______________________________________________________________________________________
+
+*   Can we override static methods ?
+
+>>  If parent method is declared as static and child class try to provide its own 
+    implementation for that static method, then it is valid but it is not method
+    overloading. This is called method hiding.
+
+______________________________________________________________________________________
+
+*   Can we change overriden method from static to non static or vice-versa ?
+
+>>  While overriding static method, we can't change it from static to non static.
+    similarly, while overloading non static method, we can't change it to static 
+    method.
+
+______________________________________________________________________________________
+
+*   What is the rule related to 'throws' keyword in method overriding ?
+
+>>  While overriding an overriden method, if overriding method throws Checked 
+    Exception then overriden method must throw same Checked Exception or its parent
+    Exception.
+
+    This is because if using child object somewhere we are using parent method that 
+    throws Checked Exception then it is mandatory to handle that method. But if 
+    later on we override that method in child class which throws other Checked 
+    Exception or parent Checked Exception, then code where we were using that method
+    with child object will get compile time error because earlier we were handling 
+    some other Checked Exception and now due to polymorphism we have to handle new
+    Checked Exception or parent of previous Checked Exception.
+
+______________________________________________________________________________________
+
+*   What are valid and invalid method overriding cases on the basis of 'throws' 
+    keyword ? 
+
+>>  below are the valid method overriding cases on the basis of 'throws' 
+    keyword :
+
+
+    (1) Parent  : throws Checked Exception
+        Child   : doesn't throws any Exception
+
+        ```
+        class Parent {
+
+            public void m1() throws Exception {}
+        }
+
+        class Child extends Parent {
+            
+            public void m1() {}
+        }
+        ```
+
+    (2) Parent  : throws parent Checked Exception
+        Child   : throws child Checked Exception
+
+        ```
+        class Parent {
+
+            public void m1() throws Exception {}
+        }
+
+        class Child extends Parent {
+            
+            public void m1() throws IOException {}
+        }
+        ```
+
+    (3) Parent  : throws parent Checked Exception
+        Child   : throws child Checked Exception
+
+        ```
+        class Parent {
+
+            public void m1() throws IOException {}
+        }
+
+        class Child extends Parent {
+            
+            public void m1() throws FileNotFoundException, EOFException {}
+        }
+        ```
+    
+    (4) Parent  : throws Checked Exception
+        Child   : throws Unchecked Exception
+
+        ```
+        class Parent {
+
+            public void m1() throws IOException {}
+        }
+
+        class Child extends Parent {
+            
+            public void m1() throws ArithmeticException, NullPointerException, ClassCastException {}
+        }
+        ```
+
+    (5) Parent  : doesn't throws any Exception
+        Child   : throws Unchecked Exception
+
+        ```
+        class Parent {
+
+            public void m1() {}
+        }
+
+        class Child extends Parent {
+            
+            public void m1() throws RuntimeException {}
+        }
+        ```
+    
+    below are the invalid method overriding cases on the basis of 'throws' 
+    keyword :
+
+    (1) Parent  : doesn't throws any Exception
+        Child   : throws Checked Exception
+
+        ```
+        class Parent {
+
+            public void m1() {}
+        }
+
+        class Child extends Parent {
+            
+            public void m1() throws Exception {}
+        }
+        ```
+
+    (2) Parent  : throws child Checked Exception
+        Child   : throws parent Checked Exception
+
+        ```
+        class Parent {
+
+            public void m1() throws IOException {}
+        }
+
+        class Child extends Parent {
+            
+            public void m1() throws Exception {}
+        }
+        ```
+
+    (3) Parent  : throws parent Checked Exception
+        Child   : throws child and other parent level Checked Exception
+
+        ```
+        class Parent {
+
+            public void m1() throws IOException {}
+        }
+
+        class Child extends Parent {
+            
+            public void m1() throws EOFException, InterruptedException {}
+        }
+        ```
+______________________________________________________________________________________
+
+*   Is overriding applicable for class fields (variables) ?
+
+>>  There is no concept of variable overriding or attribute overriding in java. But 
+    there is a concept of variable hiding.
+
+______________________________________________________________________________________
+

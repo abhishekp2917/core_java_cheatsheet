@@ -1,0 +1,92 @@
+*   What is variable hiding in java ?
+
+>>  If both parent and child class have variable (either static or non static) with 
+    same name, then it is called variable hidding because in java variable is resolved
+    based on reference type and not based on runtime object type. Therefore, if we 
+    read that variable from child object with child reference, then we will get value 
+    of child variable and if try to read that variable from child object with
+    parent reference then we will get value of parent variable. 
+
+    Here based on reference type, variable gets hidden. If parent reference is used
+    then child variable gets hidden and if we use child reference then parent variable
+    gets hidden.
+
+_______________________________________________________________________________________
+
+*   In variable hiding, on what basis variable is resolved ?
+
+>>  In variable hiding, variable resolution is done by compiler based on reference 
+    type and not based on runtime object.
+
+_______________________________________________________________________________________
+
+*   Based on below parent-child relation what will be the output of given statement 
+    based on variable hiding ?
+
+>>  ```
+    class Parent {
+        static int i = 666;
+        int j = 777;
+    }
+
+    class Child extends Parent {
+        static int i = 888;
+        int j = 999;
+    }
+    ```
+
+    (1) Parent Object with Parent reference :
+
+        ```
+        Parent p = new Parent();
+        System.out.println(p.i);
+        ```
+
+        Output : 666
+    
+    (2) Parent Object with Parent reference :
+
+        ```
+        Parent p = new Parent();
+        System.out.println(p.j);
+        ```
+
+        Output : 777
+    
+    (3) Child Object with Child reference :
+
+        ```
+        Child c = new Child();
+        System.out.println(c.i);
+        ```
+    
+        Output : 888
+    
+    (4) Child Object with Child reference :
+    
+        ```
+        Child c = new Child();
+        System.out.println(c.j);
+        ```
+
+        Output : 999
+    
+    (5) Child Object with Parent reference :
+
+        ```
+        Parent p = new Child();
+        System.out.println(p.i);
+        ```
+
+        Output : 666
+
+    (6) Child Object with Parent reference :
+
+        ```
+        Parent p = new Child();
+        System.out.println(p.j);
+        ```
+
+        Output : 777
+
+

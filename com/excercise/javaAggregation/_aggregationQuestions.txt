@@ -1,0 +1,10 @@
+*   What is aggregation ?
+
+>>  When a contained object is weakly associated to container object and there is
+    an existance of contained object without container object, then it is called 
+    aggregation.
+
+    In aggregation container object holds just the reference of the contained 
+    objects.
+
+____________________________________________________________________________________

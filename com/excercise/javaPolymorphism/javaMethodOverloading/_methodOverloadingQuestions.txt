@@ -1,0 +1,74 @@
+*   What is method overloading ?
+
+>>  Method with same name but different method signature in same class is known as
+    method overloading. 
+
+    Due to method overloading, we can declare method with same name but different 
+    argument types.
+
+______________________________________________________________________________________
+
+*   How method resolution is done in method overloading ?
+
+>>  In method overloading, method resolution is done by Compiler based on object 
+    reference type. That's why it is also called Compile time or static polymorphism
+    or early binding.
+
+    Method resolution is done based on object reference type because overloading is 
+    done in same class and compiler can resolve it by just using object reference. 
+
+______________________________________________________________________________________
+
+*   On what basis method is resolved by compiler in method overloading ?
+
+>>  In method overloading, method is resolved on the basis of object reference type 
+    and not on the basis of object type. 
+
+    If we pass Child class object with Parent class reference, the method that accepts
+    Parent class object as argument will get executed by compiler.
+
+______________________________________________________________________________________
+
+*   What is automatic promotion in method overloading ?
+
+>>  While resolving overloaded methods if exact matched methods is not avialable then 
+    we won't get compiler time error imediatly. First it will promote the argument to 
+    next level and will check whether matched method is avialable or not. If matched 
+    method is not avialable them compiler again promotes the argument to next level
+    and this will continue until all possible promotions. Still id the matched method
+    is not avialable then we will get compile time error. This is called automatic
+    promotion.
+
+    Below are all possible promotions:
+
+    byte >> short >> int >> long >> float >> double
+
+    char >> int >> long >> float >> doubleMoreover, unlike automatic promotion, there 
+    is no concept of automatic demotion in method overloading in java.
+
+______________________________________________________________________________________
+
+*   If a method accepts Parent class objects overloaded with method accepting Child 
+    class object then by calling that method by passing child class object, which 
+    method will get executed ?
+
+>>  In method overloading, always method with Child Class argument type will get 
+    higher priority than Parent class argument type.
+
+    But if overloaded method accepting argument accepts arguments which are at same 
+    level, in that case if we pass argument that satifies both the method then 
+    ambiguity will arise and compiler will give compile time error.
+
+______________________________________________________________________________________
+
+*   Is it possible to overloaded static method in java ?
+
+>>  Yes, we can overload static methods but overloaded method must be static as well
+    else it won't be consider as overloaded methods.
+
+______________________________________________________________________________________
+
+*   Can we change the access modifiers of overloaded method ?
+
+>>  Yes, we overloaded methods can have different access modifiers as for overloaded
+    methods only their method signature must be similar while anything else can differ.

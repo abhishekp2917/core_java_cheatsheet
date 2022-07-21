@@ -1,0 +1,421 @@
+*   What is object type casting ?
+
+>>  Casting one object into another object is called object typr casting.
+    
+    For example:
+
+    ```
+        // Throwable reference to hold IndexOutOfBoundsExceptio type object 
+        Throwable t = new IndexOutOfBoundsException();
+            
+        // casting IndexOutOfBoundsException to RuntimeException
+        RuntimeException re = (RuntimeException) t;
+    ```
+_______________________________________________________________________________________
+
+*   How is object type casting validated ?
+
+>>  At first compiler validates the object type casting based on two condition and 
+    then at runtime JVM validates the object type casting based on one condition.
+
+    Let say we have below statement, where we want to type cast 'd' into type 'C' 
+    and assign it to 'b' of type 'A'.
+
+    ```
+    A b = (C) d;
+    ```
+
+    where, 
+            A = class or interface name
+            b = reference variable name
+            C = class or interface name
+            d = reference variable name
+
+    Compiler will check two things i.e. whether the conversion of 'd' to 'C' is valid 
+    or not and assignment of 'd' of type 'C' to 'b' of type 'A' is valid or not. The 
+    two condition that must be satisfied are :
+
+    (1) Condition-I:
+
+        There must be relation between 'd' and 'C' either parent-child or child-parent 
+        or both of same type, else compiler will give inconvertible type error.
+
+    (2) Condition-II:
+
+        'A' must be of same type as 'C' or must be parent of 'C', else compiler will
+        give incompatible type error.
+    
+    JVM will check only one condition and will validate based on runtime object that 
+    'd' is holding. That one and only one condition is :
+
+    (1) Condition-I:
+
+        Runtime object that 'd' is holding that must be of same type as 'C' or must 
+        be child (derived) type of 'C', else it will throw ClassCastException.
+    
+_______________________________________________________________________________________
+
+*   What are the valid type casting for given hierarchy of classes ?
+
+>>                                Object
+                        ____________|________________
+                        |                           |
+                        |                           |
+                        Base1                       Base2
+                        |                           |
+            ____________|___________        ________|___________    
+            |                       |       |                   |
+            |                       |       |                   |
+        Derived1                Derived2    Derived3        Derived4     
+
+    ```
+    Base2 b = new Derived4();
+    ```
+
+    Below are valid object type casting cases :
+
+    (1) 
+        ```
+        Object o = (Base2) b;
+        ```
+    
+    Below are invalid object type casting cases :
+
+    (1) Compiler Condition-I fails : Inconvertible types
+
+        ```
+        Object o = (Base1) b;
+        ```
+    
+    (2) JVM Condition-I fails : ClassCastException
+
+        ```
+        Object o = (Derived3) b;
+        ```
+    
+    (3) Compiler Condition-I fails : Inconvertible types
+        ```
+        Base2 b2 = (Base1) b;
+        ``` 
+    
+    (4) Compiler Condition-II fails : incompatible types
+
+        ```
+        Base1 b1 = (Derived4) b;
+        ```
+_______________________________________________________________________________________
+
+*   What is internal implementation on object type casting ?
+
+>>  Whenever we type cast an object to new reference type, then a new reference 
+    variable is assign to that object and new object is not created. It is to note
+    that we are performing type casting and not object casting i.e we are not 
+    converting one object into other type of object.
+
+    Since we have assign new reference variable to that object, from that new 
+    reference variable we can invoke only that reference type methods 
+
+    For example :
+
+    Let say we have created String object witth String reference type
+
+    ```
+    String s = new String("Hello world");
+    ```
+
+    We type cast String type to Object type due to which now String object can be 
+    referenced from 's' as well as 'o'
+
+    ```
+    Object o = (Object) s;
+    ```
+
+    above statement is similar to below statement
+
+    ```
+    Object o = new String("Hello world");
+    ``` 
+
+_______________________________________________________________________________________
+
+*   For the below parent-child relation which is the valid and invalid statements ?
+
+>>  ```
+    class Parent {
+
+        void method1() {
+            System.out.println("Parent method1");
+        }
+    }
+    class Child extends Parent {
+
+        void method2() {
+            System.out.println("Child method2");
+        }
+    }
+    ```
+
+    Let say we have below object with reference variable
+
+    ```
+    Child c = new Child();
+
+    Parent p = new Child();
+    ```
+
+    Below are the valid statements :
+
+    (1) Calling Parent method from Child reference
+
+        ```
+        c.m1();
+        ```
+    
+    (2) Calling Child method from Child reference
+
+        ```
+        c.m2();
+        ```
+    
+    (3) Calling Parent method from Parent reference after type casting Child reference 
+        to Parent reference
+
+        ```
+        ((Parent)(c)).m1();
+        ```
+    
+    (4) Calling Parent method from Parent reference 
+
+        ```
+        p.m1();
+        ```
+    
+    (5) Calling Parent method from Parent reference after type casting Parent 
+        reference to Parent reference
+
+        ```
+        ((Parent)p).m1();
+        ```
+    
+    Below are the invalid statements :
+
+    (1) Calling Child method from Parent reference 
+
+        ```
+        p.m2();
+        ```
+    
+    (2) Calling Child method from Parent reference after type casting Parent reference 
+        to Parent reference
+
+        ```
+        ((Parent)p).m2();
+        ```
+    
+    (3) Calling Child method from Parent reference after type casting Child reference 
+        to Parent reference
+
+        ```
+        ((Parent)(c)).m2();
+        ```
+    
+_______________________________________________________________________________________
+
+*   For the below parent-child-grandChild relation what will be the output of given 
+    statements ?
+    
+>>  ```
+    class Parent {
+
+        void method1() {
+            System.out.println("Parent method1");
+        }
+    }
+    class Child extends Parent {
+
+        void method1() {
+            System.out.println("Child method1");
+        }
+    }
+    class GrandChild extends Child {
+
+        void method1() {
+            System.out.println("GrandChild method1");
+        }
+    }
+    ```
+
+    Let say we have below object with reference variable
+
+    ```
+    GrandChild gc = new GrandChild();
+    ```
+
+    (1) Calling GrandChild method from GrandChild reference
+
+        ```
+        gc.method1();
+        ```
+    
+        Output : Parent method1
+    
+    (2) Calling Child method from Child reference after converting GrandChild 
+        reference to Child reference
+
+        ```
+        ((Child)gc).method1();
+        ```
+    
+        Output : Parent method1
+
+    (3) Calling Parent method from Parent reference after converting GrandChild 
+        reference to Child reference and then from Child to Parent reference
+
+        ```
+        ((Parent)((Child)gc)).method1();
+        ```
+    
+        Output : Parent method1
+
+    (4) Calling Parent method from Parent reference after converting GrandChild 
+        reference to Parent reference
+
+        ```
+        ((Parent)gc).method1();
+        ```
+    
+        Output : Parent method1
+    
+    (5) Calling Child method from Child reference after converting GrandChild 
+        reference to Child reference and then from Child to Parent reference and then
+        Parent reference back to Child reference
+
+        ```
+        ((Child)((Parent)((Child)gc))).method1();
+        ```
+    
+        Output : Parent method1
+
+    (6) Calling GrandChild method from GrandChild reference after converting 
+        GrandChild reference to Child reference and then from Child back to 
+        GrandChild reference
+
+        ```
+        ((GrandChild)((Child)gc)).method1();
+        ```
+    
+        Output : Parent method1
+    
+_______________________________________________________________________________________
+
+*   For the below parent-child-grandChild relation what will be the output of given 
+    statements ?
+    
+>>  ```
+    class Parent {
+
+        int i = 666;
+        static int j = 777;
+    }
+    class Child extends Parent {
+
+        int x = 888;
+        static int y = 999;
+    }
+    ```
+
+    Let say we have below object with reference variable
+
+    ```
+    Child gc = new Child();
+    ```   
+
+    (1) Calling Parent instance variable from Child reference
+        
+        ```
+        System.out.println(c.i);
+        ```
+
+        Output : 666
+        
+    (2) Calling Parent static variable from Child reference
+
+        ```        
+        System.out.println(c.j);
+        ```
+
+        Output : 777
+         
+    (3) Calling Child instance variable from Child reference
+    
+        ```
+        System.out.println(c.x);
+        ```
+
+        Output : 888
+
+    (4) Calling Child static variable from Child reference
+    
+        ```
+        System.out.println(c.y);
+        ```
+
+        Output : 999
+        
+    (5) Calling Parent instance variable from Parent reference after converting 
+        Child reference to Parent reference
+    
+        ```
+        System.out.println(((Parent)c).i);
+        ```
+
+        Output : 666
+
+    (6) Calling Parent static variable from Parent reference after converting 
+        Child reference to Parent reference
+        
+        ```
+        System.out.println(((Parent)c).j);
+        ```
+        
+        Output : 777
+
+    (7) Calling Parent instance variable from Child reference after converting 
+        Child reference to Parent reference and then from Parent reference back
+        to Child reference
+        
+        ```
+        System.out.println(((Child)((Parent)c)).i);
+        ```
+        
+        Output : 666
+
+    (8) Calling Parent static variable from Child reference after converting 
+        Child reference to Parent reference and then from Parent reference back
+        to Child reference
+        
+        ```
+        System.out.println(((Child)((Parent)c)).j);
+        ```
+        
+        Output : 777
+
+    (9) Calling Child instance variable from Child reference after converting 
+        Child reference to Parent reference and then from Parent reference back
+        to Child reference
+        
+        ```
+        System.out.println(((Child)((Parent)c)).x);
+        ```
+        
+        Output : 888
+
+    (10) Calling Child static variable from Child reference after converting 
+        Child reference to Parent reference and then from Parent reference back
+        to Child reference
+        
+        ```
+        System.out.println(((Child)((Parent)c)).y);
+        ```
+
+        Output : 999

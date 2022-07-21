@@ -1,0 +1,704 @@
+*   In which order static control flows in java ?
+
+>>  Whenever we execute java class, then static control flows in below given
+    order :
+
+    (1) Identification of static members from top to bottom
+
+    (2) Execution of static variable assignments and static block form top to bottom
+
+    (3) Execution of main method
+
+______________________________________________________________________________________
+
+*   How many times does execution of static variable assignments and static block 
+    happens ?
+
+>>  Execution of static variable assignments and static block happens only one time 
+    at the time of class loading. After this static block is not executed and 
+    static variable is not assigned even if we create an instance (object) of that 
+    class. 
+
+______________________________________________________________________________________
+
+*   Along with the class which we are executing, which other classes static blocks are 
+    executed ?
+
+>>  Let say there is a class 'A' whose child is 'B' and whose child is 'C', then if we 
+    execute class 'A' then only class 'A' static block and main method will be executed.
+    
+    If we execute class 'B' then class 'A' static block and class 'B' static block and 
+    main method will be executed. 
+
+    If we execute class 'C' then class 'A' static block, class 'B' static block and
+    class 'C' static block and main method will be executed. 
+
+______________________________________________________________________________________
+
+*   In what order given java class will be executed ?
+
+>>  ```
+    public class Test {
+
+        static int i = 10;
+
+        static {
+
+            method1();
+
+            System.out.println("First static block");
+        }
+
+        public static void main(String[] args) {
+
+            method1();
+
+            System.out.println("Main method");
+        }
+
+        private static void method1() {
+
+            System.out.println(j);
+        }
+
+        static {
+
+            System.out.println("Second static block");
+        }
+
+        static int j = 20;
+    }
+    ```
+
+    In below order given java class will be executed :
+
+    (a) Identification of static members from top to bottom :
+
+        (1) JVM will identify below static variable and will assign default value to 
+            it (i = 0). Currently this variable is in Read Indirect Write only (RIWO) 
+            mode
+
+            ```
+            static int i = 10;
+            ```
+
+        (2) Then below static block will be indentified by JVM
+
+            ```
+            static {
+
+                method1();
+
+                System.out.println("First static block");
+            }
+            ```
+
+        (3) Then static main method will be indentified by JVM
+
+        (4) Then static method 'method1()' will be indentified by JVM
+
+        (5) Then below static block will be indentified by JVM
+
+            ```
+            static {
+
+                System.out.println("Second static block");
+            }
+            ```
+
+        (6) Then JVM will identify below static variable and will assign default value 
+            to it (j = 0). Currently this variable is in Read Indirect Write Only 
+            (RIWO) mode
+
+            ```
+            static int j = 20;
+            ```
+    (b) Execution of static variable assignments and static block form top to bottom :
+
+        (7) JVM will initialize below static variable with original value (i = 10). 
+            Now this variable is in Read Write Only (RWO) mode
+
+            ```
+            static int i = 10;
+            ```
+
+        (8) Then JVM will execute below static block in which it will first execute 
+            static method 'method1()'  which will print value of variable 'j' which is
+            j = 0 as 'j' has not been initialized with its original value 
+
+            Next JVM will print "First static block" 
+
+            ```
+            static {
+
+                method1();
+
+                System.out.println("First static block");
+            }
+            ```
+
+        (9) Then JVM will execute below static block which will print 
+            "Second static block"
+
+            ```
+            static {
+
+                System.out.println("Second static block");
+            }
+            ```
+
+        (10) Then JVM will initialize below static variable with original value 
+            (j = 20). Now this variable is in Read Write Only (RWO) mode
+
+            ```
+            static int j = 20;
+            ```
+    (c) Execution of main method :
+
+        (11) At last JVM will execute main method. In which first method 'method1()'
+            will be executed which will print value of static variable 'j' which is 
+            j = 20 as 'j' has already been initialized to its original value. 
+            
+            Next JVM will print "Main method"
+
+            ```
+            public static void main(String[] args) {
+
+                method1();
+
+                System.out.println("Main method");
+            }
+            ```
+
+    Output of entire Test class will be :
+
+        ```
+        0
+        First static block
+        Second static block 
+        20
+        Main method
+        ```
+______________________________________________________________________________________
+
+*   What is Read Indirect Write Only Mode ?
+
+>>  If a static variable is in this mode, the we can read the value of that static
+    variable indirectly only and not directly else we will get compile time error.
+
+______________________________________________________________________________________
+
+*   What does reading directly and indirectly means ?
+
+>>  When we read value of static variable directly inside static block, that means
+    we are reading that static variable directly.
+
+    For example :
+
+    In below code we are reading value of static variable 'i' directly inside static
+    block by printing its value
+
+    ```
+    class Test {
+
+        static int i = 10;
+
+        static {
+
+            System.out.println(i);
+        }
+    }
+    ```
+
+    When we read value of static variable through a static method inside static block,
+    that means we are reading that static variable indirectly.
+
+    For example :
+
+    In below code we are reading value of static variable 'i' indirectly inside static
+    block through static method 'method1()'
+
+    ```
+    class Test {
+
+        static int i = 10;
+
+        static {
+
+           method1();
+        }
+
+        public static void method1() {
+            System.out.println(i);
+        }
+    }
+    ```
+______________________________________________________________________________________
+
+*   What is importance of static block ?
+
+>>  Static block is executed at the time of class loading. Hence, if we want to 
+    perform any operation at that time we have to define that operation inside
+    static block.
+
+    For example :
+
+    If we want to load native libararies, we have to define loading operation inside
+    static block because loading of native libararies must be performed at the time
+    of class loading
+
+______________________________________________________________________________________
+
+*   Is it possible to print any statement in console without main method ?
+
+>>  Since we can't execute java class without main method from 1.7 version, it is 
+    not possible to print any statement in console without main method. 
+
+    But in earlier version (before 1.7 version) of java, we can do so by defining
+    printing operation inside static block.
+
+    For example :
+
+    (1) Printing statement to console without main method :
+
+        ```
+        class Test {
+
+            static {
+
+            System.out.println("Printing without main method");
+            
+            // exiting from system so that JVM don't look for main method
+            System.exit(0);
+            }
+        }
+        ```
+    
+    (2) Printing statement to console without main method and static block :
+
+        ```
+        class Test {
+
+            // assigning value return by static method method1() to static variable 'i'
+            static int i = method1();
+
+            public static int method1() {
+
+                System.out.println("Printing without main method and static block");
+
+                // exiting from system so that JVM don't look for main method
+                System.exit(0);
+
+                return 0;
+            }
+        }
+        ```
+
+    (3) Printing statement to console without main method, static block and static 
+        method :
+
+        ```
+        class Test {
+
+            // creating Test object and assigning it to the static variable 't'
+            static Test t = new Test();
+
+            Test {
+
+                System.out.println("Printing without main method, static block and main method");
+
+                // exiting from system so that JVM don't look for main method
+                System.exit(0);
+            }
+        }
+        ```
+______________________________________________________________________________________
+
+*   Which are valid and invalid java class based on static control flow ?
+
+>>  Below are the valid java class based on static control flow :
+
+    (1) Output : 10
+
+        ```
+        class Test {
+
+            static int x = 10;
+
+            static {
+
+                System.out.println(x);
+            }
+
+            public static void main(String[] args) {
+
+            }
+        }
+
+        ```
+    
+    (2) Output : 10
+
+        ```
+        class Test {
+
+            static {
+
+                method1();
+            }
+
+            public static void method1() {
+
+                System.out.println(x);
+            }
+
+            public static void main(String[] args) {
+                
+            }
+
+            static int x = 10;
+        }
+
+        ```
+    
+    
+    (3) Output : 10
+
+        ```
+        class Test {
+
+            static {
+
+                System.out.println(Test.x);
+            }
+
+            public static void method1() {
+
+                System.out.println(x);
+            }
+
+            public static void main(String[] args) {
+                
+            }
+
+            static int x = 10;
+        }
+
+        ```
+    
+    Below are the invalid java class based on static control flow :
+
+    (1) This will give an Exception as there is no main method
+
+        ```
+        class Test {
+
+            static int x = 10;
+
+            static {
+
+                System.out.println(x);
+            }
+        }
+
+        ```
+    
+    (2) This will give an Exception as there is no main method
+
+        ```
+        class Test {
+
+            static {
+
+                System.out.println(x);
+            }
+
+            static int x = 10;
+        }
+
+        ```
+    
+    (3) This will give an Exception as there is no main method
+
+        ```
+        class Test {
+
+            static {
+
+                method1();
+            }
+
+            public static void method1() {
+
+                System.out.println(x);
+            }
+
+            static int x = 10;
+        }
+
+        ```
+    
+    (4) This will give compile time error because we are reading static variable 'x'
+        directly in static block even though static variable 'x' is in Read Indirect 
+        Write Only
+
+        ```
+        class Test {
+
+            static {
+
+                System.out.println(x);
+            }
+
+            public static void main(String[] args) {
+                
+            }
+
+            static int x = 10;
+        }
+
+        ```
+
+______________________________________________________________________________________
+
+*   In what order given java class (Child class) will be executed ?
+
+>>  ```
+    public class Parent {
+
+        static int i = 100;
+
+        static {
+
+            method1();
+
+            System.out.println("Parent static block");
+        }
+
+        public static void main(String[] args) {
+
+            method1();
+
+            System.out.println("Parent main method");
+        }
+
+        private static void method1() {
+
+            System.out.println(j);
+        }
+
+        static int j = 200;
+    }
+
+    public class Child extends Parent {
+
+        static int x = 10;
+
+        static {
+
+            method2();
+
+            System.out.println("Child first static block");
+        }
+
+        public static void main(String[] args) {
+
+            method2();
+
+            System.out.println("Child main method");
+        }
+
+        private static void method2() {
+
+            System.out.println(y);
+        }
+
+        static {
+
+            System.out.println("Child second static block");
+        }
+
+        static int y = 20;
+    }
+    ```
+
+    In below order given java class will be executed :
+
+    (a) Identification of static members of Parent class from top to bottom :
+
+        (1) JVM will identify below static variable and will assign default value to 
+            it (i = 0). Currently this variable is in Read Indirect Write only (RIWO) 
+            mode
+
+            ```
+            static int i = 100;
+            ```
+
+        (2) Then below static block will be indentified by JVM
+
+            ```
+            static {
+
+                method1();
+
+                System.out.println("Parent static block");
+            }
+            ```
+
+        (3) Then static main method will be indentified by JVM
+
+        (4) Then static method 'method1()' will be indentified by JVM
+
+        (5) Then JVM will identify below static variable and will assign default value 
+            to it (j = 0). Currently this variable is in Read Indirect Write Only 
+            (RIWO) mode
+
+            ```
+            static int j = 200;
+            ```
+
+    (b) Identification of static members of Child class from top to bottom :
+
+        (6) JVM will identify below static variable and will assign default value to 
+            it (x = 0). Currently this variable is in Read Indirect Write only (RIWO) 
+            mode
+
+            ```
+            static int x = 10;
+            ```
+
+        (7) Then below static block will be indentified by JVM
+
+            ```
+            static {
+
+                method2();
+
+                System.out.println("Child first static block");
+            }
+            ```
+
+        (8) Then static main method will be indentified by JVM
+
+        (9) Then static method 'method2()' will be indentified by JVM
+
+        (10) Then below static block will be indentified by JVM
+
+            ```
+            static {
+
+                System.out.println("Child second static block");
+            }
+            ```
+
+        (11) Then JVM will identify below static variable and will assign default value 
+            to it (y = 0). Currently this variable is in Read Indirect Write Only 
+            (RIWO) mode
+
+            ```
+            static int y = 20;
+            ```
+
+    (c) Execution of static variable assignments and static block of Parent class 
+        form top to bottom :
+
+        (12) JVM will initialize below static variable with original value (i = 100). 
+            Now this variable is in Read Write Only (RWO) mode
+
+            ```
+            static int i = 100;
+            ```
+
+        (13) Then JVM will execute below static block in which it will first execute 
+            static method 'method1()'  which will print value of variable 'j' which is
+            j = 0 as 'j' has not been initialized with its original value 
+
+            Next JVM will print "Parent static block" 
+
+            ```
+            static {
+
+                method1();
+
+                System.out.println("Parent static block");
+            }
+            ```
+
+        (14) Then JVM will initialize below static variable with original value 
+            (j = 200). Now this variable is in Read Write Only (RWO) mode
+
+            ```
+            static int j = 200;
+            ```
+
+    
+    (d) Execution of static variable assignments and static block of Child class 
+        form top to bottom :
+
+        (15) JVM will initialize below static variable with original value (x = 10). 
+            Now this variable is in Read Write Only (RWO) mode
+
+            ```
+            static int x = 10;
+            ```
+
+        (16) Then JVM will execute below static block in which it will first execute 
+            static method 'method2()'  which will print value of variable 'y' which is
+            y = 0 as 'y' has not been initialized with its original value 
+
+            Next JVM will print "Child first static block" 
+
+            ```
+            static {
+
+                method2();
+
+                System.out.println("Child first static block");
+            }
+            ```
+        
+        (17) Then JVM will execute below static block which will print 
+            "Child second static block"
+
+            ```
+            static {
+
+                System.out.println("Child second static block");
+            }
+            ```
+
+        (18) Then JVM will initialize below static variable with original value 
+            (y = 20). Now this variable is in Read Write Only (RWO) mode
+
+            ```
+            static int y = 20;
+            ```
+
+    (e) Execution of Child class main method :
+
+        (19) At last JVM will execute Child class main method. In which first method 
+            'method2()' will be executed which will print value of static variable 'y' 
+            which is y = 20 as 'y' has already been initialized to its original value. 
+            
+            Next JVM will print "Child main method"
+
+            ```
+            public static void main(String[] args) {
+
+                method2();
+
+                System.out.println("Child main method");
+            }
+            ```
+
+    Output of entire Child class will be :
+
+        ```
+        0
+        Parent static block
+        0
+        Child first static block
+        Child second static block
+        20
+        Child main method
+        ```

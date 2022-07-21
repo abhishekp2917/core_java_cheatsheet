@@ -1,0 +1,45 @@
+*   What is method hiding ?
+
+>>  If both parent and child having same method signature are static, then we won't 
+    get any compile time error. It seems overriding concept applicable for static 
+    methods but it is not overriding and it is method hiding.
+
+______________________________________________________________________________________
+
+*   In method hiding, on what basis method is resolved ?
+
+>>  In method hiding method resolution is done by compiler based on reference type 
+    and not based on runtime object.
+
+    This is called method hiding and not overriding because if we call static method 
+    from child object with parent reference type, then overriden method will get 
+    executed and if we call static method from child object with child reference 
+    type then overriding method will get executed. This shows that static method
+    is only hidden and not overriden.
+
+    But in case of overriding, if we call method from child object with any reference 
+    type either of parent type or child type, always overriding method will be called
+    as overriden method has been overriden by overriding method.
+
+______________________________________________________________________________________
+
+*   What is difference between Method Hiding and Method Overriding ?
+
+>>              Method Hiding                           Method Overriding
+                                        |
+    Method resolution is always takes   |   Method resolution is always takes care 
+    care by compiler based on reference |   by JVM based on runtime object
+    type                                |
+                                        |
+    It is known as compile time         |   It is known as runtime polymorphism or 
+    polymorphism or early binding or    |   late binding or dynamic polymorphism
+    static polymorphism                 |
+                                        |
+    Both parent and child class methods |   Both parent and child class methods 
+    should be static                    |   should be non static
+                                        |
+
+______________________________________________________________________________________
+
+*   
+                                

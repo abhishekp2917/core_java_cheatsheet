@@ -1,0 +1,106 @@
+*   What is IS-A relationship ?
+
+>>  IS-A relationship is also known as inheritance and we can make IS-A relationship 
+    using 'extends' keyword. The main advantage of IS-A relationship is reuseablilty.
+
+_____________________________________________________________________________________
+
+*   What is inheritance ?
+
+>>  Inheritance is an OOPS concept in which child class extends parent class and 
+    thus get access to parent class methods and properties. 
+
+    This concept is only applicable for classes only and not for interfaces as 
+    interface can extend other interface but since they don't get implementation
+    of the parent interface behaviour, we can't consider it as inheritance.
+
+    A class can extends other class and interface can extend other interface. If a
+    class doesn't extends any other class then by default 'Object' class becomes its
+    parent class
+
+_____________________________________________________________________________________
+
+*   Can Parent class reference hold child class object and vice-versa ?
+
+>>  Parent class reference can be used to hold child class objects but Child class
+    reference can't be used to hold parent class objects.
+
+_____________________________________________________________________________________
+
+*   Can Child class reference has access to Parent class methods and vice-versa ?
+
+>>  Child class reference has access to Parent class methods but Parent class
+    reference don't have access to child class methods. 
+
+_____________________________________________________________________________________
+
+*   Which class is parent class of all the classes in java ?
+
+>>  'Object' class is parent class of all the classes in java and get access to 
+    Object class methods. If a class doesn' extends any class then by default 
+    'Object' class becomes parent of that class.
+
+_____________________________________________________________________________________
+
+*   Does java supports multiiple inheritance with respect to class ?
+
+>>  Java doesn't supports multiiple inheritance with respect to class because 
+    if there is method with same method signature in the inherited class then by 
+    invoking that method from child class reference, an ambiguity will arise and 
+    compiler won't be able to decide which method implementation to execute.
+
+_____________________________________________________________________________________
+
+*   Does java supports multiiple inheritance with respect to interface ?
+
+>>  Java does support multiiple inheritance with respect to interface because even 
+    if there are methods with common method signature in inherited interfaces, the
+    implementation of those methods will be provided by the class which implements
+    the child interface and thus by invoking that method from child reference will
+    arise ambiguity for compiler as there will be only one implementation for that 
+    method.
+
+_____________________________________________________________________________________
+
+*   Does java supports multi-level inheritance with respect to class and interface ?
+
+>>  Java does supports multi-level inheritance with respect to  both class and 
+    interface.
+
+_____________________________________________________________________________________
+
+*   What is cyclic inheritance and does java supports it ?
+
+>>  Let say there is class A and extends class A itself then it is known as cyclic
+    inheritance. 
+
+    Examples of cyclic inheritance :
+
+    (1)
+        ```
+        class A extends B {
+
+        }
+
+        class B extends A {
+
+        }
+        ```
+    
+    (2)
+        ```
+        class A extends A {
+
+        }
+        ```
+    
+    Java doesn't supports cyclic inheritance as there is no need of it.
+
+_____________________________________________________________________________________
+
+*   While creating child class object does parent class objects get created or not ?
+
+>>  While creating child class objects parent class objects doesn't create but 
+    parent class constructor is called to initialize parent class attributes which
+    child class object has access to.
+

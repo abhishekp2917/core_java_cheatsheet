@@ -1,0 +1,27 @@
+*   What is HAS-A relationship ?
+
+>>  When a class has a reference to other class object, then it is called as HAS-a
+    relationship and there is no specific keyword for HAS-A relationship. This is 
+    also known as composition or aggregation.
+
+    The main advantage of HAS-A relationship is code reuseablity.
+
+____________________________________________________________________________________
+
+*   What is composition ?
+
+>>  When a contained object is strongly associated to container object and there is 
+    no existance of contained object without container object, then it is called 
+    composition.
+
+    In composition container object holds entire contained objects.
+
+____________________________________________________________________________________
+
+*   When to use IS-A and HAS-A relationship ?
+
+>>  If we want total functionality of a class, then we should go for IS-A 
+    realtionship but is we want only few functionality of a class then we should go
+    for HAS-A realtionship.
+
+ 
