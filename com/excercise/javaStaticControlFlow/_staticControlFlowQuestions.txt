@@ -11,6 +11,20 @@
 
 ______________________________________________________________________________________
 
+*   Where can we declare static members ?
+
+>>  We can declare static members only directly inside a class. If we declare static
+    memebers else where then we will get compile time error. 
+
+    This is because static members are always executed before instance members. But 
+    if a static member is inside instance member, then it won't be executed before 
+    execution of instance members which is not valid.
+
+    But surely we can use static members anywhere whether it is inside a static 
+    memeber or inside an instance member.
+
+______________________________________________________________________________________
+
 *   How many times does execution of static variable assignments and static block 
     happens ?
 
@@ -702,3 +716,5 @@ ________________________________________________________________________________
         20
         Child main method
         ```
+______________________________________________________________________________________
+

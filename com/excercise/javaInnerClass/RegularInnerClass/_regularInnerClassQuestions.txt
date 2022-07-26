@@ -1,0 +1,418 @@
+*   What is normal or regular inner class ?
+
+>>  If we declare a named class without static modifier directly inside a class,
+    such classes are called normal or regular inner class.
+
+    Fpr example :
+
+    In given example, we declared class 'Inner' without static modifier directly 
+    inside 'Outer' class. 
+
+    ```
+    class Outer {
+
+        class Inner {
+
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   Does '.class' files generate for inner classes ?
+
+>>  Yes, if there is a inner class declared inside outer class then while compiling
+    outer class, inner class '.class' file will be generated along with outer class
+    '.class' file.
+
+    For example :
+
+    If we compile below class 'Outer' then '.class' file of both class 'Outer' and 
+    'Inner' will be generated i.e. 'Outer.class' and 'Outer$Inner.class'. 
+
+    ```
+    class Outer {
+
+        class Inner {
+
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   Can an inner class have 'main' method ?
+
+>>  Since inner classes are instance members of outer class and as we can't declare 
+    static members inside instance members, inner classes can't have 'main' method
+    because 'main' method always has static declaration.
+
+    Moreover, as inner classes can't have 'main' method, we can't run inner classes.
+
+____________________________________________________________________________________
+
+*   How to access inner class instance members from outer class static area ?
+
+>>         
+    ```
+    // creating outer class
+    class Outer {
+
+        // creating inner class
+        class Inner {
+
+            // inner class instance variables
+            int a;
+            int b;
+
+            // inner class constructor
+            Inner(int a, int b) {
+                this.a = a;
+                this.b = b;
+            }
+
+            // inner class instance method
+            public void add() {
+                System.out.println(this.a + this.b);
+            }
+        }
+
+        public static void main(String[] args) {
+            
+            // creating outer class object so that we can create inner class object
+            Outer o = new Outer();
+
+            // creating inner class object using outer class object
+            Outer.Inner i = o.new Inner(10, 20);
+
+            // calling inner class instance method
+            i.add();
+
+            // creating outer and inner class object and calling inner class method in single line
+            new Outer().new Inner(20, 30).add();
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   How to access inner class instance members from outer class instance area ?
+
+>> 
+    ```
+    // creating outer class
+    class Outer {
+
+        // creating inner class
+        class Inner {
+
+            // inner class instance variables
+            int a;
+            int b;
+
+            // inner class constructor
+            Inner(int a, int b) {
+                this.a = a;
+                this.b = b;
+            }
+
+            // inner class instance method
+            public void add() {
+                System.out.println(this.a + this.b);
+            }
+        }
+
+        // outer class instance method
+        public void outerMethod() {
+
+            // creating inner class object
+            Inner i = new Inner(10, 20);
+
+            // calling inner class instance method
+            i.add();
+        }
+
+        public static void main(String[] args) {
+            
+            // creating outer class object 
+            Outer o = new Outer();
+
+            // calling outer class instance method
+            o.outerMethod();
+        }
+    }
+    ```
+
+    ```
+    // creating outer class
+    class Outer {
+
+        // creating inner class
+        class Inner {
+
+            // inner class instance variables
+            int a;
+            int b;
+
+            // inner class constructor
+            Inner(int a, int b) {
+                this.a = a;
+                this.b = b;
+            }
+
+            // inner class instance method
+            public void add() {
+                System.out.println(this.a + this.b);
+            }
+        }
+
+        // outer class instance method
+        public void outerMethod() {
+
+            // creating outer class object 
+            Outer o = new Outer();
+
+            // creating inner class object using outer class object
+            Outer.Inner i = o.new Inner(10, 20);
+
+            // calling inner class instance method
+            i.add();
+        }
+
+        public static void main(String[] args) {
+            
+            // creating outer class object 
+            Outer o = new Outer();
+
+            // calling outer class instance method
+            o.outerMethod();
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   How to access inner class instance members from outside of outer class ?
+
+>>  
+    ```
+    // creating outer class
+    class Outer {
+
+        // creating inner class
+        class Inner {
+
+            // inner class instance variables
+            int a;
+            int b;
+
+            // inner class constructor
+            Inner(int a, int b) {
+                this.a = a;
+                this.b = b;
+            }
+
+            // inner class instance method
+            public void add() {
+                System.out.println(this.a + this.b);
+            }
+        }
+    }
+
+    public class Demo {
+
+        public static void main(String[] args) {
+            
+            // creating outer class object so that we can create inner class object
+            Outer o = new Outer();
+
+            // creating inner class object using outer class object
+            Outer.Inner i = o.new Inner(30, 40);
+
+            // calling inner class instance method
+            i.add();
+        }
+    } 
+    ```
+____________________________________________________________________________________
+    
+*   Can we access instance and static members of outer class from inner class ?
+
+>>  Yes, we can access outer class static and instance members from inner class.
+
+    For example :
+
+    ```
+    // creating outer class
+    class Outer {
+
+        // creating outer class instance and static method respectively
+        int x = 10;
+        static int y = 20;
+
+        // creating outer class instance method
+        public void outerInstanceMethod() {
+
+            System.out.println("outer class instance method");
+        }
+
+        // creating outer class static method
+        public static void outerStaticMethod() {
+
+            System.out.println("outer class static method");
+        }
+
+        // creating inner class
+        class Inner {
+
+            // inner class instance method
+            public void display() {
+
+                // accessing outer class instance variable
+                System.out.println(x);
+
+                // accessing outer class static variable
+                System.out.println(y);
+
+                // accessing outer class instance method
+                outerInstanceMethod();
+
+                // accessing outer class static method
+                outerStaticMethod();
+            }
+        }
+
+        public static void main(String[] args) {
+
+            // creating inner class object using outer class object
+            Outer.Inner i = new Outer().new Inner();
+
+            // calling inner class instance method
+            i.display();
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   How to access Inner class instance members from inside of inner class if outer 
+    class members have same name ?
+
+>>  
+    ```
+    // creating outer class
+    class Outer {
+
+        // outer class instance variables
+        String s = "Outer";
+
+        // creating inner class
+        class Inner {
+
+            // inner class instance variable with name similar to outer class instance variable
+            String s = "Inner";
+
+            // inner class instance method
+            public void display() {
+
+                String s = "Local";
+
+                // accessing inner class instance variable
+                System.out.println(this.s);
+
+                // accessing local variable
+                System.out.println(s);
+            }
+        }
+
+        public static void main(String[] args) {
+
+            // creating inner class object using outer class object
+            Outer.Inner i = new Outer().new Inner();
+
+            // calling inner class instance method
+            i.display();
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   How to access outer class instance members from inside of inner class if there
+    is a naming conflict between outer class member and inner class member ?
+
+>>  
+    ```
+    // creating outer class
+    class Outer {
+
+        // outer class instance variables
+        String s = "Outer";
+
+        // creating inner class
+        class Inner {
+
+            // inner class instance variable with name similar to outer class instance variable
+            String s = "Inner";
+
+            // inner class instance method
+            public void display() {
+
+                String s = "Local";
+
+                // accessing outer class instance variable
+                System.out.println(Outer.this.s);
+
+                // accessing inner class instance variable
+                System.out.println(this.s);
+
+                // accessing local variable
+                System.out.println(s);
+            }
+        }
+
+        public static void main(String[] args) {
+
+            // creating inner class object using outer class object
+            Outer.Inner i = new Outer().new Inner();
+
+            // calling inner class instance method
+            i.display();
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   Can we declare inner class inside inner class ?
+
+>>   Yes, we can declare inner class inside inner class.
+
+    For example :
+
+    ```
+    class Outer {
+
+        class Inner {
+
+            class NestedInner {
+
+            }
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   Which modifiers are applicable to inner classes ?
+
+>>  Following modifiers are applicable to inner classes :
+
+    Outer class valid modifiers :
+
+        public, <default>, abstract, final,  strictfp
+    
+    Other valid modifiers :
+
+        private, protected, static
+        
+____________________________________________________________________________________
+
+*   Is inheritance applicable in regular inner classes ?
+
+>>  Yes, inheritance is allowed in inner classes. Infact, all the concept that is
+    applicable to outer classes is also applicable to inner classes.
+
+____________________________________________________________________________________
