@@ -1,0 +1,366 @@
+*   What is method local inner class ?
+
+>>  Class declared inside a method is called method local inner class.
+
+____________________________________________________________________________________
+
+*   When to use method local inner class ?
+
+>>  Let say in a method there is repeated functionality. To avoid repeated code
+    we must define that functionality inside a method.
+
+    But in java, nesting of method is not allowed. We could define this functionality 
+    inside another method of that class but it won't be method specific.
+
+    So, in this case we can decalre a class inside this method and in thta inner 
+    class we can define another method in which we will provide repeated functionality
+    and by making the object of that inner class, we can use that inner class method
+    inside a method which needs the repeated functionality.
+
+    For example :
+
+    In below class method 'logic-2' is repeating. To avoid code redundancy we can
+    declare a class inside that method which will have a method with 'logic-2' 
+    functionality 
+
+    Without using method local inner class :
+
+        ```
+        // outer class
+        class Outer {
+
+            // outer class instance method
+            void method1() {
+
+                // logic-1
+
+                // logic-2
+
+                // logic-2
+
+                // logic-2
+            }
+        }
+        ``` 
+
+    Using method local inner class :
+
+        ```
+        // outer class 
+        class Outer {
+
+            // outer class instance method
+            void method1() {
+
+                // method local inner class 
+                class Inner {
+
+                    // inner class instance method
+                    void method2() {
+                        // logic-2
+                    }
+                }
+
+                // logic-1
+
+                /*
+                    creating method local inner class object so that we can call its 
+                    method repeatedly to avoid code redundancy
+                */
+                Inner i = new Inner();
+
+                // calling method local inner class instance method
+                i.method2();
+
+                // calling method local inner class instance method
+                i.method2();
+                
+                // calling method local inner class instance method
+                i.method2();
+            }
+        }
+        ``` 
+____________________________________________________________________________________
+
+*   What is the scope of method local inner class ?
+
+>>  The scope of the method local inner class is only within the method in which it
+    is declared. From outside of method we can't access method local inner classes.
+
+____________________________________________________________________________________
+
+*   Can we declare method local inner class inside both instance and static method ?
+
+>>  Yes, we can declare method local inner class inside both instance and static 
+    method as instance members can be declared inside static as well as instance 
+    area.
+
+    If we declare method local inner class inside an instance method, then we can
+    access instance as well as static members of outer class from that method local
+    inner class.
+
+    For example :
+
+    ```
+    // outer class 
+    class Outer {
+
+        // outer class instance variable
+        int x = 20;
+
+        // outer class static variable
+        static int y = 30;
+
+        // outer class instance method
+        void method1() {
+
+            // method local inner class inside outer class instance method
+            class Inner {
+
+                // inner class instance method
+                void method2() {
+                    
+                    // accessing outer class instance method
+                    System.out.println(x);
+                    // accessing outer class static method
+                    System.out.println(y);
+                }
+            }
+
+            /*
+                creating method local inner class object so that we can call instance
+                method of method local inner class
+            */
+            Inner i = new Inner();
+
+            // calling method local inner class instance method
+            i.method2();
+        }
+    }
+    ```
+
+
+    But if we declare method local inner class inside an static method, then we can
+    access only instance members and not static members of outer class from that 
+    method local inner class, becuase we can't access non-static members from 
+    static area.
+
+    ```
+    // outer class 
+    class Outer {
+
+        // outer class instance variable
+        int x = 20;
+
+        // outer class static variable
+        static int y = 30;
+
+        // outer class instance method
+        static void method1() {
+
+            // method local inner class inside outer class instance method
+            class Inner {
+
+                // inner class instance method
+                void method2() {
+                    
+                    // accessing outer class instance method
+                    System.out.println(y);
+
+                    // we can't access outer class static method
+                }
+            }
+
+            /*
+                creating method local inner class object so that we can call instance
+                method of method local inner class
+            */
+            Inner i = new Inner();
+
+            // calling method local inner class instance method
+            i.method2();
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   Can we access local variable from inside of method local inner class ?
+
+>>  We can access local variable from inside of method local inner class if and only 
+    if that variab;e is declared as final else we will get compile time error.
+
+    This is because when we declare local variable it is created inside stack 
+    memory and when we create method local inner class object it is created inside 
+    heap area. 
+
+    Since local variable doesn't exist after method completion but object inside
+    heap will still exist for sometime due to which we can access that object even
+    after completion of the method. But this is not valid as after method completion
+    we can't access the local variable from the method local inner class object
+    which still exist.
+
+    But we declare local variable 'final' then compiler will replace all the 
+    reference of that variable with a constant value due to which method local 
+    inner class doesn't depend upon local variable and we can use that object even 
+    after method completion.
+
+    Valid access :
+
+    ```
+    // outer class 
+    class Outer {
+
+        // outer class instance method
+        static void method1() {
+
+            // final (constant) local variable
+            final int x = 10;
+
+            // method local inner class inside outer class instance method
+            class Inner {
+
+                // inner class instance method
+                void method2() {
+                    
+                    // accessing local variable of outer class instance method
+                    System.out.println(x);
+                }
+            }
+
+            // creating method local inner class object 
+            Inner i = new Inner();
+
+            // calling method local inner class instance method
+            i.method2();
+        }
+    }
+    ```
+
+    Invalid access :
+
+    ```
+    // outer class 
+    class Outer {
+
+        // outer class instance method
+        static void method1() {
+
+            // local variable
+            int x = 10;
+
+            // method local inner class inside outer class instance method
+            class Inner {
+
+                // inner class instance method
+                void method2() {
+                    
+                    // --------------this is not valid------------ 
+                    // accessing local variable of outer class instance method
+                    System.out.println(x);
+                }
+            }
+
+            // creating method local inner class object 
+            Inner i = new Inner();
+
+            // calling method local inner class instance method
+            i.method2();
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   From the given code which variables are accessible from declared method local 
+    inner class ?
+
+>>  (1) Method local inner class declared inside outer class instance method :
+
+        Below variables are accessible from method local inner class in given 
+        example :
+
+            (1) outer class instance variable : 'a'
+
+            (2) outer class static variable : 'b'
+
+            (3) outer class instance method local final variable : 'd'
+
+        ```
+        // outer class 
+        class Outer {
+
+            // outer class instance variable
+            int a = 10;
+
+            // outer class static variable
+            static int b = 20;
+
+            // outer class instance method
+            void method1() {
+
+                // local variable
+                int c = 30;
+
+                // final local variable
+                int d = 40;
+
+                // method local inner class inside outer class instance method
+                class Inner {
+
+                }
+            }
+        }
+        ```
+
+    (2) Method local inner class declared inside outer class static method :
+
+        Below variables are accessible from method local inner class in given 
+        example :
+
+            (1) outer class static variable : 'b'
+
+            (2) outer class instance method local final variable : 'd'
+
+        ```
+        // outer class 
+        class Outer {
+
+            // outer class instance variable
+            int a = 10;
+
+            // outer class static variable
+            static int b = 20;
+
+            // outer class instance method
+            static void method1() {
+
+                // local variable
+                int c = 30;
+
+                // final local variable
+                int d = 40;
+
+                // method local inner class inside outer class instance method
+                class Inner {
+
+                }
+            }
+        }
+        ```
+____________________________________________________________________________________
+
+*   Which modifiers are applicable to method local inner classes ?
+
+>>  Following modifiers are applicable to method local inner classes :
+
+        (1) final
+        
+        (2) abstract
+        
+
+
+
+
+
+
+
+

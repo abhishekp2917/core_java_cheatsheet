@@ -1,0 +1,230 @@
+*   What is BufferedWriter ?
+
+>>  BufferedWriter is use to write character data to the file similar to FileWriter,
+    but main advantage of BufferedWriter over FileWriter is that we don't have to
+    add line separator manually, instead there is a method to so.
+
+    BufferedWriter doesn't write directly to the file, instead it uses another
+    Writer object (FileWriter) to write into a file.
+
+____________________________________________________________________________________
+
+*   What are various BufferedWriter class constructors ?
+
+>>  Following are the BufferedWriter class constructors :
+
+    (1) This constructor is used create BufferedWriter object that uses Writer object
+        to write into file
+
+        ```
+        BufferedWriter bw = new BufferedWriter(Writer w);
+        ```
+
+    (2) This constructor is used create BufferedWriter object that uses Writer object
+        with specified bufferedSize to write into file
+ 
+        ```
+        BufferedWriter bw = new BufferedWriter(Writer w, int bufferedSize);
+        ```
+____________________________________________________________________________________
+
+*   Which are valid and invalid BufferedWriter object creation ?
+
+>>  Below are valid BufferedWriter object creation :
+
+    (1) BufferedWriter object using FileWriter object to write into file named 
+        "abc.txt" 
+
+        ```
+        BufferedWriter bw = new BufferedWriter(new FileWriter("abc.txt"));
+        ```
+    
+    (2) BufferedWriter object using another BufferedWriter object which uses 
+        FileWriter object to write into file named "abc.txt" 
+
+        ```
+        BufferedWriter bw1 = new BufferedWriter(new FileWriter("abc.txt"));
+
+        BufferedWriter bw2 = new BufferedWriter(bw1);
+        ```
+
+    Below are invalid BufferedWriter object creation :
+
+    (1) BufferedWriter object using file named "abc.txt" to write into it directly
+
+        ```
+        BufferedWriter bw = new BufferedWriter("abc.txt");
+        ```
+    
+    (2) BufferedWriter object using File object refering to file named "abc.txt" 
+        to write into it directly
+
+        ```
+        BufferedWriter bw = new BufferedWriter(new File("abc.txt"));
+        ```
+
+    (3) BufferedWriter object using File object refering to directory named "abc" 
+        to write into it directly
+
+        ```
+        BufferedWriter bw = new BufferedWriter(new File("abc"));
+        ```
+
+    (4) BufferedWriter object using FileWriter object refering to write into 
+        directory named "abc"
+
+        ```
+        BufferedWriter bw = new BufferedWriter(new FileWriter("abc"));
+        ```
+____________________________________________________________________________________
+
+*   What are the various important methods of BufferedWriter class ?
+
+>>  ```
+    BufferedWriter bw = new BufferedWriter(Writer w);
+    ```
+
+    (1) This method is use to write single character to the file via Writer object
+
+        ```
+        void bw.write(int ch);
+        ```
+
+    (2) This method is use to write array of characters to the file via Writer object
+
+        ```
+        void bw.write(char[] ch);
+        ```
+
+    (3) This method is use to write string to the file via Writer object
+
+        ```
+        void bw.write(String s);
+        ```
+
+    (4) This method gaurantees that all the characters have been written to the file
+        via Writer object
+
+        ```
+        void bw.flush();
+        ```
+
+    (5) This method is use to close the BufferedWriter and FileWriter
+
+        ```
+        void bw.close();
+        ```
+
+    (6) This method is use to insert a line separator into the file
+
+        ```
+        void bw.newLine();
+        ```
+____________________________________________________________________________________
+
+*   How to override character of the file using BufferedWriter ?
+
+>>
+    ```
+    public class Test {
+    
+        `public static void main(String[] args) throws IOException {
+            
+            /* 
+                creating FileWriter object that will create new file if specified file 
+                doesn't exist
+            */
+            FileWriter fw = new FileWriter("abc.txt");
+
+            /* 
+                creating BufferedWriter object to write character data into the file 
+                using Filewriter object
+            */
+            BufferedWriter bw = new BufferedWriter(fw);
+
+            // overriding string to the file named "abc.txt"
+            bw.write("Abhishek Pandey");
+
+            // adding new line into the file
+            bw.newLine();
+
+            // overriding string to the file named "abc.txt"
+            bw.write("Gender : Male");
+
+            // adding new line into the file
+            bw.newLine();
+
+            // overriding string to the file named "abc.txt"
+            bw.write("Id : ");
+            
+            // overriding a single character to the file named "abc.txt"
+            bw.write('M');
+
+            // overriding a character array to the file named "abc.txt"
+            bw.write(new char[]{'2', '3', '4', '2'});
+
+            // adding new line into the file
+            bw.newLine();
+
+            // flushing all the character if some character got stuck while writing
+            bw.flush();
+
+            // closing the BufferedWriter
+            bw.close();
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   How to append character to the file using BufferedWriter ?
+
+>>
+    ```
+    public class Test {
+    
+        `public static void main(String[] args) throws IOException {
+            
+            /* 
+                creating FileWriter object that will create new file if specified file 
+                doesn't exist
+            */
+            FileWriter fw = new FileWriter("abc.txt", true);
+
+            /* 
+                creating BufferedWriter object to write character data into the file 
+                using Filewriter object
+            */
+            BufferedWriter bw = new BufferedWriter(fw);
+
+            // appending string to the file named "abc.txt"
+            bw.write("Abhishek Pandey");
+
+            // adding new line into the file
+            bw.newLine();
+
+            // appending string to the file named "abc.txt"
+            bw.write("Gender : Male");
+
+            // adding new line into the file
+            bw.newLine();
+
+            // appending string to the file named "abc.txt"
+            bw.write("Id : ");
+            
+            // appending a single character to the file named "abc.txt"
+            bw.write('M');
+
+            // appending a character array to the file named "abc.txt"
+            bw.write(new char[]{'2', '3', '4', '2'});
+
+            // adding new line into the file
+            bw.newLine();
+
+            // flushing all the character if some character got stuck while writing
+            bw.flush();
+
+            // closing the BufferedWriter
+            bw.close();
+        }
+    } 
+    ```

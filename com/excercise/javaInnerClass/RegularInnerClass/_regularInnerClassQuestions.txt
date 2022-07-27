@@ -416,3 +416,289 @@ ________________________________________________________________________________
     applicable to outer classes is also applicable to inner classes.
 
 ____________________________________________________________________________________
+
+*   can regular inner class extends class and implements interface outside of outer 
+    class ?
+
+>>  Yes, regular inner classes can extend class and implements interfaces outside of 
+    outer class and inside on outer class but not of inside of inner class.
+
+    Moreover, it is applicable in context of interface as well.
+
+____________________________________________________________________________________
+
+*   Which of the following is valid and invalid code in context to inheritance of 
+    inner class ?
+
+>>  Below are valid code in context to inheritance of inner class :
+
+    (1) 
+
+        ```
+        class Outer {
+
+            class Parent {
+
+            }
+
+            class child extends Parent {
+
+            }
+        }
+        ```
+    
+    (2) 
+
+        ```
+        class Outer {
+
+            interface Parent {
+
+            }
+
+            class child implements Parent {
+                
+            }
+        }
+        ```
+
+    (3) 
+
+        ```
+        class Outer {
+
+            interface Parent1 {
+
+            }
+
+            interface Parent2 {
+
+            }
+
+            class Person {
+
+            }
+
+            class child extends Person implements Parent1, Parent2 {
+                
+            }
+        }
+        ```
+
+    (4) 
+
+        ```
+        class Outer {
+
+            interface Parent {
+
+            }
+
+            interface child extends Parent {
+                
+            }
+        }
+        ```
+
+    (5) 
+
+        ```
+        class Outside {
+
+        }
+
+        class Outer {
+
+            class Inner extends Outside {
+
+            }
+        }
+        ```
+
+    (6) 
+
+        ```
+        interface Outside {
+
+        }
+
+        class Outer {
+
+            class Inner implements Outside {
+
+            }
+        }
+        ```
+    
+    (7) 
+
+        ```
+        interface Outer {
+
+            class Parent {
+
+            }
+
+            class Child extends Parent {
+
+            }
+        }
+        ```
+    
+    (8) 
+
+        ```
+        interface Outside {
+
+        }
+
+        interface Outer {
+
+            class Inner implements Outside {
+
+            }
+        }
+        ```
+    
+    (9) 
+
+        ```
+        interface Outside {
+
+        }
+
+        interface Outer {
+
+            interface Inner extends Outside {
+
+            }
+        }
+        ```
+
+    (10) 
+
+        ```
+        interface Outside {
+
+        }
+
+        interface Outer {
+
+            interface Parent {
+
+            }
+
+            interface Child extends Parent, Outside {
+
+            }
+        }
+        ```
+    
+    Below are invalid code in context to inheritance of inner class :
+
+    (1) 
+        ```
+        class Outer {
+
+            class Inner extends Inside {
+
+                class Inside {
+
+                }
+            }
+        }
+        ```
+    
+    (2) 
+        ```
+        class Outer {
+
+            class Inner implements Inside {
+
+                interface Inside {
+
+                }
+            }
+        }
+        ```
+    
+    (3) 
+        ```
+        class Outer {
+
+            interface Inner extends Inside {
+
+                interface Inside {
+
+                }
+            }
+        }
+        ```
+____________________________________________________________________________________
+
+*   How to define class inside interface ?
+
+>>
+    ```
+    interface Vehicle {
+
+        void start();
+        
+        class Engine {
+
+            void startEngine() {
+
+                System.out.println("starting engine");
+            }
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   How to define interface inside another interface ?
+
+>>
+    ```
+    interface Outer {
+
+        void method1();
+        
+        interface Inner {
+
+            void method2();
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   How to implement inner interface which is declared inside outer interface ?
+
+>>
+    ```
+    // outer interface
+    interface Outer {
+
+        // outer interface method
+        void method1();
+        
+        // inner interface
+        interface Inner {
+
+            // inner interface method
+            void method2();
+        }
+    }
+
+    // class test implements inner interface defined inside outer interface
+    class Test implements Outer.Inner {
+
+        // there is no need to provide implementation for outer interface
+
+        // overriding inner interface method
+        @override
+        void method2() {
+            
+            System.out.println("Inner interface method2 implementation");
+        }
+    }
+    ```

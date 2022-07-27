@@ -1,0 +1,398 @@
+*   What is annonymous inner classes ?
+
+>>  Inner classes without any name which is defined only for one time usage is 
+    called annonymous inner classes.
+
+____________________________________________________________________________________
+
+*   How many types of annonymous inner classes are there ?
+
+>>  Below are the three types of annonymous inner classes :
+    
+    (1) Annonymous inner class that extends a class
+
+    (2) Annonymous inner class that implements an interface
+
+    (3) Annonymous inner class that defined inside an argument
+
+____________________________________________________________________________________
+
+*   When to use annonymous inner classes ?
+
+>>  If you want to use an object of a class just for one time only, the it is better 
+    to go for annonymous inner class
+
+____________________________________________________________________________________
+
+*   How to define annonymous inner class that extends a class ?
+
+>>  
+    ```
+    // defining Person abstract class
+    abstract class Person {
+
+        // instance variable
+        String name;
+
+        // abstract method
+        public abstract void speak();
+    }
+
+    // defining Test class
+    public class Test {
+
+        public static void main(String[] args) {
+
+            /*
+                creating annonymous inner class that extends Person class which is for 
+                one time use only
+
+                this annonymous class has parent class reference that's why even though 
+                we can declare new variable and method inside this annonymous class we 
+                can access only parent class members and not this class specific members 
+            */
+            Person p = new Person() {
+
+                String introSpeech = "Hello! How are you ?";
+
+                // define speak method 
+                @Override
+                public void speak() {
+
+                    System.out.println(introSpeech);
+                } 
+            };
+
+            // calling 'speak' method of annonymous inner class that extends Person class
+            p.speak();
+        }
+    }    
+    ```
+____________________________________________________________________________________
+
+*   How to define annonymous inner class that implements an interface ?
+
+>>  
+    ```
+    // defining Person interface
+    interface Person {
+
+        // abstract method
+        public abstract void speak();
+    }
+
+    // defining Test class
+    public class Test {
+
+        public static void main(String[] args) {
+
+            /*
+                creating annonymous inner class that implements Person interface which 
+                is for one time use only
+
+                this annonymous class has parent class reference that's why even though 
+                we can declare new variable and method inside this annonymous class we 
+                can access only parent class members and not this class specific members 
+            */
+            Person p = new Person() {
+
+                String name = "Anjali";
+
+                // overriding speak method of Person interface
+                @Override
+                public void speak() {
+
+                    System.out.println("My name is " + this.name);
+                } 
+            };
+
+            // calling 'speak' method of annonymous inner class that implements Person interface
+            p.speak();
+        }
+    }
+    ```
+
+____________________________________________________________________________________
+
+*   How to define annonymous inner class inside an argument ?
+
+>>  
+    ```
+    // defining Person abstract class 
+    abstract class Person {
+
+        abstract void intro();
+    }
+
+    // defining Test class
+    class Test {
+
+        // static method to print person info
+        public static void printInfo(Person p) {
+
+            // calling person intro method
+            p.intro();
+        }
+
+        public static void main(String[] args) {
+
+            // calling Test class static method that accepts person object
+            Test.printInfo(
+                
+                /*
+                    defining annonymous inner class inside an argument that extends 
+                    Person class
+                */
+                new Person() {
+
+                    // overriding Person abstract class intro method
+                    @Override
+                    void intro() {
+
+                        System.out.println("Hello! How are you");
+                    }                
+                }
+            );
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   Will '.class' file of annonymous inner class generate ?
+
+>>  Yes, for each and every annonymous inner class, a separate '.class' file Will
+    be generated.
+
+____________________________________________________________________________________
+
+*   How to define a thread by extending thread class through normal class and 
+    annonymous inner class approach ?
+
+>>  Definig a thread by extending thread class through normal class approach :
+
+        ```
+        // defining MyThread that extends Thread class
+        class MyThread extends Thread {
+
+            // overriding run method of Thread class
+            @Override
+            public void run() {
+
+                // defining job that this thread would perform
+                for(int i=0; i<10; i++) {
+
+                    System.out.println("Running child thread");
+                }
+            }
+        }
+
+        public class Test {
+
+            public static void main(String[] args) {
+                
+                // creating MyThread object
+                MyThread t = new MyThread();
+
+                // running child thread
+                t.run();
+
+                // definig job that this main thread would perform
+                for(int i=0; i<10; i++) {
+
+                    System.out.println("Running main thread");
+                }
+            }
+        }
+        ```
+
+    Definig a thread by extending thread class through annonymous inner class 
+    approach :
+
+        ```
+        public class Test {
+
+            public static void main(String[] args) {
+                
+                // creating thread by creating annonymous inner class that extends Thread class
+                Thread t = new Thread() {
+
+                    // overriding run method of Thread class
+                    @Override
+                    public void run() {
+                
+                        // defining job that this thread would perform
+                        for(int i=0; i<10; i++) {
+                
+                            System.out.println("Running child thread");
+                        }
+                    }
+                };
+
+                // running child thread
+                t.run();
+
+                // definig job that this main thread would perform
+                for(int i=0; i<10; i++) {
+
+                    System.out.println("Running main thread");
+                }
+            }
+        }
+        ```
+____________________________________________________________________________________
+
+*   How to define a thread by implementing Runnable interface through normal class 
+    and annonymous inner class approach ?
+
+>>  Definig a thread by implementing Runnable interface through normal class 
+    approach :
+
+        ```
+        // defining MyThread that implements Runnable interface
+        class MyThread implements Runnable {
+
+            // overriding run method of Runnable interface
+            @Override
+            public void run() {
+
+                // defining job that this thread would perform
+                for(int i=0; i<10; i++) {
+
+                    System.out.println("Running child thread");
+                }
+            }
+        }
+
+        public class Test {
+
+            public static void main(String[] args) {
+                
+                // creating MyThread object (target runnable)
+                MyThread r = new MyThread();
+
+                // creating Thread object tthat runs target runnable
+                Thread t = new Thread(r);
+
+                // running child thread
+                t.run();
+
+                // definig job that this main thread would perform
+                for(int i=0; i<10; i++) {
+
+                    System.out.println("Running main thread");
+                }
+            }
+        }
+        ```
+
+    Definig a thread by implementing Runnable interface through annonymous inner 
+    class approach :
+
+        ```
+        public class Test {
+
+            public static void main(String[] args) {
+
+                // creating target runnable by creating annonymous inner class that implements Runnable interface
+                Runnable r = new Runnable() {
+
+                    // overriding run method of Runnable interface
+                    @Override
+                    public void run() {
+                
+                        // defining job that this thread would perform
+                        for(int i=0; i<10; i++) {
+                
+                            System.out.println("Running child thread");
+                        }
+                    }
+                };
+
+                // creating Thread object that runs target runnable
+                Thread t = new Thread(r);
+
+                // running child thread
+                t.run();
+
+                // definig job that this main thread would perform
+                for(int i=0; i<10; i++) {
+
+                    System.out.println("Running main thread");
+                }
+            }
+        }
+        ```
+____________________________________________________________________________________
+
+*   How to define a thread by implementing Runnable interface through annonymous 
+    inner class approach that defined inside an argument ?
+
+>>  
+    ```
+    public class Test {
+
+        public static void main(String[] args) {
+
+            /*
+                defining annonymous inner class that defined inside Thread object's
+                runnable argument
+            */
+            Thread t = new Thread(new Runnable() {
+
+                // overriding run method of Runnable interface
+                @Override
+                public void run() {
+            
+                    // defining job that this thread would perform
+                    for(int i=0; i<10; i++) {
+            
+                        System.out.println("Running child thread");
+                    }
+                }
+            });
+
+            // running child thread
+            t.run();
+
+            // definig job that this main thread would perform
+            for(int i=0; i<10; i++) {
+
+                System.out.println("Running main thread");
+            }
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   What is the difference between normal class and annonymous inner class ?
+
+>>              Normal class                    Annonymous inner class 
+                                        |
+    It can extend only one class at a   |   It can also extend only one class at a
+    time                                |   time
+                                        |
+    It can implement multiple interface |   It can implement only one interface at a
+                                        |   time
+                                        |
+    It can extend a class and can       |   It can either extend a class or can 
+    implement interface simultaneously  |   implement an interface but not 
+                                        |   simultaneously
+                                        |
+    It can have static members          |   It can have static members unlike other
+                                        |   inner classes
+                                        |
+    We can define any number of         |   We can't define any constructor inside
+    constructors explicitly inside      |   annonymous inner class because a
+    inner class                         |   constructor must have a name similar to 
+                                        |    classname but annonymous inner class
+                                        |    doesn' have any name
+                                        |
+____________________________________________________________________________________
+
+*   Which modifiers are applicable to annonymous inner classes ?
+
+>>  we can't apply any modifiers to annonymous inner classes.
+
+    
+
+                                

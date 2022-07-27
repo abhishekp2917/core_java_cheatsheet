@@ -1,0 +1,687 @@
+*   What is generics ?
+
+>>  Generics means paramterized types i.e. we can provide types such as Integer,
+    Boolean, User-defined types, etc to the methods, classes and interfaces as 
+    a parameter.
+
+    It was introduced in java 1.5 version. 
+
+____________________________________________________________________________________
+
+*   What are the main objectives of generics ?
+
+>>  The main objectives of generics are
+
+    (1) to provide type safety 
+
+    (2) to solve type casting problems
+
+    For example :
+
+    In ArrayList we can store any type of object due to which it is not type safety
+    as at runtime there is a possiblity that we may get Exception. 
+
+    Moreover, we need to type cast the object we get from the ArrayList and here 
+    also there is possiblity that at runtime we can get classCastexception.
+
+    To overcome these problems, generics concept was introduced in which we can 
+    specify the type of object which we want to store in the ArrayList due to which
+    if we try to store any other type of object in it, we will get compile time error.
+
+    Since, we can store single type of object, while retrieving that object we get
+    assurance that we get same type object due to which we don't need to type cast
+    the retrieved object and won't get runtime Exception.
+
+    (a) Using ArrayList without generics concept to store only String type object :
+
+        ```
+        public class Test {
+            
+            public static void main(String[] args) {
+                
+                /*  
+                    creating ArrayList object without paramterized type (generics)
+                    
+                    in this list we want to add only string type object
+                */
+                ArrayList l = new ArrayList();
+
+                // adding string object
+                l.add(new String("Ravi"));
+                l.add(new String("Anvisha"));
+                l.add(new String("Abhishek"));
+
+                /*  
+                    by mistake adding object which is not of string type 
+
+                    this doesn't provide type safety as we can add any type of object
+                */
+                l.add(new Integer(10));
+
+                /* 
+                    retrieving objects stored inside ArrayList expecting it to be of only
+                    string type but we get Integer type object as well
+
+                    this is why generics concept introduced to provide type safety and 
+                    solve type casting problems
+                */
+                System.out.println(l.get(0));
+                System.out.println(l.get(1));
+                System.out.println(l.get(2));
+                System.out.println(l.get(3));
+            }
+        }
+        ```
+    
+    (b) Using ArrayList with generics concept to store only String type object :
+
+        ```
+        public class Test {
+            
+            public static void main(String[] args) {
+                
+                // creating ArrayList object with paramterized type (generics)
+                ArrayList <String> l = new ArrayList <String> ();
+
+                // adding string object
+                l.add(new String("Ravi"));
+                l.add(new String("Anvisha"));
+                l.add(new String("Abhishek"));
+
+                /*  
+                    by mistake adding object which is not of string type will give
+                    compile time error and thus provide type safety
+                */
+                // l.add(new Integer(10));
+
+                /* 
+                    retrieving objects stored inside ArrayList expecting it to be of only
+                    string type
+
+                    Here due to generics we get assurance that we will get only String 
+                    type object
+
+                    moreover, we don't need to type cast this object
+                */
+                System.out.println(l.get(0));
+                System.out.println(l.get(1));
+                System.out.println(l.get(2));
+            }
+        }
+        ```
+____________________________________________________________________________________
+
+*   What is the advantages of using generic version of ArrayList over normal 
+    ArrayList ?
+
+>>  Following are the advantages of using generic version of ArrayList :
+
+    (1) Type safety as we can add a certain type of object in it and we try to 
+        add any other type of object, we will get compile time error.
+
+    (2) We don't need to type cast the object we retrived from the ArrayList as 
+        that object will be of the user specified type only
+    
+____________________________________________________________________________________
+
+*   Is polymorphism concept applicable for parameter type (generics) ?
+
+>>  No, polymorphism concept is not applicable for parameter type (generics).
+    we can't use parent parameter type to hold child parameter type object.
+
+    For example :
+
+    Below declaration is valid
+
+        ```
+        ArrayList <String> l = new ArrayList <String> ();
+        ```
+
+    Below declaration is invalid
+
+        ```
+        ArrayList <Object> l = new ArrayList <String> ();
+        ```
+____________________________________________________________________________________
+
+*   Can we provide primitives as a type parameter ?
+
+>>  No, we can't provide primitive datatype as a type parameter. only valid type 
+    parameters are class and interface.
+
+____________________________________________________________________________________
+
+*   Which of the following is valid and invalid based on parameter type declaration ?
+
+>>  Valid declaration based on parameter type :
+
+    (1)
+        ```
+        ArrayList <String> l = new ArrayList <String> ();
+        ```
+
+    (2)
+        ```
+        List <Object> l = new ArrayList <Object> ();
+        ```
+    
+    (3)
+        ```
+        Collection <Integer> l = new ArrayList <Integer> ();
+        ```
+
+    Invalid declaration based on parameter type :
+
+    (1)
+        ```
+        ArrayList <Object> l = new ArrayList <String> ();
+        ```
+
+    (2)
+        ```
+        List <String> l = new ArrayList <Object> ();
+        ```
+    
+    (3)
+        ```
+        ArrayList <int> l = new ArrayList <int> ();
+        ```
+____________________________________________________________________________________
+
+*   What are generic classes and generic methods ?
+
+>>  (1) Generic classes :
+
+        Type paramterized classes are called generic classes
+
+    (2) Generic methods :
+
+        Type paramterized methods are called generic methods
+
+____________________________________________________________________________________
+
+*   What is the internal implementation of generics with respect to ArrayList ?
+
+>>  
+    ```
+    // ArrayList class with type parameter 'T'
+    class ArrayList <T> {
+
+        // add method that takes 'T' type object
+        void add(T object) {
+
+            // add operation
+        }
+
+        // get method that returns 'T' type object
+        T get(int index) {
+
+            // get operation
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   Can we define our own generic classes, generic interfaces, generic constructor, 
+    generic instance variables and generic methods ?
+
+>>  Yes, we can define our own generic classes, generic interfaces, generic 
+    constructor and generic methods.
+
+    For example :
+
+    User defined Generic class :
+
+        ```
+        class MyClass <T> {
+
+        }
+        ```
+    
+    User defined Generic interface :
+
+        ```
+        interface MyInterface <T> {
+
+        }
+        ```
+    
+    User defined Generic instance variable :
+
+        ```
+        class MyClass <T> {
+
+            T obj;
+        }
+        ```
+    
+    User defined Generic constructor :
+
+        ```
+        class MyClass <T> {
+
+            T obj;
+
+            MyClass(T obj) {
+
+                this.obj = obj;
+            }
+        }
+        ```
+    
+    User defined Generic method :
+
+        ```
+        class MyClass <T> {
+
+            T obj;
+
+            MyClass(T obj) {
+                
+                this.obj = obj;
+            }
+
+            void setObj(T obj) {
+
+                this.obj = obj;
+            }
+
+            T getObj() {
+                
+                return obj;
+            }
+        }
+        ```
+____________________________________________________________________________________
+
+*   Can we declare generic members as static ?
+
+>>  No, we can't declare generic members as static
+
+____________________________________________________________________________________
+
+*   What are bounded type paramters ?
+
+>>  When we bound the range of type parameter by using 'extends' keyword, such type 
+    parameter are called bounded types parameter.
+
+    For example :
+
+    (1) let say we have given generic class
+
+            ```
+            class Test <T> {
+                
+            }
+            ```
+
+        In this type parameter we can pass any type and hence it is unbounded
+        type parameter
+
+            ```
+            Test <String> t1 = new Test <String>();
+
+            Test <Number> t1 = new Test <Number>();
+
+            Test <Integer> t1 = new Test <Integer>();
+            ```
+
+    (2) let say we have given generic class
+
+            ```
+            class Test <T extends Number> {
+                
+            }
+            ```
+
+        In this type parameter we can pass only Number or its child classes type and 
+        hence it is bounded type parameter
+
+            ```
+            Test <Number> t1 = new Test <Number>();
+
+            Test <Integer> t1 = new Test <Integer>();
+            ```
+
+____________________________________________________________________________________
+
+*   What is syntax for bounded type parameter ?
+
+>>  
+    ```
+    class Test <T extends X>
+    ```
+
+    Here, X can be either class or interface.
+
+    If x is a class, then as a type parameter we can pass either X type or its child
+    classes.
+
+    Ix X is an interface, then as a type parameter we can pass either X type or its
+    implementation classes. 
+
+    For example :
+
+
+    (1) let say we have given generic class
+
+            ```
+            class Test <T extends Number> {
+                
+            }
+            ```
+
+        In this bounded type parameter we can pass only Number or its child classes 
+        type
+
+            ```
+            Test <Number> t1 = new Test <Number>();
+
+            Test <Integer> t1 = new Test <Integer>();
+            ```
+    
+    (2) let say we have given generic class
+
+            ```
+            class Test <T extends Runnable> {
+                
+            }
+            ```
+
+        In this bounded type parameter we can pass only Runnable or its implementation
+        classes type
+
+            ```
+            Test <Runnable> t1 = new Test <Runnable>();
+
+            Test <Thread> t1 = new Test <Thread>();
+            ```
+____________________________________________________________________________________
+
+*   How to define bounded types parameter in combination ?
+
+>>  
+    ```
+    class Test <T extends Number & Runnable>
+    ```
+
+    Here, as a type parameter we can pass anything which should be child class of
+    Number and should implements Runnable interface.
+
+____________________________________________________________________________________
+
+*   Which are valid and invalid type parameter and what type can be passed as 
+    parameter ?
+
+>>  Valid type parameter and parameter allowed for these type parameter :
+
+    (1) We can pass anything for the given type parameter
+
+        ```
+        class Test <T> {
+
+        }
+        ```
+    
+    (2) We can pass anything for the given type parameter but here we have to pass 
+        two type, both could be of any type and could be similar or different 
+
+        ```
+        class Test <S, T> {
+
+        }
+        ```
+    
+    (3) We can pass only Number or its child classes for the given type parameter
+
+        ```
+        class Test <T extends Number> {
+
+        }
+        ```
+    
+    (4) We can pass only Runnable or its implementation classes for the given type 
+        parameter
+
+        ```
+        class Test <T extends Runnable> {
+
+        }
+        ```
+
+    (5) We can pass anything which should be child class of Number and should 
+        implements Runnable interface
+
+        ```
+        class Test <T extends Number & Runnable> {
+
+        }
+        ```
+    
+    (6) We can pass anything which should be child class of Number and should 
+        implements both Runnable and Comparable interface
+
+        ```
+        class Test <T extends Number & Runnable & Comparable> {
+
+        }
+        ```
+    
+    (7) We can pass anything which should be child class of Number and should 
+        implements both Runnable and Comparable interface
+
+        ```
+        class Test <T extends Number & Runnable & Comparable> {
+
+        }
+        ```
+    
+    (8) For first parameter we can pass anything which should be child class of 
+        Number and should implements Runnable interface 
+
+        For second type we can pass anythingwhich should be of Comparable type or its
+        implementation
+
+        ```
+        class Test <T extends Number & Runnable, S extends Comparable> {
+
+        }
+        ```
+
+    Invalid type parameter :
+
+    (1) We can't extend interface before class as bounded type parameter
+
+        ```
+        class Test <T extends Runnable & Number> {
+
+        }
+        ```
+    
+    (2) We can't extend more than one class as bounded type parameter
+
+        ```
+        class Test <T extends String & Number> {
+
+        }
+        ```
+____________________________________________________________________________________
+
+*   What are rules related to type parameter ?
+
+>>  Following are the rules related to type parameter :
+
+    (1) It is to note that we can define bounded type by using 'extends' keyword only 
+        but we can replace 'implements' keyword purpose with 'extends' keyword.
+
+    (2) In place of 'T', we can take any valid java identifier as a type parameter.
+
+    (3) We can take any number of type paramter.
+
+    (4) For combination of bounded type parameter, we can extend only one class
+        and class must extend before interface
+
+____________________________________________________________________________________
+
+*   How to call given methods and want operation we can perform with the passed argument
+    within the method ?
+
+>>  (1) We can call this method by passing ArrayList of only String type 
+        
+        Within the method we can add only String type of objects to the list else we 
+        will get compile time error.
+
+        ```
+        void method1(ArrayList <String> list) {
+
+        }
+        ```
+    
+    (2) We can call this method by passing ArrayList of any type (String, Runnable,
+        Integer, Object etc)
+        
+        Within the method we can add only 'null' to the list as 'null' is valid for 
+        any type of object else we will get compile time error.
+
+        ```
+        void method1(ArrayList <?> list) {
+
+        }
+        ```
+    
+    (3) We can call this method by passing ArrayList of Number or its child classes 
+        type
+        
+        Within the method we can add only 'null' to the list as 'null' is valid for 
+        any type of object.
+
+        ```
+        void method1(ArrayList <? extends Number> list) {
+
+        }
+        ```
+    
+    (4) We can call this method by passing ArrayList of Runnable or its 
+        implementation classes type
+        
+        Within the method we can add only 'null' to the list as 'null' is valid for 
+        any type of object.
+
+        ```
+        void method1(ArrayList <? extends Runnable> list) {
+
+        }
+        ```
+    
+    (5) We can call this method by passing ArrayList of classes that extend Number 
+        and implements Runnable interface
+        
+        Within the method we can add only 'null' to the list as 'null' is valid for 
+        any type of object.
+
+        ```
+        void method1(ArrayList <? extends Number & Runnable> list) {
+
+        }
+        ```
+    
+    (6) We can call this method by passing ArrayList of classes that extend Number 
+        and implements both Runnable and Throwable interface
+        
+        Within the method we can add only 'null' to the list as 'null' is valid for 
+        any type of object.
+
+        ```
+        void method1(ArrayList <? extends Number & Runnable & Throwable> list) {
+
+        }
+        ```
+    
+    (7) We can call this method by passing ArrayList of Integer or its super classes
+        
+        Within the method we can add only Integer or 'null' to the list as 'null' is 
+        valid for any type of object.
+
+        Adding Integer type is valid because here passed ArrayList will be of 
+        Integer or its parent type only and parent can be use to hold child type 
+        object.
+
+        ```
+        void method1(ArrayList <? super Integer> list) {
+
+        }
+        ```
+    
+    (8) We can call this method by passing ArrayList of Runnable or super classes of
+        implementation of Runnable interface
+        
+        Within the method we can add only Runnable or 'null' to the list as 'null' is 
+        valid for any type of object.
+
+        Adding Runnable type is valid because here passed ArrayList will be of 
+        Runnable or super classes of implementation of Runnable interface only and 
+        parent can be use to hold child type object.
+
+        ```
+        void method1(ArrayList <? super Runnable> list) {
+
+        }
+        ```
+____________________________________________________________________________________
+
+*   How generic object interact in non-generic area and vice-versa ?
+
+>>  If we send generic object in non-generic area then it will behave like 
+    non-generic object.
+
+    Similarly, If we send non-generic object in generic area then it will behave 
+    like generic object.
+
+    Hence, the location in which object is present, based on that behaviour will be 
+    defined.
+
+____________________________________________________________________________________
+ 
+*   
+
+    ```
+    class Test {
+
+        public static void main(String[] args) {
+
+            // creating ArrayList of String type
+            ArrayList <String> list = new ArrayList <String> ();
+
+            // adding String object in ArrayList
+            list.add("Abhishek");
+            list.add("Anjali");
+
+            // can't add other than String object
+            // list.add(10);
+
+            /*
+                passing ArrayList object of String type as an argument to method1() 
+                which takes non-generic ArrayList
+
+                sending generic object to non-generic area
+            */
+            method1(list);
+
+            // can't add other than String object
+            // list.add(10);
+
+            // adding String object in ArrayList
+            list.add("Avanish");
+        } 
+
+        // method1() takes non-generic ArrayList
+        public static void method1(ArrayList l) {
+
+            // non-generic area
+
+            // adding any object to passed Arraylist
+            l.add(10);
+            l.add(true);
+        }
+    }
+    ```

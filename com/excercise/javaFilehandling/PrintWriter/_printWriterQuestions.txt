@@ -1,0 +1,303 @@
+*   What is the use of PrintWriter ?
+
+>>  PrintWriter is used to write character data into the file similar to other 
+    writer line FileWriter and BufferedWriter. 
+
+    But drawback of FileWriter was that we can add only char and String data and not 
+    other primitive data type like Boolean, float, int etc to the file and had to 
+    add line separator manually.
+
+    To overcome line separator problem of FileWriter, BufferedWriter was introduced
+    in which one can use line separator method to add new line. But this was also
+    not convincing and here also we can't add other primitive data type.
+
+    To solve all this problem, PrintWriter was introduced in which one can add any
+    type of primitive data and don't need to add line separator manually using
+    line separator method.
+
+    PrintWriter is most enhanced writer.
+
+____________________________________________________________________________________
+
+*   What are the advantages of using PrintWriter over other writer ?
+
+>>  Following are the advantages of PrintWriter :
+
+    (1) We can add any primitive data type (int, float, boolean etc) to the file
+
+    (2) We don't need to add line separator manually using specific line separator
+        method or character.
+
+    (3) We can create PrintWriter object without using other writer object as it can
+        communicate directly withe the file as well as can communicate indirectly via 
+        other writer.  
+
+____________________________________________________________________________________
+
+*   What are various PrintWriter class constructors ?
+
+>>  Following are the PrintWriter class constructors :
+
+    (1) This constructor is used create PrintWriter object to write character data 
+        to the file named 'fileName'
+
+        ```
+        PrintWriter pw = new PrintWriter(String fileName);
+        ```
+    
+    (2) This constructor is used create PrintWriter object to write character data 
+        to the file refernced by 'f'
+
+        ```
+        PrintWriter pw = new PrintWriter(File f);
+        ```
+
+    (3) This constructor is used create PrintWriter object that uses Writer object
+        to write into file
+ 
+        ```
+        PrintWriter bw = new PrintWriter(Writer w);
+        ```
+____________________________________________________________________________________
+
+*   What are the various important methods of PrintWriter class ?
+
+>>  ```
+    PrintWriter pw = new PrintWriter(File f);
+    ```
+
+    (1) This method is use to write single character to the file
+
+        ```
+        void pw.write(int ch);
+        ```
+
+    (2) This method is use to write array of characters to the file
+
+        ```
+        void pw.write(char[] ch);
+        ```
+
+    (3) This method is use to write string to the file
+
+        ```
+        void pw.write(String s);
+        ```
+
+    (4) This method gaurantees that all the characters have been written to the file
+
+        ```
+        void pw.flush();
+        ```
+
+    (5) This method is use to close the PrintWriter and FileWriter
+
+        ```
+        void pw.close();
+        ```
+
+    (6) This method is use to write single character to the file
+
+        ```
+        void pw.print(char ch);
+        ```
+    
+    (7) This method is use to write int value to the file
+
+        ```
+        void pw.print(int i);
+        ```
+
+    (8) This method is use to write long value to the file
+
+        ```
+        void pw.print(long l);
+        ```
+
+    (9) This method is use to write float value to the file
+
+        ```
+        void pw.print(float f);
+        ```
+
+    (10) This method is use to write double value to the file
+
+        ```
+        void pw.print(double d);
+        ```
+
+    (11) This method is use to write boolean value to the file
+
+        ```
+        void pw.print(boolean b);
+        ```
+
+    (12) This method is use to write char array value to the file
+
+        ```
+        void pw.print(char[] s);
+        ```
+
+    (13) This method is use to write String value to the file
+
+        ```
+        void pw.print(String s);
+        ```
+    
+    (14) This method is use to write char value to the file with line separator
+
+        ```
+        void pw.println(char ch);
+        ```
+    
+    (15) This method is use to write int value to the file with line separator
+
+        ```
+        void pw.println(int i);
+        ```
+
+    (16) This method is use to write long value to the file with line separator
+
+        ```
+        void pw.println(long l);
+        ```
+
+    (17) This method is use to write float value to the file with line separator
+
+        ```
+        void pw.println(float f);
+        ```
+
+    (18) This method is use to write double value to the file with line separator
+
+        ```
+        void pw.println(double d);
+        ```
+
+    (19) This method is use to write boolean value to the file with line separator
+
+        ```
+        void pw.println(boolean b);
+        ```
+
+    (20) This method is use to write char array value to the file with line separator
+
+        ```
+        void pw.println(char[] s);
+        ```
+
+    (21) This method is use to write String value to the file with line separator
+
+        ```
+        void pw.println(String s);
+        ```
+____________________________________________________________________________________
+
+*   How to write character of the file using PrintWriter via a FileWriter ?
+
+>>
+    ```
+    public class Test {
+    
+        `public static void main(String[] args) throws IOException {
+            
+            /* 
+                creating FileWriter object that will create new file if specified file 
+                doesn't exist
+            */
+            FileWriter fw = new FileWriter("abc.txt");
+
+            /* 
+                creating BufferedWriter object to write character data into the file 
+                using Filewriter object
+            */
+            BufferedWriter bw = new BufferedWriter(fw);
+
+            // overriding string to the file named "abc.txt"
+            bw.write("Abhishek Pandey");
+
+            // adding new line into the file
+            bw.newLine();
+
+            // overriding string to the file named "abc.txt"
+            bw.write("Gender : Male");
+
+            // adding new line into the file
+            bw.newLine();
+
+            // overriding string to the file named "abc.txt"
+            bw.write("Id : ");
+            
+            // overriding a single character to the file named "abc.txt"
+            bw.write('M');
+
+            // overriding a character array to the file named "abc.txt"
+            bw.write(new char[]{'2', '3', '4', '2'});
+
+            // adding new line into the file
+            bw.newLine();
+
+            // flushing all the character if some character got stuck while writing
+            bw.flush();
+
+            // closing the BufferedWriter
+            bw.close();
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   How to append character to the file using BufferedWriter ?
+
+>>
+    ```
+    public class Test {
+    
+        `public static void main(String[] args) throws IOException {
+            
+            /* 
+                creating FileWriter object that will create new file if specified file 
+                doesn't exist
+            */
+            FileWriter fw = new FileWriter("abc.txt", true);
+
+            /* 
+                creating BufferedWriter object to write character data into the file 
+                using Filewriter object
+            */
+            BufferedWriter bw = new BufferedWriter(fw);
+
+            // appending string to the file named "abc.txt"
+            bw.write("Abhishek Pandey");
+
+            // adding new line into the file
+            bw.newLine();
+
+            // appending string to the file named "abc.txt"
+            bw.write("Gender : Male");
+
+            // adding new line into the file
+            bw.newLine();
+
+            // appending string to the file named "abc.txt"
+            bw.write("Id : ");
+            
+            // appending a single character to the file named "abc.txt"
+            bw.write('M');
+
+            // appending a character array to the file named "abc.txt"
+            bw.write(new char[]{'2', '3', '4', '2'});
+
+            // adding new line into the file
+            bw.newLine();
+
+            // flushing all the character if some character got stuck while writing
+            bw.flush();
+
+            // closing the BufferedWriter
+            bw.close();
+        }
+    } 
+    ```
+
+

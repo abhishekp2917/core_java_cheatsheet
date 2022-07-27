@@ -1,0 +1,641 @@
+*   What is serialization ?
+
+>>  The process of converting objects from java supported form to either file 
+    supported form or network supported form is called serialization.
+
+                                or
+
+    The process of writing state of an object into a file is called serialization.
+
+_____________________________________________________________________________________
+
+*   What is de-serialization ?
+
+>>  The process of converting objects from either file supported form or 
+    network supported form to java supported form is called de-serialization.
+    
+                                or
+
+    The process of reading state of an object from a file is called de-serialization.
+
+_____________________________________________________________________________________
+
+*  How to implement serialization ? 
+
+>>  By using FileOutputStream and ObjectOutputStream classes we can implement 
+    serialization.
+
+_____________________________________________________________________________________
+
+*  How to implement se-serialization ? 
+
+>>  By using FileInputStream and ObjectInputStream classes we can implement 
+    se-serialization.
+
+_____________________________________________________________________________________
+
+*   Can a object be serialized and de-serialized without implementing Serializable 
+    interface ?
+
+>>  No, an object can't be serialized as well as de-serialized without implementing
+    Serializable interface. If we try to serialize such object then   we will get
+    NotSerialzableException.
+
+_____________________________________________________________________________________
+
+*   Is Serializable interface a marker interface ?
+
+>>  Yes, Serializable is a marker interface i.e. interface without any method.
+
+_____________________________________________________________________________________
+
+*   How to write (serialize) and read (de-serialize) state of an object ?
+
+>>  
+    ```
+    /*
+        Person class which is to be serialized and then de-serialized has to implement
+        Serializable interface else we will get NotSerialzableException
+    */
+    class Person implements Serializable {
+
+        String name;
+
+        Person(String name) {
+            this.name = name;
+        }
+    }
+
+    public class Test {
+        
+        public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+            // creating Person class object which is to be serialized and de-serialized
+            Person p1 = new Person("Abhishek");
+
+            System.out.println("Before serialization - Name : " + p1.name);
+
+
+            // ___________________________serialization_______________________________
+            
+            // creating FileOutputStream object to make connection with file named "abc.txt"
+            FileOutputStream fos = new FileOutputStream("abc.txt");
+
+            // creating ObjectOutputStream object to write object to file via FileOutputStream
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            // writing Person object to file named "abc.txt"
+            oos.writeObject(p1);
+
+            // closing ObjectOuputstream
+            oos.close();
+
+
+            // ___________________________de-serialization______________________________
+
+            // creating FileInputStream object to make connection with file named "abc.txt"
+            FileInputStream fis = new FileInputStream("abc.txt");
+
+            // creating ObjectInputStream object to read object from the file via FileInputStream
+            ObjectInputStream ois = new ObjectInputStream(fis);
+
+            /*
+                reading Person object from the file named "abc.txt" and type casting it
+                to Person type from Object type 
+            */
+            Person p2 = (Person) ois.readObject();
+
+            System.out.println("After de-serialization - Name : " + p2.name);
+
+            // closing ObjectInputStream
+            ois.close();
+        }
+    }
+    ```
+_____________________________________________________________________________________
+
+*   What is the importance of 'transient' keyword in context to serialization ?
+
+>>  At the time of serialization, if we don't want to store value of a particular 
+    varaiable to meet the security constraints then we should declare that variable
+    as 'transient'.
+
+    While performing serialization, JVM ignores the original value of transient 
+    variable and store default value of that variable.
+
+    Hence, 'transient' means not to serialize. 
+_____________________________________________________________________________________
+
+*   Can we use 'transient' modifier for methods and classes ?
+
+>>  No, 'transient' modifier is applicable only for variables but not for methods 
+    and classes.
+
+_____________________________________________________________________________________
+
+*   How to secure confidential object data from being send over the network or 
+    being saved into a file while serializing that object ?
+
+>>  
+    ```
+    /* 
+        Account object which is to be serialized and de-serialized but storing 
+        confidential fields with its default value instead of original one 
+    */
+    class Account implements Serializable {
+
+        String name;
+
+        /*  making password as transient so that its default value will be stored in 
+            file at the time of serialization
+        */
+        transient String password;
+
+        Account(String name, String password) {
+            this.name = name;
+            this.password = password;
+        }
+    }
+
+    public class Test {
+        
+        public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+            // creating Person class object which is to be serialized and de-serialized
+            Account a1 = new Account("Abhishek", "abcd123");
+
+            System.out.println("Before serialization  Name : " + a1.name + " Password : " + a1.password);
+
+            // ___________________________serialization_______________________________
+            
+            // creating FileOutputStream object to make connection with file named "abc.txt"
+            FileOutputStream fos = new FileOutputStream("abc.txt");
+
+            // creating ObjectOutputStream object to write object to file via FileOutputStream
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            // writing account object to file named "abc.txt"
+            oos.writeObject(a1);
+
+            // closing ObjectOuputstream
+            oos.close();
+
+
+            // ___________________________de-serialization______________________________
+
+            // creating FileInputStream object to make connection with file named "abc.txt"
+            FileInputStream fis = new FileInputStream("abc.txt");
+
+            // creating ObjectInputStream object to read object from the file via FileInputStream
+            ObjectInputStream ois = new ObjectInputStream(fis);
+
+            /*
+                reading Account object from the file named "abc.txt" and type casting it
+                to Account type from Object type 
+            */
+            Account a2 = (Account) ois.readObject();
+
+            System.out.println("Before serialization  Name : " + a2.name + " Password : " + a2.password);
+
+            // closing ObjectInputStream
+            ois.close();
+        }
+    }
+    ```
+_____________________________________________________________________________________
+
+*   Does static variables take part in serialization ?
+
+>>  No, static varaiable doesn't take part in serialization because static variable 
+    belongs to class and not to a particular object.
+
+    For example :
+
+    ```
+    /* 
+        Account object which is to be serialized and de-serialized 
+    */
+    class Account implements Serializable {
+
+        String name;
+        
+        /*  making password as transient so that its default value will be stored in 
+            file at the time of serialization
+        */
+        transient String password;
+
+        /*  
+            making static variable bankName as transient 
+
+            as static variable doesn't involve in serialization, decalring static 
+            variable as transient will no have no effect
+        */
+        transient static String bankName = "SBI";
+
+        Account(String name, String password) {
+            this.name = name;
+            this.password = password;
+        }
+    }
+
+    public class Test {
+        
+        public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+            // creating Person class object which is to be serialized and de-serialized
+            Account a1 = new Account("Abhishek", "abcd123");
+
+            System.out.println("Before serialization BankName : " + Account.bankName + " Name : " + a1.name + " Password : " + a1.password);
+
+            // ___________________________serialization_______________________________
+            
+            // creating FileOutputStream object to make connection with file named "abc.txt"
+            FileOutputStream fos = new FileOutputStream("abc.txt");
+
+            // creating ObjectOutputStream object to write object to file via FileOutputStream
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            // writing account object to file named "abc.txt"
+            oos.writeObject(a1);
+
+            // closing ObjectOuputstream
+            oos.close();
+
+
+            // ___________________________de-serialization______________________________
+
+            // creating FileInputStream object to make connection with file named "abc.txt"
+            FileInputStream fis = new FileInputStream("abc.txt");
+
+            // creating ObjectInputStream object to read object from the file via FileInputStream
+            ObjectInputStream ois = new ObjectInputStream(fis);
+
+            /*
+                reading Account object from the file named "abc.txt" and type casting it
+                to Account type from Object type 
+            */
+            Account a2 = (Account) ois.readObject();
+
+            /* 
+                as static variable banlName didn't involve in serialization, after 
+                de-serialization we get its original value
+            */
+            System.out.println("Before serialization BankName : " + Account.bankName + " Name : " + a2.name + " Password : " + a2.password);
+
+            // closing ObjectInputStream
+            ois.close();
+        }
+    }
+    ```
+_____________________________________________________________________________________
+
+*   Will there be any impact of declaring final variable as transient ?
+
+>>  No, final variable will participate in the serialization directly by the value. 
+    Hence, declaring a final variable as transient has no impact as JVM won't be 
+    able to know whether that constant value is transient or not. 
+
+    For example :
+
+    ```
+    /* 
+        Account object which is to be serialized and de-serialized 
+    */
+    class Account implements Serializable {
+
+        String name;
+        
+        /*  making password as transient so that its default value will be stored in 
+            file at the time of serialization
+        */
+        transient String password;
+
+        /*  
+            making final variable accountNumber as transient 
+
+            final variable will participate in the serialization directly by the value. 
+            Hence, declaring a final variable as transient has no impact as JVM won't be 
+            able to know whether that constant value is transient or not
+        */
+        transient final int accountNumber = 123456789;
+
+        Account(String name, String password) {
+            this.name = name;
+            this.password = password;
+        }
+    }
+
+    public class Test {
+        
+        public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+            // creating Person class object which is to be serialized and de-serialized
+            Account a1 = new Account("Abhishek", "abcd123");
+
+            System.out.println("Before serialization Account Number : " + a1.accountNumber + " Name : " + a1.name + " Password : " + a1.password);
+
+            // ___________________________serialization_______________________________
+            
+            // creating FileOutputStream object to make connection with file named "abc.txt"
+            FileOutputStream fos = new FileOutputStream("abc.txt");
+
+            // creating ObjectOutputStream object to write object to file via FileOutputStream
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            // writing account object to file named "abc.txt"
+            oos.writeObject(a1);
+
+            // closing ObjectOuputstream
+            oos.close();
+
+
+            // ___________________________de-serialization______________________________
+
+            // creating FileInputStream object to make connection with file named "abc.txt"
+            FileInputStream fis = new FileInputStream("abc.txt");
+
+            // creating ObjectInputStream object to read object from the file via FileInputStream
+            ObjectInputStream ois = new ObjectInputStream(fis);
+
+            /*
+                reading Account object from the file named "abc.txt" and type casting it
+                to Account type from Object type 
+            */
+            Account a2 = (Account) ois.readObject();
+
+            /* 
+                as final variable accountNumber is participate in serialization directly
+                by value, serialization will have no impact on it and after
+                de-serialization we will get its original value
+            */
+            System.out.println("Before serialization Account Number : " + a2.accountNumber + " Name : " + a2.name + " Password : " + a2.password);
+
+            // closing ObjectInputStream
+            ois.close();
+        }
+    }
+    ```
+
+_____________________________________________________________________________________
+
+*   What will be the value of given variable after serialization and 
+    de-serialization based on declaration ?
+
+>>  (1) Declaration : 
+
+        int i = 10;
+        int j = 20;
+
+        Output :
+
+        i = 10;
+        j = 20;
+
+    (2) Declaration : 
+
+        transient int i = 10;
+        int j = 20;
+
+        Output :
+
+        i = 0;
+        j = 20;
+
+    (3) Declaration : 
+
+        transient int i = 10;
+        transient int j = 20;
+
+        Output :
+
+        i = 0;
+        j = 0;
+
+    (4) Declaration : 
+
+        transient static int i = 10;
+        transient int j = 20;
+
+        Output :
+
+        i = 10;
+        j = 0;
+
+    (5) Declaration : 
+
+        transient final int i = 10;
+        int j = 20;
+
+        Output :
+
+        i = 10;
+        j = 20;
+    
+    (6) Declaration : 
+
+        transient final int i = 10;
+        transient static int j = 20;
+
+        Output :
+
+        i = 10;
+        j = 20;
+
+_____________________________________________________________________________________
+
+*   Can we serialize multiple objects into same file ?
+
+>>  Yes, we can serialize any number of objects into same file.
+
+_____________________________________________________________________________________
+
+*   How to serialize multiple objects into same file ?
+
+>>  
+    ```
+    // declaring Dog class
+    class Dog implements Serializable {
+
+        @Override
+        public String toString() {
+            return "Dog object";
+        }
+    }
+
+    // declaring Cat class
+    class Cat implements Serializable {
+
+        @Override
+        public String toString() {
+            return "Cat object";
+        }
+    } 
+
+    // declaring Mouse class
+    class Mouse implements Serializable {
+
+        @Override
+        public String toString() {
+            return "Mouse object";
+        }
+    }
+
+    public class Test {
+        
+        public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+            // creating Dog object
+            Dog d1 = new Dog();
+
+            // creating Cat object
+            Cat c1 = new Cat();
+
+            // creating Mouse object
+            Mouse m1 = new Mouse();
+
+            // ___________________________serialization_______________________________
+            
+            // creating FileOutputStream object to make connection with file named "abc.txt"
+            FileOutputStream fos = new FileOutputStream("abc.txt");
+
+            // creating ObjectOutputStream object to write object to file via FileOutputStream
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            // serializing Mouse object to file named "abc.txt"
+            oos.writeObject(m1);
+
+            // serializing cat object to file named "abc.txt"
+            oos.writeObject(c1);
+
+            // serializing Dog object to file named "abc.txt"
+            oos.writeObject(d1);
+
+            // closing ObjectOuputstream
+            oos.close();
+
+
+            // ___________________________de-serialization______________________________
+
+            // creating FileInputStream object to make connection with file named "abc.txt"
+            FileInputStream fis = new FileInputStream("abc.txt");
+
+            // creating ObjectInputStream object to read object from the file via FileInputStream
+            ObjectInputStream ois = new ObjectInputStream(fis);
+
+            // de-serializing objects from file "abc.txt" in same order we serialized them
+            Mouse m2 = (Mouse) ois.readObject();
+
+            Cat c2 = (Cat) ois.readObject();
+
+            Dog d2 = (Dog) ois.readObject();
+
+            // printing mouse object
+            System.out.println(m2);
+
+            // printing cat object
+            System.out.println(c2);
+
+            // printing dog object
+            System.out.println(d2);
+
+            // closing ObjectInputStream
+            ois.close();
+        }
+    }
+    ```
+_____________________________________________________________________________________
+
+*   What is Object Graph and how to serialize it ?
+
+>>  While serializing an object, all the set of objects which are reachable from that
+    object automatically get serialized. This group of objects are called Object
+    graph.
+
+    To serialize this Object grpah, all the object must be serializable. If atleast
+    one object is not serializable, then we will get NotSerialzableException.
+
+    For example :
+
+    ```
+    // declaring Dog class which has cat object
+    class Dog implements Serializable {
+
+        Cat c = new Cat();
+
+        @Override
+        public String toString() {
+            return "Dog object";
+        }
+    }
+
+    // declaring Cat class which has Mouse object
+    class Cat implements Serializable {
+
+        Mouse m = new Mouse();
+
+        @Override
+        public String toString() {
+            return "Cat object";
+        }
+    } 
+
+    // declaring Mouse class
+    class Mouse implements Serializable {
+
+        @Override
+        public String toString() {
+            return "Mouse object";
+        }
+    }
+
+    public class Test {
+        
+        public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+            // creating Dog object
+            Dog d1 = new Dog();
+
+            // ___________________________serialization_______________________________
+            
+            // creating FileOutputStream object to make connection with file named "abc.txt"
+            FileOutputStream fos = new FileOutputStream("abc.txt");
+
+            // creating ObjectOutputStream object to write object to file via FileOutputStream
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            /*  
+                serializing Dog object which has Cat object and Cat object has Mouse 
+                object forming an Object Graph
+            */
+            oos.writeObject(d1);
+
+            // closing ObjectOuputstream
+            oos.close();
+
+
+            // ___________________________de-serialization______________________________
+
+            // creating FileInputStream object to make connection with file named "abc.txt"
+            FileInputStream fis = new FileInputStream("abc.txt");
+
+            // creating ObjectInputStream object to read object from the file via FileInputStream
+            ObjectInputStream ois = new ObjectInputStream(fis);
+
+            // de-serializing Dog object from file named "abc.txt"
+            Dog d2 = (Dog) ois.readObject();
+
+            // printing dog object
+            System.out.println(d2);
+
+            // closing ObjectInputStream
+            ois.close();
+        }
+    }
+    ```
+_____________________________________________________________________________________
+
+*   Can we call object instance and static method after de-serialization of that 
+    object ?
+
+>>  Yes, we can call object static as well as instnace method after serializing
+    and de-serializing that object

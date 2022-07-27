@@ -1,0 +1,196 @@
+*   Will the given code snippet create a new file or directory ?
+
+>>  
+    ```
+    File f = new File("abc.txt");
+    ```
+
+    This code snippet won't create a new file or directory, but first it will check 
+    is there any physical file named with "abc.txt" is available or not. If it is 
+    available then 'f' will refers that file. 
+
+    If file is not available then we are just creating java File object to represent 
+    the name "abc.txt"
+
+____________________________________________________________________________________
+
+*   How to create a new file in current working directory (CWD) ?
+
+>>  
+    ```
+    /*
+        creating file object
+
+        this will not create new file but if file named "abc.txt" already exists
+        in CWD then 'f' will refer to that file
+    */
+    File f = new File("abc.txt");
+
+    /* 
+        this line will create a new file named "abc.txt" and will return true
+
+        if the file named "abc.txt" already exists in CWD then it won't create new
+        file and will return false
+    */
+    f.createNewFile();
+    ```
+____________________________________________________________________________________
+
+*   Can we use File object to represent directory ?
+
+>>  Yes, we can represent and can create new directory using File object because 
+    java FileIO is implemented based on UNIX OS.
+
+____________________________________________________________________________________
+
+*   How to create a new directory in current working directory (CWD) ?
+
+>>  
+    ```
+    /*
+        creating file object
+
+        this will not create new directory but if directory named "newFolder" 
+        already exists in CWD then 'f' will refer to that directory
+    */
+    File f = new File("newFolder");
+
+    /* 
+        this line will create a new directory named "newFolder" and will return true
+
+        if the directory named "newFolder" already exists in CWD then it won't create 
+        new directory and will return false
+    */
+    f.mkdir();
+    ```
+____________________________________________________________________________________
+
+*   What are various File class constructors ?
+
+>>  Following are the File class constructors :
+
+    (1) This constructor is use to create File object to represent name of 
+        the file or directory in current working directory. 
+
+        ```
+        File f = new File(String fileName);
+        ```
+
+    (2) This constructor is use to create File object to represent name of 
+        the file or directory present in specified subdirectory. 
+
+        ```
+        File f = new File(String subDirectoryName, String fileName);
+        ```
+
+    (3) This constructor is use to create File object to represent name of 
+        the file or directory present in specified subdirectory based of sub 
+        directory File object. 
+
+        ```
+        File f = new File(File subDirectory, String fileName);
+        ```
+____________________________________________________________________________________
+
+*   What are the various important methods of File class ?
+
+>>  Following are the important method inside File class :
+
+    ```
+    File f = new File(String fileName);
+    ```
+
+    (1) This method is use to check whether a file or directory represented by 'f'
+        is available or not
+
+        ```
+        void f.exists();
+        ```
+
+    (2) This method is use to create new file if it doesn't exist. If file is 
+        created then it will return true else it will return false
+
+        ```
+        Boolean f.createNewFile();
+        ```
+
+    (3) This method is use to create new directory if it doesn't exist. If 
+        directory is created then it will return true else it will return false
+
+        ```
+        Boolean f.mkdir();
+        ```
+
+    (4) This method is use to check whether 'f' is refering to a file or not
+
+        ```
+        Boolean f.isFile();
+        ```
+
+    (5) This method is use to check whether 'f' is refering to a directory or not
+
+        ```
+        Boolean f.isDirectory();
+        ```
+
+    (6) This method is use to get list of files and directory inside the directory
+        represented by 'f'
+
+        ```
+        String[] f.list();
+        ```
+
+    (7) This method is use to get length of character present in a file 
+
+        ```
+        long f.length();
+        ```
+
+    (8) This method is use to delete file or directory is exist. If file or 
+        directory is available then it will delete it and will return true else it
+        will return false
+
+        ```
+        Boolean f.length();
+        ```
+____________________________________________________________________________________
+
+*   How we can read and write character data as well as binary data ?
+
+>>  Following are use to read and write character data form and to the file 
+    respectively :
+
+        (1) Reader : to read character data 
+
+        (2) Writer : to write character data 
+    
+    Following are use to read and write binary data form and to the file 
+    respectively :
+
+        (1) InputStream : to read binary data 
+
+        (2) OutputStream : to write binary data 
+
+____________________________________________________________________________________
+
+*   What is the hierarchy of the Reader and Writer ?
+
+>>                  
+                                 object
+                                    |
+                    ________________|_________________________
+                    |                                        |
+                    |                                        |
+                Reader                                     Writer
+                    |                                        |
+        ____________|___________         ____________________|_________________
+        |                      |         |                   |                |
+        |                      |         |                   |                |
+InputStreamReader  BufferedReader  OutputStreamWriter   BufferedWriter  PrintWriter  
+        |                                   |
+        |                                   |
+    FileReader                          FileWriter
+
+____________________________________________________________________________________
+
+*   

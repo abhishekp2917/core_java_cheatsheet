@@ -1,0 +1,147 @@
+*   What is the purpose of customized serialization ?
+
+>>  During serialization, if we declare a variable as 'transient', then that 
+    variable default value will be stored in the file instead of original value.
+
+    So, at the time of de-serialization, there may be a chance of loss of 
+    information due to 'transient' keyword. To recover this loss of information
+    customized serialization is used.
+
+    Here, at the time of serialization JVM will check whether below method is 
+    present or not.
+
+        ```
+        private void writeObject(ObjectOutputStream oos) throws Exception
+        ```
+
+    If it is present then it will be executed automatically by JVM in which we 
+    will perform extra task so that we can store data which will be lost due to 
+    'transient' keyword
+
+    Similarly, at the time of de-serialization JVM will check whether below method is 
+    present or not.
+
+        ```
+        private void readObject(ObjectInputStream ois) throws Exception
+        ```
+    If it is present then it will be executed automatically by JVM that method 
+    in which we will perform extra task so that we can recover lost information 
+    at the time of de-serialization 
+
+_____________________________________________________________________________________
+
+*   Can we change the return type or scope of writeObject() and readObject() in 
+    the class whose object is to be serialized ?
+
+>>  No, we can't change the return type or scope of writeObject() and readObject() 
+    in the class whose object is to be serialized
+
+_____________________________________________________________________________________
+
+*   How to perform customized serialization ?
+
+>>  
+    ```
+    /* 
+        Account object which is to be serialized and de-serialized 
+    */
+    class Account implements Serializable {
+
+        String name;
+        
+        /*  making password as transient so that its default value will be stored in 
+            file at the time of serialization
+        */
+        transient String password;
+
+        Account(String name, String password) {
+            this.name = name;
+            this.password = password;
+        }
+
+        /*
+            writeObject method which will be called by JVM at the time of serialization
+            this object so that we can store encrypted password in the file which will 
+            be retrived at the time of de-serialization
+        */
+        private void writeObject(ObjectOutputStream oos) throws IOException {
+
+            // performing default serialization
+            oos.defaultWriteObject();
+
+            // encrypting password
+            String encryptedPassword = "123" + this.password;
+            
+            // serializing encrypted password
+            oos.writeObject(encryptedPassword);
+        }
+
+        /* 
+            readObject method which will be called by JVM at the time of 
+            de-serialization so that we can get encrypted password.
+
+            This encypted password will be decrypted at and will be assigned to the
+            password variable
+        */
+        private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+
+            // performing default de-serialization
+            ois.defaultReadObject();
+
+            // de-serializing encrypted password
+            String encryptedPassword = (String) ois.readObject();
+
+            // decrypting encrypted password
+            this.password = encryptedPassword.substring(3);
+        }
+    }
+
+    public class Test {
+        
+        public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+            // creating Person class object which is to be serialized and de-serialized
+            Account a1 = new Account("Abhishek", "abcd123");
+
+            System.out.println("Before serialization Account Number : Name : " + a1.name + " Password : " + a1.password);
+
+            // ___________________________serialization_______________________________
+            
+            // creating FileOutputStream object to make connection with file named "abc.txt"
+            FileOutputStream fos = new FileOutputStream("abc.txt");
+
+            // creating ObjectOutputStream object to write object to file via FileOutputStream
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            // writing account object to file named "abc.txt"
+            oos.writeObject(a1);
+
+            // closing ObjectOuputstream
+            oos.close();
+
+
+            // ___________________________de-serialization______________________________
+
+            // creating FileInputStream object to make connection with file named "abc.txt"
+            FileInputStream fis = new FileInputStream("abc.txt");
+
+            // creating ObjectInputStream object to read object from the file via FileInputStream
+            ObjectInputStream ois = new ObjectInputStream(fis);
+
+            /*
+                reading Account object from the file named "abc.txt" and type casting it
+                to Account type from Object type 
+            */
+            Account a2 = (Account) ois.readObject();
+
+            /* 
+                due to customized serialization, we will get the original password 
+                by decrypting the encrypted password
+            */
+            System.out.println("Before serialization Account Number : Name : " + a2.name + " Password : " + a2.password);
+
+            // closing ObjectInputStream
+            ois.close();
+        }
+    }
+    ```

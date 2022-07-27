@@ -1,0 +1,147 @@
+*   What is BufferedReader ?
+
+>>  To read character from a file, BufferedReader is used. Unlike FileReader, 
+    BufferedReader can be used to read the file line by line as well. 
+
+    BufferedReader doesn't read directly from the file, instead it uses another
+    Reader object (FileReader) to read from the file.
+    
+    BufferedReader is most enhanced character data reader till date.
+
+____________________________________________________________________________________
+
+*   What are various BufferedReader class constructors ?
+
+>>  Following are the BufferedReader class constructors :
+
+    (1) This constructor is used to read character from the specified file using
+        Reader object
+
+        ```
+        BufferedReader br = new BufferedReader(Reader r);
+        ```
+
+    (2) This constructor is used to read character from the specified file using 
+        Reader object with specified bufferedSize
+ 
+        ```
+        BufferedReader br = new BufferedReader(Reader r, int bufferedSize);
+        ```
+____________________________________________________________________________________
+
+*   What are the various important methods of BufferedReader class ?
+
+>>  ```
+    BufferedReader br = new BufferedReader(Writer w);
+    ```
+
+    (1) This method attempts to read next character from the file and returns its 
+        unicode value (int value). If next character is not available, then this 
+        method will return -1. 
+
+        As this method return unicode value (int value), it is mandatory to type 
+        cast that unicode value to char value  
+
+        ```
+        int br.read();
+        ```
+    
+    (2) This method reads enough characters from the file into character array and 
+        returns number of characters copied from the file   
+
+        ```
+        int br.read(char[] ch);
+        ```
+
+    (3) This method is used to close BufferedReader
+
+        ```
+        void br.close();
+        ```
+
+    (4) This methods to read next line from the file and return it in String form.
+        If next line not available, then this method returns 'null'.
+
+        ```
+        String br.readLine();
+        ```
+____________________________________________________________________________________
+
+*   How to read character data of the file line by line using BufferedReader ?
+
+>>
+    ```
+    public class Test {
+    
+        public static void main(String[] args) throws IOException {
+            
+            /*  creating FileReader object that will read a specified file named 
+                "javaQuestiions.txt"  
+            */
+            FileReader fr = new FileReader("javaQuestions.txt");
+
+            /* 
+                creating BufferedReader object which will use Reader object to read 
+                file named"javaQuestiions.txt" 
+            */
+            BufferedReader br = new BufferedReader(fr);
+
+            // reading first line of file
+            String line = br.readLine(); 
+
+            while(line!=null) {
+
+                System.out.println(line);
+
+                // reading next line of the file
+                line = br.readLine();
+            }
+
+            // closing BufferedReader
+            br.close();
+        }
+    }    ```
+____________________________________________________________________________________
+
+*   How to read character data of the file line by line using BufferedReader which
+    uses another BufferedReader ?
+
+>>
+    ```
+    public class Test {
+    
+        public static void main(String[] args) throws IOException {
+            
+            /*  creating FileReader object that will read a specified file named 
+                "javaQuestiions.txt"  
+            */
+            FileReader fr = new FileReader("javaQuestions.txt");
+
+            /* 
+                creating first BufferedReader object which will use FileReader object 
+                to read file named"javaQuestiions.txt" 
+            */
+            BufferedReader br1 = new BufferedReader(fr);
+
+            /* 
+                creating second BufferedReader object which will use BufferedReader 
+                object to read file named"javaQuestiions.txt" 
+            */
+            BufferedReader br2 = new BufferedReader(br1);
+
+            // reading first line of file using 'br2'
+            String line = br2.readLine(); 
+
+            while(line!=null) {
+
+                System.out.println(line);
+
+                // reading next line of the file
+                line = br2.readLine();
+            }
+
+            // closing second BufferedReader
+            br2.close();
+        }
+    }
+    ```

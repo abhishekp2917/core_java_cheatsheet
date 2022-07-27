@@ -1,0 +1,419 @@
+*   What is static nested class ?
+
+>>  Inner class with static modifier are called static nested class.
+
+    In normal inner class object, without existing outer class object there is 
+    no chance of existing inner class object and that's why inner class objects
+    are strongly associated with outer class object.
+
+    But in static nested class object, without existing outer class object there  
+    may be chance of existing nested class object. Hence, static nested class object
+    is not strongly associated with outer class object and the reason for name 
+    'nested'.
+
+____________________________________________________________________________________
+
+*   How to define static nested class ?
+
+>>  
+    ```
+    // defining outer class
+    class Outer {
+
+        // defining static nested inner class 
+        static class Inner {
+
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   Can we declare static members inside static nested class ?
+
+>>  Yes, we can declare static members inside static nested class. Moreover, we 
+    can even declare main method inside static nested class.
+
+____________________________________________________________________________________
+
+*   Can we run static nested class from command prompt ?
+
+>>  yes, because static nested class can contain static members and we can declare
+    main method inside static nested class.
+
+____________________________________________________________________________________
+
+*   Can we access outer class instance members from static nested class ?
+
+>>  Since we can't access non-static members from static area, we can't access
+    outer class instance members from static nested class.
+
+____________________________________________________________________________________
+
+*   Which modifiers are applicable to static nested classes ?
+
+>>  Following modifiers are applicable to static nested classes :
+
+    Top level class valid modifiers :
+
+        public, <default>, abstract, final,  strictfp
+    
+    Other valid modifiers :
+
+        private, protected, static
+
+____________________________________________________________________________________
+
+*   How to access static nested class members from outer class main method ?
+
+>>  
+    ```
+    // defining outer class
+    class Outer {
+
+        // defining static nested class
+        static class Inner {
+
+            // static nested class instance variable
+            String s1 = "Static nested class instance variable";
+
+            // static nested class static variable
+            static String s2 = "Static nested class static variable";
+
+            // static nested class instance method
+            void method1() {
+
+                System.out.println("Static nested class instance method");
+            }
+
+            // static nested class static method
+            static void method2() {
+
+                System.out.println("Static nested class static method");
+            }
+
+            // static nested class main method
+            public static void main(String[] args) {
+
+                System.out.println("Static nested class main method");
+            }
+        }
+
+        // outer class main method
+        public static void main(String[] args) {
+
+            // creating object of static nested class from inside of outer class main method
+            Inner i = new Inner();
+
+            // accessing static nested class instance variable
+            System.out.println(i.s1);
+
+            // accessing static nested class static variable
+            System.out.println(Inner.s2);
+
+            // calling static nested class instance method
+            i.method1();
+
+            // calling static nested class static method
+            Inner.method2();
+
+            // calling static nested class main method
+            Inner.main(new String[0]);
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   How to access static nested class members from outer class members ?
+
+>>  
+    ```
+    // defining outer class
+    class Outer {
+
+        // defining static nested class
+        static class Inner {
+
+            // static nested class instance variable
+            String s1 = "Static nested class instance variable";
+
+            // static nested class static variable
+            static String s2 = "Static nested class static variable";
+
+            // static nested class instance method
+            void method1() {
+
+                System.out.println("Static nested class instance method");
+            }
+
+            // static nested class static method
+            static void method2() {
+
+                System.out.println("Static nested class static method");
+            }
+        }
+
+        // outer class instance method
+        public void outerMethod() {
+
+            // creating static nested class object from inside outer class member
+            Inner i = new Inner();
+
+            // accessing static nested class instance variable
+            System.out.println(i.s1);
+
+            // accessing static nested class static variable
+            System.out.println(Inner.s2);
+
+            // calling static nested class instance method
+            i.method1();
+
+            // calling static nested class static method
+            Inner.method2();
+        }
+
+        // outer class main method
+        public static void main(String[] args) {
+
+            // creating outer class object
+            Outer o = new Outer();
+
+            // calling outer class
+            o.outerMethod();
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   How to access static nested class members from outside of outer class ?
+
+>>  
+    ```
+    // defining outer class
+    class Outer {
+
+        // defining static nested class
+        static class Inner {
+
+            // static nested class instance variable
+            String s1 = "Static nested class instance variable";
+
+            // static nested class static variable
+            static String s2 = "Static nested class static variable";
+
+            // static nested class instance method
+            void method1() {
+
+                System.out.println("Static nested class instance method");
+            }
+
+            // static nested class static method
+            static void method2() {
+
+                System.out.println("Static nested class static method");
+            }
+
+            // static nested class main method
+            public static void main(String[] args) {
+
+                System.out.println("Static nested class main method");
+            }
+        }
+    }
+
+    class Test {
+
+        // Test class main method
+        public static void main(String[] args) {
+
+            // creating object of static nested class from outside of outer class
+            Outer.Inner i = new Outer.Inner();
+
+            // accessing static nested class instance variable
+            System.out.println(i.s1);
+
+            // accessing static nested class static variable
+            System.out.println(Outer.Inner.s2);
+
+            // calling static nested class instance method
+            i.method1();
+
+            // calling static nested class static method
+            Outer.Inner.method2();
+
+            // calling static nested class main method
+            Outer.Inner.main(new String[0]);
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   Can static nested class extend other class and implements interface ?
+
+>>  
+____________________________________________________________________________________
+
+*   What is the difference between normal inner class and static nested class ?
+
+>>              Normal inner class              Static nested class
+                                        |
+    WE can't create normal inner class  |   We can create static nested class  
+    object without creating outer class |   without creating outer class object
+    object                              |
+                                        |
+    We can't declare static members     |   We can declare static members inside
+    inside normal inner class           |   static nested class
+                                        |
+                                        |
+    We can't declare main method        |   We can declare main method inside static
+    inside normal inner class           |   nested class
+                                        |
+    we can access outer class instance  |   we can't access outer class instance
+    members from normal inner class     |   members from static nested class
+                                        |
+____________________________________________________________________________________
+
+*   Which classes can inherit static nested class ?
+
+>>  Following classes can inherit static nested class :
+
+    (1) Class declared directly inside outer class of static nested class
+
+        ```
+        class Outer {
+
+            static class Nested {
+
+            } 
+
+            class Inner extends Nested {
+
+            }
+        }
+        ```
+    
+    (2) Inner class of class declared directly inside outer class of static nested 
+        class
+
+        ```
+        class Outer {
+
+            static class Nested {
+
+            } 
+
+            class Inner {
+
+                class Inside extends Nested {
+
+                }
+            }
+        }
+        ```
+    
+    (3) Inner class of static nested class
+
+        ```
+        class Outer {
+
+            static class Nested {
+
+                class Inner extends Nested {
+
+                }
+            } 
+        }
+        ```
+
+    (4) Class declared outside of outer class of static nested class
+
+        ```
+        class Outer {
+
+            static class Nested {
+
+            } 
+        }
+
+        class Outside extends Outer.Nested {
+
+        }
+        ```
+
+    (5) Inner class of class declared outside of outer class of static nested class
+
+        ```
+        class Outer {
+
+            static class Nested {
+
+            } 
+        }
+
+        class Outside {
+
+            class Inside extends Outer.Nested {
+
+            } 
+        }
+        ```
+    
+    (6) Method local inner class of method declared directly inside outer class of 
+        static nested class
+
+        ```
+        class Outer {
+
+            static class Nested {
+
+            } 
+
+            void method1() {
+
+                class MethodLocal extends Nested {
+
+                }
+            }
+        }
+        ```
+    
+    (7) Method local inner class of method declared directly inside static nested 
+        class
+
+        ```
+        class Outer {
+
+            static class Nested {
+
+                void method1() {
+
+                    class MethodLocal extends Nested {
+
+                    }
+                }
+            } 
+        }
+        ```
+    
+    (8) Method local inner class of method declared directly inside outside of outer
+        class of static nested class
+
+        ```
+        class Outer {
+
+            static class Nested {
+
+            } 
+        }
+
+        class Outside {
+
+            void method1() {
+
+                class MethodLocal extends Outer.Nested {
+
+                }
+            }
+        }
+        ```
+
+

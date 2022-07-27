@@ -1,0 +1,126 @@
+*   What is FileReader ?
+
+>>  To read character from a file, FileReader is used.
+
+____________________________________________________________________________________
+
+*   What are various FileReader class constructors ?
+
+>>  Following are the FileReader class constructors :
+
+    (1) This constructor is used to read character from the specified file named
+        'fileName'
+
+        ```
+        FileReader fr = new FileReader(String fileName);
+        ```
+
+    (2) This constructor is used to read character from the specified file 
+        referenced by File object 'file'
+ 
+        ```
+        FileReader fr = new FileReader(File file);
+        ```
+____________________________________________________________________________________
+
+*   What are the various important methods of FileReader class ?
+
+>>  ```
+    FileReader fw = new FileReader(String fileName);
+    ```
+
+    (1) This method attempts to read next character from the file and returns its 
+        unicode value (int value). If next character is not available, then this 
+        method will return -1. 
+
+        As this method return unicode value (int value), it is mandatory to type 
+        cast that unicode value to char value  
+
+        ```
+        int fr.read();
+        ```
+    
+    (2) This method reads enough characters from the file into character array and 
+        returns number of characters copied from the file   
+
+        ```
+        int fr.read(char[] ch);
+        ```
+    
+    (3) This method is used to close FileReader
+    
+        ```
+        void fr.close();
+        ```
+
+____________________________________________________________________________________
+
+*   How to read character data of the file using FileReader ?
+
+>>
+    ```
+    public class Test {
+    
+        public static void main(String[] args) throws IOException {
+            
+            // creating FileReader object that will read a specified file named "javaQuestiions.txt"  
+            FileReader fr = new FileReader("javaQuestions.txt");
+
+            // reading character of specified file
+            int ch = fr.read();
+
+            while(ch!=-1) {
+
+                // printing character
+                System.out.print((char) ch);
+
+                // reading next character
+                ch = fr.read();
+            }
+
+            // closing FileReader
+            fr.close();
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   How to copy character data of the file in a char array using FileReader ?
+
+>>
+    ```
+    public class Test {
+    
+        public static void main(String[] args) throws IOException {
+
+            // creating file object which will represent the file that is to be read
+            File f = new File("javaQuestions.txt");
+            
+            // creating FileReader object that will read a file 'f' 
+            FileReader fr = new FileReader(f);
+
+            // char array to store characters of file that is to be read
+            char[] ch = new char[(int) f.length()];
+
+            // reading all the characters of the file 'f' and storing it in char array 'ch'
+            fr.read(ch);
+
+            // iterating over char array 'ch' and printing each character
+            for(char c : ch) {
+
+                // printing character
+                System.out.print(c);
+            }
+
+            // closing FileReader
+            fr.close();
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   What are the disadvantages of FileReader ?
+
+>>  By using FileReader, we can read data character by character and not line by line
+    which is not convinient to the programmer. To solve this problem, BufferedReader
+    is used.

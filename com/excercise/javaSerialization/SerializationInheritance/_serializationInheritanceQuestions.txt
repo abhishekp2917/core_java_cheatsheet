@@ -1,0 +1,219 @@
+*   Can we serialize and de-serialize parent class and child class object if only
+    parent class implements Serializable interface and not child class ?
+
+>>  Yes, because if parent class implements Serializable interface than 
+    automatically all its child class object becomes serializable and hence, 
+    to serialize child class objects, child class doesn't need to implement 
+    Serializable interface. 
+
+    For example :
+
+    ```
+    /* 
+        Parent class implements Serializable interface which is to be serialized
+
+        As Parent implements Serializable interface, all its child can be serialized without 
+        implementing Serializable interface  
+    */
+    class Parent implements Serializable {
+
+        // Parent class instance variable
+        String s;
+        int i;
+
+        // Parent class constructor
+        Parent(String s, int i) {
+            this.s = s;
+            this.i = i;
+        }
+    }
+
+
+    /* 
+        child class don't need to implement Serializable interface as its parent already
+        implements Serializable interface
+        
+        Hence, Child class is can also be serialized
+    */
+    class Child extends Parent {
+
+        // Child class instance variable
+        String x;
+        int y;
+
+        // Child class constructor
+        Child(String s, int i, String x, int y) {
+            super(s, i);
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    public class Test {
+
+        public static void main(String[] args) throws IOException, ClassNotFoundException {
+            
+            // creating Parent class object which is to be serialized 
+            Parent p1 = new Parent("Parent", 100);
+
+            // creating child class object which is to be serialized 
+            Child c1 = new Child("Parent", 100, "Child", 10);
+
+            // _______________________before serialization_____________________________
+
+            System.out.println("Before serialization");
+
+            System.out.println(p1.s + " " + p1.i);
+            System.out.println(c1.s + " " + c1.i + " " + c1.x + " " + c1.y);
+
+            FileOutputStream fos = new FileOutputStream("abc.txt");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            // serializing Parent class object into file named "abc.txt"
+            oos.writeObject(p1);
+
+            // serializing Child class object into file named "abc.txt"
+            oos.writeObject(c1);
+
+            oos.close();
+
+            FileInputStream fis = new FileInputStream("abc.txt");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+
+            // de-serializing Parent class object from file named "abc.txt"
+            Parent p2 = (Parent) ois.readObject();
+
+            // de-serializing Child class object from file named "abc.txt"
+            Child c2 = (Child) ois.readObject();
+
+            // _________________________after de-serialization_____________________________
+
+            System.out.println("After de-serialization");
+
+            System.out.println(p2.s + " " + p2.i);
+            System.out.println(c2.s + " " + c2.i + " " + c2.x + " " + c2.y);
+
+            ois.close();
+        } 
+    }
+    ```
+
+___________________________________________________________________________________
+
+*   Can we serialize and de-serialize child class object if only child class 
+    implements Serializable interface and not parent class ?
+
+>>  Yes, because while serializing child class objects, parent class object is not
+    serialized and instance variable inherited by child from parent are assigned 
+    their default values at the time of serialization.
+
+    Moreover, while de-serializing child object, JVM runs parent class instance 
+    control flow and no-argument constructor.
+
+    As we can see their is parent class object doesn't play any role in child class
+    serialization, it is possible to serialize and de-serialize child class object 
+    if only child class implements Serializable interface and not parent class.
+
+    Note :
+
+    To de-serialize child class object, parent class must have no-argument 
+    constructor else we will get InvalidClassException.
+
+    For example :
+
+    ```
+    /* 
+        Parent class can't be serialized as it doesn't implement Serializable 
+        interface
+
+        As Parent dosn't implement Serializable interface, while de-serializing Child 
+        class object JVM will run parent class instance control flow and no-argument 
+        constructor 
+    */
+    class Parent {
+
+        // Parent class instance variable
+        String s;
+        int i;
+
+        {
+            System.out.println("Parent instance block");
+        }
+
+        // Parent class argument constructor
+        Parent(String s, int i) {
+            System.out.println("Parent class argument constructor");
+            this.s = s;
+            this.i = i;
+        }
+
+        /* 
+            Parent class no-argument constructor
+
+            It is mandatory to define no-argument constructor in parent class if we
+            want to serialize child class object
+        */
+        Parent() {
+            System.out.println("Parent class no-argument constructor");
+        }
+    }
+
+
+    /* 
+        Child class implements Serializable interface but its parent class doesn't 
+        due to which variables inherited from parent will be serialized with
+        default value
+    */
+    class Child extends Parent  implements Serializable {
+
+        // Child class instance variable
+        String x;
+        int y;
+
+        // Child class constructor
+        Child(String s, int i, String x, int y) {
+            super(s, i);
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    public class Test {
+
+        public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+            // creating child class object which is to be serialized 
+            Child c1 = new Child("Parent", 100, "Child", 10);
+
+            // _______________________before serialization_____________________________
+
+            System.out.println("Before serialization");
+
+            System.out.println(c1.s + " " + c1.i + " " + c1.x + " " + c1.y);
+
+            FileOutputStream fos = new FileOutputStream("abc.txt");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            // serializing Child class object into file named "abc.txt"
+            oos.writeObject(c1);
+
+            oos.close();
+
+            FileInputStream fis = new FileInputStream("abc.txt");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+
+            // de-serializing Child class object from file named "abc.txt"
+            Child c2 = (Child) ois.readObject();
+
+            // _________________________after de-serialization_____________________________
+
+            System.out.println("After de-serialization");
+
+            System.out.println(c2.s + " " + c2.i + " " + c2.x + " " + c2.y);
+
+            ois.close();
+        } 
+    }
+    ```
+
+___________________________________________________________________________________

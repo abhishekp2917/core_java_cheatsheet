@@ -1,0 +1,153 @@
+*   What is the use of FileWriter ?
+
+>>  We can use FileWriter to write character data to the file.
+
+____________________________________________________________________________________
+
+*   What are various FileWriter class constructors ?
+
+>>  Following are the FileWriter class constructors :
+
+    (1) This constructor is use to override the content of file named 'fileName' If
+        it exist. If specified file doesn't exist then it will create a new file to 
+        write characters in it.
+
+        ```
+        FileWriter fw = new FileWriter(String fileName);
+        ```
+
+    (2) This constructor is use to override the content of file referenced by 'file'
+        if it exist. If specified file doesn't exist then it will create a new file 
+        to write characters in it.
+
+        ```
+        FileWriter fw = new FileWriter(File file);
+        ```
+
+    (3) This constructor is use to override as well as append the content to file 
+        named 'fileName' if it exist. If specified file doesn't exist then it will 
+        create a new file to write characters in it.
+
+        ```
+        FileWriter fw = new FileWriter(String fileName, Boolean append);
+        ```
+
+    (4) This constructor is use to override as well as append the content to file 
+        referenced by 'file' if it exist. If specified file doesn't exist then it
+        will create a new file to write characters in it.
+
+        ```
+        FileWriter fw = new FileWriter(File file, Boolean append);
+        ```
+____________________________________________________________________________________
+
+*   What are the various important methods of FileWriter class ?
+
+>>  ```
+    FileWriter fw = new FileWriter(String fileName);
+    ```
+
+    (1) This method is use to write single character to the file
+
+        ```
+        void fw.write(int ch);
+        ```
+
+    (2) This method is use to write array of characters to the file
+
+        ```
+        void fw.write(char[] ch);
+        ```
+
+    (3) This method is use to write string to the file
+
+        ```
+        void fw.write(String s);
+        ```
+
+    (4) This method gaurantees that all the characters have been written to the file
+
+        ```
+        void fw.flush();
+        ```
+
+    (5) This method is use to close the FileWriter
+
+        ```
+        void fw.close();
+        ```
+____________________________________________________________________________________
+
+*   How to override character of the file using FileWriter ?
+
+>>  
+    ```
+    public class Test {
+    
+        public static void main(String[] args) throws IOException {
+            
+            /* 
+                creating FileWriter object that will create new file if specified file 
+                doesn't exist
+            */
+            FileWriter fw = new FileWriter("abc.txt");
+
+            // overriding string to the file named "abc.txt"
+            fw.write("Abhishek Pandey \nId : ");
+
+            // overriding a single character to the file named "abc.txt"
+            fw.write('M');
+
+            // overriding a character array to the file named "abc.txt"
+            fw.write(new char[]{'2', '3', '4', '2'});
+
+
+            // flushing all the character if some character got stuck while writing
+            fw.flush();
+
+            // closing the FileWriter
+            fw.close();
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   How to append character to the file using FileWriter ?
+
+>>  
+    ```
+    public class Test {
+    
+        public static void main(String[] args) throws IOException {
+            
+            /* 
+                creating FileWriter object that will create new file if specified file 
+                doesn't exist
+            */
+            FileWriter fw = new FileWriter("abc.txt", true);
+
+            // appending string to the file named "abc.txt"
+            fw.write("Abhishek Pandey \nId : ");
+
+            // appending a single character to the file named "abc.txt"
+            fw.write('M');
+
+            // appending a character array to the file named "abc.txt"
+            fw.write(new char[]{'2', '3', '4', '2'});
+
+            // flushing all the character if some character got stuck while writing
+            fw.flush();
+
+            // closing the FileWriter
+            fw.close();
+        }
+    }
+    ```
+____________________________________________________________________________________
+
+*   What is the disadvantage of using FileWriter ?
+
+>>  In FileWriter we have to insert line separater '\n' manually which is varied 
+    from system to system due to which based on system, we may get different output
+    while writing in a file. To solve this problem, BufferedWriter and PrintWriter 
+    are used. 
