@@ -1,0 +1,157 @@
+*   Explain CopyOnWriteArraySet in detail.
+
+>>  CopyOnWriteArraySet is a thread-safe implementation of the Set interface.
+
+    Internally, it uses a CopyOnWriteArrayList to store elements.
+
+    It provides constant-time performance for read operations and linear-time 
+    complexity for write operations.
+
+    It is best suited for applications with frequent read operations and infrequent modifications.
+
+    How it works:
+
+        - The CopyOnWriteArraySet internally maintains a CopyOnWriteArrayList.
+
+        - When adding an element:
+            
+            - It first checks if the element is already present.
+
+            - If not, a new copy of the underlying array is created, and the new element is added.
+
+        - During iteration:
+
+            - A snapshot of the array is used.
+
+            - The iterator does not reflect modifications made after it was created.
+    
+    Example:
+
+    (1) Basic Usage
+        
+        ```
+            import java.util.concurrent.CopyOnWriteArraySet;
+
+            public class CopyOnWriteArraySetExample {
+                public static void main(String[] args) {
+                    CopyOnWriteArraySet<Integer> set = new CopyOnWriteArraySet<>();
+
+                    // Adding elements
+                    set.add(10);
+                    set.add(20);
+                    set.add(30);
+                    set.add(10);  // Duplicate, will be ignored
+
+                    // Iterating over the set
+                    for (Integer num : set) {
+                        System.out.println(num);
+                    }
+
+                    // Removing an element
+                    set.remove(20);
+
+                    System.out.println("After removal: " + set);
+                }
+            }
+        ```
+    
+        Output:
+
+            ```
+                10
+                20
+                30
+                After removal: [10, 30]
+            ```
+
+    (2) Concurrent Modification Scenario:
+
+        - Since iterators operate on a snapshot of the data, they do not reflect changes 
+          made after their creation.
+
+        ```
+            import java.util.concurrent.CopyOnWriteArraySet;
+
+            public class ConcurrentIterationExample {
+                public static void main(String[] args) {
+                    CopyOnWriteArraySet<String> set = new CopyOnWriteArraySet<>();
+                    set.add("A");
+                    set.add("B");
+                    set.add("C");
+
+                    for (String item : set) {
+                        System.out.println(item);
+                        set.add("D"); // This will not affect iteration
+                    }
+
+                    System.out.println("Final Set: " + set);
+                }
+            }
+        ```
+
+        - Even though "D" was added during iteration, it does not appear in the loop 
+          because the iterator works on a snapshot.
+            
+        Output:
+
+            ```
+                A
+                B
+                C
+                Final Set: [A, B, C, D]
+            ```
+
+_______________________________________________________________________________________
+
+*   What are the differences between CopyOnWriteArraySet, SynchronizedSet and HashSet ?
+
+>>  (1) Thread Safety:
+
+        - CopyOnWriteArraySet is thread-safe as it creates a new copy of the underlying 
+          array whenever a modification occurs.
+
+        - SynchronizedSet is thread-safe because it synchronizes access to the set 
+          using a wrapper method from Collections.synchronizedSet().
+
+        - HashSet is not thread-safe, meaning concurrent modifications can lead to 
+          race conditions or ConcurrentModificationException.
+
+    (2) Read Performance:
+
+        - CopyOnWriteArraySet has excellent read performance because it allows iteration 
+          without locking.
+
+        - SynchronizedSet has lower performance compared to HashSet due to the synchronization 
+          overhead added to every operation.
+
+        - HashSet provides the best overall performance in a single-threaded environment 
+          since it does not have any synchronization overhead.
+
+    (3) Write Performance:
+
+        - CopyOnWriteArraySet has poor write performance because every modification creates 
+          a new copy of the underlying array.
+
+        - SynchronizedSet has moderate write performance since every modification requires 
+          acquiring a lock.
+
+        - HashSet has the best write performance because it does not involve copying or 
+          locking mechanisms.
+
+    (4) Iteration Performance:
+
+        - CopyOnWriteArraySet allows iteration without locks and does not throw 
+          ConcurrentModificationException, as it iterates over a snapshot of the data.
+
+        - SynchronizedSet requires explicit external synchronization while iterating, or 
+          else it may lead to ConcurrentModificationException.
+
+        - HashSet does not support concurrent modifications during iteration and throws 
+          ConcurrentModificationException if modified.
+
+    (5) Null Elements:
+
+        - CopyOnWriteArraySet, SynchronizedSet and HashSet allows storing null values 
+          as elements without any issues.
+          
+_______________________________________________________________________________________

@@ -1,0 +1,165 @@
+*   Explain CopyOnWriteArrayList in detail.
+
+>>  CopyOnWriteArrayList is a thread-safe version of ArrayList.
+
+    Unlike ArrayList (which is not thread-safe), CopyOnWriteArrayList allows multiple 
+    threads to operate safely.
+
+    How it works:
+
+        - When a write operation occurs a new copy of the internal array is created.
+
+        - The modification is applied to the new copy and the reference to the new 
+          copy replaces the old one.
+
+        - Java’s JVM synchronizes the copies at a later stage.
+
+    It is not recommended when writes are frequent, as copying the array frequently 
+    reduces performance.
+
+_______________________________________________________________________________________
+
+*   Why is it Called "Copy-On-Write" ArrayList ?
+
+>>  Read operations (get, contains, etc.) happen on the existing object without any effect.
+
+    While the write operations (add, remove, set, etc.) create a separate copy of the 
+    underlying array, modify that copy, and then update the reference.
+
+    This mechanism ensures that read operations do not get affected by concurrent modifications.
+
+_______________________________________________________________________________________
+
+*   How Does It Ensure Thread Safety ?
+
+>>  Since modifications create a separate copy, no thread sees a partially updated state.
+
+    Readers always see a stable snapshot of the data.
+    
+    Modifications do not block readers, improving concurrent access performance.
+
+_______________________________________________________________________________________
+
+*   What are the differences between ArrayList and CopyOnWriteArrayList ?
+
+>>  (1) Thread-Safety
+
+        - ArrayList is not thread-safe and requires external synchronization in a 
+          multi-threaded environment.
+
+        - CopyOnWriteArrayList is thread-safe as it creates a new cloned copy for every 
+          write operation.
+
+    (2) Modification During Iteration
+
+        - In ArrayList, if one thread is iterating and another modifies it, a 
+          ConcurrentModificationException is thrown.
+
+        - In CopyOnWriteArrayList, modifications do not affect the original list, 
+          preventing exceptions.
+
+    (3) Iterator Operations:
+
+        - ArrayList allows modifications (remove, set, add) via iterator.
+
+        - CopyOnWriteArrayList does not support remove operation via iterator; 
+          it throws an UnsupportedOperationException.
+
+_______________________________________________________________________________________
+
+*   Explain methods of CopyOnWriteArrayList.
+
+>>  Copy-On-Write ArrayList supports all methods from List and Collection interfaces.
+    
+    However, it introduces two additional methods:
+
+        (1) addIfAbsent(E e):
+
+            - Adds the specified element only if it is not already present.
+
+            - Returns true if the element was added, otherwise returns false.
+
+            Example:
+
+                ```
+                    CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<>();
+                    list.add("A");
+                    list.addIfAbsent("A");  // Won't be added
+                    list.addIfAbsent("B");  // Will be added
+                    System.out.println(list); // Output: [A, B]
+                ```
+
+        (2) addAllAbsent(Collection<? extends E> c):
+
+            - Adds all elements from the given collection, but only if they are not 
+              already present.
+
+            - Returns the number of elements successfully added.
+
+            Example:
+
+                ```
+                    List<String> normalList = Arrays.asList("A", "B", "C");
+                    CopyOnWriteArrayList<String> copyList = new CopyOnWriteArrayList<>();
+                    copyList.add("A");
+                    copyList.add("C");
+
+                    copyList.addAllAbsent(normalList);
+                    System.out.println(copyList);  // Output: [A, C, B]
+                ```
+_______________________________________________________________________________________
+
+*   What are differences between CopyOnWriteArrayList, SynchronizedList and Vector ?
+
+>>  (1) Thread Safety Mechanism:
+
+        CopyOnWriteArrayList creates a new copy of the list for every modification.
+
+        SynchronizedList uses synchronized blocks to lock the list during operations.
+
+        Vector uses synchronized methods to ensure thread safety.
+
+    (2) Performance (Read Operations):
+
+        - CopyOnWriteArrayList is fast, as multiple threads can read without blocking.
+
+        - SynchronizedList is slow, as read operations require acquiring a lock.
+
+        - Vector is slow, similar to SynchronizedList due to synchronization overhead.
+
+    (3) Performance (Write Operations):
+
+        - CopyOnWriteArrayList is slow, because it creates a new copy on every update.
+
+        - SynchronizedList is moderate, since the whole list is locked while writing.
+
+        - Vector is moderate, behaves like SynchronizedList with synchronized methods.
+
+    (4️) Concurrency Handling:
+
+        - CopyOnWriteArrayList is allows multiple threads to read simultaneously.
+
+        - SynchronizedList and Vector both allows only one thread to access at a time.
+
+    (5) Modifications During Iteration:
+
+        - CopyOnWriteArrayList does not allow modification (only read operations).
+
+        - SynchronizedList and Vector allows modification but throws ConcurrentModificationException 
+          if modified while iterating.
+
+    (6) Allowed Operations in Iterator:
+
+        - CopyOnWriteArrayList allows only read (no add or remove).
+
+        - SynchronizedList and Vectora allows read and remove.
+
+    (7) Industry Preference:
+
+        - CopyOnWriteArrayList is preferred for thread-safe read-heavy use cases.
+
+        - SynchronizedList is rarely used, better alternatives exist.
+
+        - Vector is deprecated in modern applications, ArrayList is preferred.
+
+_______________________________________________________________________________________

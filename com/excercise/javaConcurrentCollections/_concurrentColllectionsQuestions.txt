@@ -1,0 +1,165 @@
+*   Explain Java Concurrent Collections in detail.
+
+>>  In a multithreaded environment, traditional collection classes in Java, such as
+    `ArrayList`, `HashMap`, and `HashSet`, are not thread-safe. 
+    
+    If multiple threads modify these collections simultaneously, it can lead to race 
+    conditions, data inconsistency, and unpredictable behavior.
+
+    To ensure thread safety, developers used external synchronization (e.g., `synchronized`
+    keyword or explicit locks), which would lock the collection so that only one thread can 
+    access the collection at a time which led to performance bottlenecks due to excessive 
+    blocking. 
+    
+    To address these issues, Java introduced an alternative to Collections i.e. Concurrent 
+    Collections, which provide thread-safe implementations with better performance.
+
+_______________________________________________________________________________________
+
+*   What are various problems with Traditional Collections ?
+
+>>  (1) Data Corruption & Race Conditions:
+
+        Example:
+
+            - The ArrayList here is a shared resource between two threads `t1` and `t2` 
+              and both threads are performing write operations simultaneously.
+
+            - Due to context switching, both threads might read the same size before 
+              updating it, causing elements to be overwritten or skipped.
+
+            - This results in an inconsistent list size at the end, meaning the printed 
+              size may be less than 2000 instead of the expected 2000.
+            
+            ```
+                import java.util.*;
+                
+                public class UnsafeCollectionExample {
+                    public static void main(String[] args) {
+                        List<Integer> list = new ArrayList<>();
+                        
+                        // defining task that child thread will run which will modify the
+                        // collection (ArrayList)
+
+                        Runnable task = () -> {
+                            for (int i = 0; i < 1000; i++) {
+                                list.add(i);
+                            }
+                        };
+                
+                        // creating child threads and running them
+                        Thread t1 = new Thread(task);
+                        Thread t2 = new Thread(task);
+                
+                        t1.start();
+                        t2.start();
+                
+                        try {
+                            t1.join(); // making main thread to wait until t1 completes
+                            t2.join(); // making main thread to wait until t2 completes
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        // Inconsistent result
+                        System.out.println("List size: " + list.size()); 
+                    }
+                }
+            ```
+
+    (2) Synchronization Overhead:
+
+        - Using `Collections.synchronizedList(new ArrayList<>())` ensures thread safety 
+          but incurs a high cost due to locking the entire collection for each operation.
+
+_______________________________________________________________________________________
+
+*   What is the difference between Standard Collection and Concurrent Collection ?
+
+>>          Standard Collection	                            Concurrent Collection
+
+                                            |
+    It is not thread-safe, needs explicit   |   It is thread-safe, designed for concurrent
+    synchronization.                        |   access.             
+                                            |
+    Performance	Slower in multi-threaded    |   Faster as it uses fine-grained locking or                           
+    environments due to locking overhead.   |   lock-free mechanisms.                                          
+                                            |
+    Best for single-threaded applications.  |   Best for multi-threaded applications needing 
+                                            |   high performance and thread safety.
+                                            |
+    Blocks entire collection when modifying.|   Allows concurrent reads and controlled writes 
+                                            |   for better efficiency.
+                                            |
+    ArrayList, HashMap, HashSet, LinkedList.|   ConcurrentHashMap, CopyOnWriteArrayList, BlockingQueue                                   
+                                            |
+_______________________________________________________________________________________
+	
+*   List out various Concurrent Collections.
+
+>>  (1) Concurrent List Implementations:
+        
+        (a) CopyOnWriteArrayList<E>:
+
+            - Thread-safe version of ArrayList.
+
+            - Uses copy-on-write mechanism (creates a new copy on write operations).
+
+    (2) ConcurrentMap Implementations:
+        
+        (a) ConcurrentHashMap<K, V>:
+
+            - Thread-safe version of HashMap.
+
+            - Uses segment-based locking and CAS (Compare-And-Swap) operations 
+              for high performance.
+
+            - Allows multiple reads and controlled writes.
+        
+        (b) ConcurrentSkipListMap<K, V>:
+
+            - Thread-safe version of TreeMap.
+
+    (3) Concurrent Set Implementations:
+
+        (a) CopyOnWriteArraySet<E>:
+
+            - Thread-safe version of HashSet.
+
+            - Internally backed by CopyOnWriteArrayList.
+
+            - Best suited for read heavy.
+
+        (b) ConcurrentSkipListSet<E>:
+
+            - Thread-safe version of TreeSet.
+
+    (4) Concurrent Queue Implementations:
+
+        (a) ConcurrentLinkedQueue<E>:
+
+            - Non-blocking unbounded queue.
+
+            - Uses lock-free CAS operations for high performance.
+
+            - Best for high-throughput queue operations.
+
+        (b) ConcurrentLinkedDeque<E>:
+
+            - Non-blocking double-ended queue (Deque).
+
+            - Lock-free and better suited for concurrent stack or queue operations.
+
+        (c) PriorityBlockingQueue<E>:
+
+            - Thread-safe priority queue (like PriorityQueue).
+
+            - Unbounded and uses a heap-based priority ordering.
+
+    (5) Concurrent Deque Implementations:
+        
+        (a) LinkedBlockingDeque<E>:
+
+            - Blocking double-ended queue (Deque).
+
+_______________________________________________________________________________________

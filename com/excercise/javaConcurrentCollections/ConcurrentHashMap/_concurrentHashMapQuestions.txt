@@ -1,0 +1,299 @@
+*   Explain ConcurrentMap Interface in detail.
+
+>>  All concurrent collection classes, including ConcurrentMap, are present in the 
+    java.util.concurrent package.
+
+    (1) Hierarchical Relationship:
+        
+        - Map<K, V> (Parent Interface)
+
+        - ConcurrentMap<K, V> (Child Interface)
+
+        - ConcurrentHashMap<K, V> (Implementation Class)
+
+    (2) Additional Methods in ConcurrentMap:
+
+        - In addition to the standard Map methods, the ConcurrentMap interface provides 
+            three special methods to improve concurrent operations in a thread-safe manner.
+
+        (a) putIfAbsent(K key, V value):
+
+            - Unlike the traditional put(K key, V value), this method only adds the 
+                key-value pair if the key is not already present.
+
+            Example:
+
+                - If the key already exists, the method does nothing.
+
+                - The normal put method would have replaced "Durga" with "Shiva".
+
+                ```
+                    ConcurrentMap<Integer, String> map = new ConcurrentHashMap<>();
+                    map.putIfAbsent(101, "Durga");
+                    map.putIfAbsent(101, "Shiva");  // Will NOT replace "Durga"
+                    System.out.println(map);  // Output: {101=Durga}
+                ```
+
+        (b) remove(K key, V value):
+
+            - Unlike the regular remove(K key), which removes an entry based only on 
+                the key, this method removes an entry only if both key and value match.
+
+            Example:
+
+                - The first remove operation fails because the value "Shiva" does not match.
+
+                - The second remove operation succeeds as both key and value match.
+
+                ```
+                    map.put(101, "Durga");
+
+                    // Attempt to remove key 101 with a mismatched value
+                    map.remove(101, "Shiva");  // Will NOT remove
+
+                    // Attempt to remove key 101 with the correct value
+                    map.remove(101, "Durga");  // Will remove
+
+                    System.out.println(map);  // Output: {}
+                ```
+
+        (c) replace(K key, V oldValue, V newValue):
+
+            - This method replaces the value only if the existing value matches 
+                the specified old value.
+
+            Example:
+
+                ```
+                    map.put(101, "Durga");
+
+                    // Attempt to replace with incorrect old value
+                    map.replace(101, "Shiva", "Ravi");  // Will NOT replace
+
+                    // Correct replacement
+                    map.replace(101, "Durga", "Ravi");  // Will replace
+
+                    System.out.println(map);  // Output: {101=Ravi}
+                ```
+_______________________________________________________________________________________
+
+*   Explain ConcurrentHashMap in detail.
+
+>>  ConcurrentHashMap is an implementation of ConcurrentMap, designed to allow safe 
+    concurrent operations without locking the entire map.
+
+    Key Features:
+        
+        - Uses segment-based locking (instead of synchronizing the whole map).
+
+        - Unlike HashMap, which allows only one thread at a time to modify the structure, 
+            ConcurrentHashMap divides the map into multiple segments.
+
+        - Multiple threads can work on different segments simultaneously without 
+            blocking each other.
+
+_______________________________________________________________________________________
+
+*   Compare three key implementations of Map.
+
+>>  (1) HashMap: 
+
+        - Not thread-safe, multiple threads can modify it, leading to data inconsistency.
+
+    (2) Hashtable: 
+    
+        - Thread-safe but has performance issues because it locks the entire map.
+
+    (3) ConcurrentHashMap: 
+    
+        - Thread-safe with better performance due to improved locking mechanisms.
+
+_______________________________________________________________________________________
+
+*   Why is HashMap Not Thread-Safe?
+
+>>  HashMap allows multiple threads to operate simultaneously, leading to possible data 
+    inconsistency.
+
+    It does not provide built-in synchronization.
+
+    If multiple threads modify a HashMap concurrently, the structure can become corrupt.
+
+_______________________________________________________________________________________
+
+*   Why is Hashtable Thread-Safe But Slow ?
+
+>>  Hashtable synchronizes all operations by locking the entire map.
+
+    At any given time, only one thread can operate on the map.
+
+    If one thread is performing a write operation, all other threads (even for read operations) 
+    must wait causing performance bottlenecks, making Hashtable less efficient in 
+    multi-threaded applications.
+
+_______________________________________________________________________________________
+
+*   How Does ConcurrentHashMap Improve Performance ?
+
+>>  Uses a different locking mechanism to ensure thread safety while allowing better 
+    concurrency.
+
+    Unlike Hashtable, it does not lock the entire map for updates.
+
+    Instead, it uses bucket-level or segment-level locking, improving efficiency in 
+    multi-threaded applications.
+
+_______________________________________________________________________________________
+
+*   Explain internal working of ConcurrentHashMap ?
+
+>>  Initial Capacity:
+
+        - The default capacity of a ConcurrentHashMap is 16 buckets (just like HashMap).
+
+        - Buckets store the actual key-value pairs.
+
+    Read Operations:
+
+        - Read operations do not require locks.
+
+        - Multiple threads can read data simultaneously without any blocking.
+
+    Write Operations (Updates & Inserts):
+
+        - Locks are required for update operations.
+
+        - Instead of locking the entire map, only specific buckets (segments) are locked.
+
+        - This allows other threads to update different buckets simultaneously.
+
+    Segment-Based Locking (Concurrency Level):
+
+        - The map is divided into segments (buckets).
+
+        - Each segment (or a group of buckets) has its own independent lock.
+
+        - This allows multiple threads to perform updates in different buckets concurrently.
+
+    How Locking Works in ConcurrentHashMap:
+
+        (1) Bucket-Level Locking: 
+        
+            - Instead of locking the entire map, it locks only the specific bucket where 
+              the update is happening.
+
+        (2) Concurrency Level:
+
+            - By default, 16 locks are maintained (one per bucket).
+
+            - This allows up to 16 threads to update the map simultaneously.
+
+            - If the concurrency level is lower than the number of buckets, one lock might 
+              be shared between multiple buckets.
+
+            - If concurrency level is higher, each bucket may have multiple locks.
+
+            Example Scenarios of Locking Behavior:
+
+                (1) Concurrency Level = 16 (default):
+
+                    - 16 buckets, 16 locks.
+
+                    - Each bucket has one independent lock.
+
+                    - Up to 16 threads can write to different buckets concurrently.
+
+                (2) Concurrency Level = 8, Buckets = 16:
+
+                    - Each lock is shared by two buckets.
+
+                    - At most 8 threads can update the map concurrently.
+
+                (3) Concurrency Level = 32, Buckets = 16:
+
+                    - Each bucket may have multiple locks.
+
+                    - Multiple threads may still share a lock.
+
+_______________________________________________________________________________________
+
+*   Compare HashMap and ConcurrentHashMap.
+
+>>  (1) Thread Safety:
+        
+        - HashMap is not thread-safe, meaning multiple threads can modify it simultaneously, 
+          leading to data inconsistency issues.
+
+        - ConcurrentHashMap is thread-safe because it ensures that multiple threads can 
+          update it in a controlled manner.
+
+    (2) Performance Comparison:
+
+        - HashMap offers higher performance because there are no locks or thread 
+          synchronization mechanisms.
+
+        - ConcurrentHashMap has lower performance due to locking mechanisms where at a time, 
+          a maximum of 16 threads can perform an update operation by default. If a 17th thread 
+          tries to update, it has to wait.
+
+    (3) Concurrent Modification Exception:
+        
+        - HashMap uses a fail-fast iterator i.e. if one thread is iterating over the map 
+          and another thread tries to modify it simultaneously, a ConcurrentModificationException 
+          is thrown.
+
+        - ConcurrentHashMap uses a fail-safe iterator i.e. it does not throw 
+          ConcurrentModificationException because it handles modifications in a controlled 
+          and safe manner.
+
+    (4) Null Key & Null Value Handling:
+
+        - HashMap allows null keys and null values.
+
+        - ConcurrentHashMap does not allow null keys or null values.
+
+_______________________________________________________________________________________
+
+*   Compare HashTable, ConcurrentHashMap and Synchronized Map.
+
+>>  (1) Thread Safety:
+
+        - All three collections are thread-safe, meaning multiple threads can access 
+          them without causing data inconsistency.
+
+    (2) Locking Mechanism:
+
+        ConcurrentHashMap:
+
+            - Uses Bucket-Level or Segment-Based Locking instead of locking the entire map 
+              allowing multiple threads to modify different segments concurrently.
+
+        HashTable:
+
+            - Uses synchronized methods, meaning the entire map is locked for any 
+              operation. If one thread is modifying, all other threads must wait.
+
+        Synchronized Map:
+
+            - Uses Collections.synchronizedMap(), which also locks the entire map for every 
+              operation. behaves similarly to HashTable but is just a wrapper over a HashMap.
+
+    (3) Concurrent Modification Exception:
+    
+        ConcurrentHashMap:
+
+            - Does not throw ConcurrentModificationException when one threads updates the map 
+              while other thread is iterating.
+
+        HashTable & Synchronized Map:
+
+            - Throws ConcurrentModificationException if one thread iterates while another 
+              thread modifies the map.
+
+    (4) Null Handling:
+
+        - ConcurrentHashMap and HashTable do NOT allow null keys or values.
+
+        - Synchronized Map allows null keys and values because it is based on HashMap.
+
+_______________________________________________________________________________________
