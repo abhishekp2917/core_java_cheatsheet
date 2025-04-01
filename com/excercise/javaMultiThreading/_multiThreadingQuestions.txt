@@ -1,0 +1,738 @@
+*   Explain multithreading in Java in detail.
+
+>>  Multithreading is a process of executing multiple threads concurrently within a 
+    single process to achieve parallelism. It allows a program to perform multiple tasks 
+    simultaneously, improving performance and responsiveness.
+
+    In Java, multithreading is a built-in feature that enables developers to create and 
+    manage threads efficiently.
+
+_______________________________________________________________________________________
+
+*   What are the differences between process and thread ?
+
+>>  (1) Definition:
+
+        - Process is an independent program with its own memory and system resources.
+
+        - Thread is a lightweight execution unit within a process that shares its resources.
+
+    (2) Resource Allocation:
+
+        - Process has its own memory space, file handles, and system resources.
+
+        - Thread shares memory and resources of the parent process.
+
+    (3) Creation Overhead:
+
+        - Process creation is slow as it requires allocating separate resources and memory.
+
+        - Thread creation is faster since it shares existing resources of the process.
+
+    (4) Context Switching:
+
+        - Process context switching is expensive as it involves switching memory spaces.
+
+        - Thread context switching is faster as threads share the same address space.
+
+    (5) Isolation:
+
+        - Process are completely isolated from other processes; one process does not 
+          affect another.
+
+        - Thread are not isolated; a faulty thread can impact other threads in the 
+          same process.
+
+    (6) Example:
+
+        - Process: Running multiple instances of a web browser (Chrome, Firefox).
+
+        - Thread: Multiple browser tabs running within the same browser process.
+
+_______________________________________________________________________________________
+
+*   What are various ways to create a Thread ?
+
+>>  (1) Extending Thread Class:
+
+        - Create a class that extends Thread and override the run() method.
+
+        - Simple to use but prevents extending other classes due to single inheritance.
+
+        Example:    
+
+            MyThread.class:
+
+                ```
+                    class MyThread extends Thread {
+                        public void run() {
+                            System.out.println("Thread is running...");
+                        }
+                    }
+                ```
+
+            Main.class:
+                
+                ```
+                    public class Main {
+                        public static void main(String[] args) {
+                            MyThread t1 = new MyThread();
+                            t1.start();  // Starts the thread
+                        }
+                    }
+                ```
+
+    (2) Implementing Runnable Interface:
+
+        - Create a class that implements Runnable and override the run() method.
+
+        - Create a Thread object and pass an instance of this Runnable implementation 
+          class to it via Constructor.
+
+        - Preferred approach as it allows multiple inheritance.
+
+        Example:
+
+            MyRunnable.class:
+
+                ```
+                    class MyRunnable implements Runnable {
+                        public void run() {
+                            System.out.println("Thread is running...");
+                        }
+                    }
+                ```
+
+            Main.class:
+
+                ```
+                    public class Main {
+                        public static void main(String[] args) {
+                            Thread t1 = new Thread(new MyRunnable());
+                            t1.start();
+                        }
+                    }
+                ```
+
+    (3) Using Thread with Anonymous Class:
+
+        - Directly create a Thread object and override run() using an anonymous class.
+
+        - Useful for short-lived threads without needing a separate class.
+
+        Example:
+
+            Main.class:
+
+                ```
+                    public class Main {
+                        public static void main(String[] args) {
+                            Thread t1 = new Thread() {
+                                public void run() {
+                                    System.out.println("Thread is running...");
+                                }
+                            };
+                            t1.start();
+                        }
+                    }
+                ```
+
+    (4) Using Runnable with Anonymous Class:
+
+        - Pass an anonymous Runnable implementation to a Thread object.
+
+        Example:
+
+            Main.class:
+
+                ```
+                    public class Main {
+                        public static void main(String[] args) {
+                            Thread t1 = new Thread(new Runnable() {
+                                public void run() {
+                                    System.out.println("Thread is running...");
+                                }
+                            });
+                            t1.start();
+                        }
+                    }
+                ```
+
+    (5) Using Lambda Expression (Java 8+):
+
+        - Instead of an anonymous class, use a lambda expression to simplify Runnable.
+
+        Example:
+
+            Main.class:
+
+                ```
+                    public class Main {
+                        public static void main(String[] args) {
+                            Thread t1 = new Thread(() -> System.out.println("Thread is running..."));
+                            t1.start();
+                        }
+                    }
+                ```
+
+    (6) Using Callable and FutureTask (For Returning Values):
+
+        - Callable<T> can return a result and throw exceptions.
+
+        - Use FutureTask to handle execution.
+
+        - Useful when you need to return a result from a thread.
+
+        Example:
+
+            ```
+                import java.util.concurrent.Callable;
+                import java.util.concurrent.FutureTask;
+
+                public class Main {
+                    public static void main(String[] args) throws Exception {
+                        Callable<Integer> callable = () -> {
+                            System.out.println("Thread is running...");
+                            return 10;
+                        };
+
+                        FutureTask<Integer> futureTask = new FutureTask<>(callable);
+                        Thread t1 = new Thread(futureTask);
+                        t1.start();
+
+                        // Get result after execution
+                        System.out.println("Result: " + futureTask.get());
+                    }
+                }
+            ```
+
+    (7) Using ExecutorService (Thread Pool):
+
+        - ExecutorService manages a pool of threads.
+
+        - Submit tasks instead of manually creating threads.
+        
+        - Efficient for handling multiple threads with controlled execution.
+
+        Example:
+
+            ```
+                import java.util.concurrent.ExecutorService;
+                import java.util.concurrent.Executors;
+
+                public class Main {
+                    public static void main(String[] args) {
+                        ExecutorService executor = Executors.newFixedThreadPool(2);
+
+                        executor.execute(() -> System.out.println("Thread 1 is running..."));
+                        executor.execute(() -> System.out.println("Thread 2 is running..."));
+
+                        executor.shutdown();
+                    }
+                }
+            ```
+
+_______________________________________________________________________________________
+
+*   Explain Thread Lifecycle in detail.
+
+>>  A thread in Java goes through five states during its lifecycle:
+
+        (1) New (Created)
+        (2) Runnable
+        (3) Blocked (Waiting for a resource)
+        (4) Waiting
+        (5) Timed Waiting 
+        (6) Terminated (Dead)
+
+    (1) New (Created) State:
+
+        - A thread is in the new state when it is created but has not started execution yet.
+
+        - It remains in this state until the start() method is called.
+
+        Example:
+
+            ```
+                Thread t1 = new Thread(() -> System.out.println("Thread Running"));
+            ```
+
+    (2) Runnable State:
+
+        - After calling start(), the thread moves to the runnable state.
+
+        - The thread is ready to run, but CPU scheduling determines when it will execute.
+
+        - The thread may or may not be running at a given moment.
+
+        Example:
+
+            ```
+                Thread t1 = new Thread(() -> System.out.println("Thread Running"));
+                t1.start();  // Moves to the Runnable state
+            ```
+
+    (3) Blocked State:
+
+        - A thread moves to the blocked state when it tries to access a synchronized 
+          resource that is currently held by another thread.
+
+        - It remains blocked until the resource is released.
+
+        Example:
+
+            SharedResource.class:
+
+                ```
+                    class SharedResource {
+
+                        synchronized void method() {
+                            System.out.println(Thread.currentThread().getName() + " is executing...");
+                            try { Thread.sleep(1000); } catch (InterruptedException e) {}
+                        }
+                    }
+                ```
+            
+            Main.class:
+
+                ```
+                    public class Main {
+                        public static void main(String[] args) {
+                            SharedResource resource = new SharedResource();
+
+                            Thread t1 = new Thread(() -> resource.method(), "Thread-1");
+                            Thread t2 = new Thread(() -> resource.method(), "Thread-2");
+
+                            t1.start();
+                            t2.start();  // t2 will be blocked until t1 releases the lock
+                        }
+                    }
+                ```
+
+    (4) Waiting State:
+
+        - A thread moves to the waiting when it is waiting for another thread's action.
+
+        - A thread enters this state using wait(), join(), or park() and stays here until 
+          another thread notifies it.
+
+        Example:
+
+            Task.class:
+
+                ```
+                    class Task {
+
+                        synchronized void doWork() throws InterruptedException {
+                            System.out.println("Waiting for notification...");
+                            wait();  // Moves to Waiting state
+                            System.out.println("Resumed after notification");
+                        }
+
+                        synchronized void notifyTask() {
+                            notify();  // Wakes up waiting thread
+                        }
+                    }
+                ```
+
+                ```
+                    public class Main {
+                        public static void main(String[] args) throws InterruptedException {
+                            Task task = new Task();
+
+                            Thread t1 = new Thread(() -> {
+                                try { 
+                                    // task t1 moves to the waiting state
+                                    task.doWork(); 
+                                } 
+                                catch (InterruptedException e) {}
+                            });
+
+                            Thread t2 = new Thread(() -> {
+                                try { 
+                                    // task t2 notifies t1 to wakes up waiting thread  
+                                    task.notifyTask(); 
+                                } 
+                                catch (InterruptedException e) {}
+                            });
+
+                            // t1 waits indefinitely until another thread calls notify().
+                            t1.start();
+
+                            Thread.sleep(2000); // Simulate some delay
+
+                            t2.start();
+                        }
+                    }
+                ```
+
+    (5) Timed Waiting State:
+
+        - A thread moves to timed waiting if it calls sleep(), wait(timeout), or 
+          join(timeout).
+
+        - It will automatically wake up after the time expires.
+
+        Example:
+
+            ```
+                public class Main {
+                    public static void main(String[] args) throws InterruptedException {
+                        Thread t1 = new Thread(() -> {
+                            try {
+                                System.out.println("Thread Sleeping...");
+                                Thread.sleep(3000);  // Moves to Timed Waiting
+                                System.out.println("Thread Awake...");
+                            } catch (InterruptedException e) {}
+                        });
+
+                        t1.start();
+                    }
+                }
+            ```
+
+    (6) Terminated (Dead) State:
+
+        - A thread moves to the terminated state when it completes execution or it is 
+          manually stopped using stop() (deprecated).
+
+        - A terminated thread cannot be restarted.
+
+        Example:
+
+                ```
+                    public class Main {
+                        public static void main(String[] args) {
+                            Thread t1 = new Thread(() -> System.out.println("Thread Executed"));
+                            t1.start();
+
+                            try { 
+                                // main thread will wait until t1 completes  
+                                t1.join(); 
+                            } catch (InterruptedException e) {}
+
+                            // Once t1 execution completes, the thread is terminated.
+                            System.out.println("Thread is Terminated");
+                        }
+                    }
+                ```
+
+_______________________________________________________________________________________
+
+*   Which Methods Affect Thread States ?
+
+>>  (1) start(): 
+
+        - Moves from NEW → RUNNABLE
+    
+    (2) sleep(ms), wait(ms), join(ms): 	
+    
+        - Moves from RUNNING → TIMED WAITING
+
+    (3) wait(), join():	
+    
+        - Moves from RUNNING → WAITING
+    
+    (4) notify():	
+    
+        - Moves from WAITING → RUNNABLE
+
+    (5) synchronized:	
+    
+        - Moves to BLOCKED if another thread holds the lock
+
+    (6) stop()(Deprecated): 
+        
+        - Moves directly to TERMINATED
+
+_______________________________________________________________________________________
+
+*   Explain Daemon thread in detail ?
+
+>>  A daemon thread is a background thread that provides support services to user threads.
+
+    It runs continuously in the background and automatically terminates when all user 
+    threads finish execution.
+
+    It is a Low-priority threads generally used for tasks like garbage collection, monitoring, 
+    logging, and background services.
+
+_______________________________________________________________________________________
+
+*   How to create a Daemon Thread ?
+
+>>  A thread can be converted into a daemon thread using the setDaemon(true) method 
+    before calling start().
+
+    Example: 
+
+        MyDaemonThread.class:
+
+            ```
+                class MyDaemonThread extends Thread {
+
+                    public void run() {
+
+                        // Infinite loop to simulate background work
+                        while (true) {  
+                            
+                            System.out.println("Daemon thread is running...");
+                            try {
+                                Thread.sleep(1000);  // Sleep for 1 second
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            ```
+
+        Main.class:
+
+            ```
+                public class Main {
+                    public static void main(String[] args) {
+
+                        MyDaemonThread daemonThread = new MyDaemonThread();
+                        daemonThread.setDaemon(true);  // Mark thread as daemon
+                        daemonThread.start();
+
+                        System.out.println("Main thread is running...");
+
+                        try {
+                            Thread.sleep(4000); // Main thread sleeps for 4 seconds
+                        } catch (InterruptedException e) {}
+
+                        // Daemon thread automatically stops when the main thread finishes execution.
+                        System.out.println("Main thread finished execution");
+                    }
+                }
+            ```
+        
+        Output:
+
+            ```
+                Main thread is running...
+                Daemon thread is running...
+                Daemon thread is running...
+                Daemon thread is running...
+                Daemon thread is running...
+                Main thread finished execution
+            ```
+
+_______________________________________________________________________________________
+
+*   What are the differences between User Thread and Daemon Thread.
+
+>>  (1) Purpose:
+        
+        - User Thread executes the main task of an application.
+
+        - Daemon Thread runs in the background to support user threads.
+
+    (2) JVM Behavior:
+
+        - JVM waits for all User Threads to finish before terminating.
+
+        - JVM terminates immediately if only daemon threads remain.
+
+    (3) Creation:
+
+        - User Thread are created by default when a new thread is instantiated.
+
+        - Daemon Thread must be explicitly set using setDaemon(true).
+
+    (4) Priority:
+
+        - User Thread usually has a higher priority.
+
+        - Daemon Thread has a lower priority than user threads.
+
+    (6) Lifespan:
+
+        - User Thread runs until its task is completely finished.
+
+        - Daemon Thread terminates immediately when all user threads finish execution.
+
+    (7) Example Use Cases:
+
+        - User Thread: Handling user requests, file processing, computations.
+
+        - Daemon Thread: Garbage collection (GC), logging, continuously monitor system health, 
+          automatically save progress in application.
+
+_______________________________________________________________________________________
+
+*   Explain Thread Priority in detail.
+
+>>  Thread priority determines the relative importance of a thread in scheduling.
+
+    Threads with higher priority get more CPU time than lower-priority threads, but it 
+    does not guarantee execution order.
+
+    The Java thread scheduler uses preemptive scheduling and time slicing based on priority.
+
+    Default Thread Priorities:
+
+        - Every thread in Java has a priority ranging from 1 to 10.
+
+        - The Thread class defines three priority constants:
+
+            (1) Thread.MIN_PRIORITY - 1: Lowest priority
+            
+            (2) Thread.NORM_PRIORITY - 5: Default priority (assigned to threads by default)
+            
+            (3) Thread.MAX_PRIORITY	- 10: Highest priority
+
+        Example:
+
+            ```
+                public class Main {
+                    public static void main(String[] args) {
+
+                        Thread t = new Thread(() -> System.out.println("Thread running..."));
+                        System.out.println("Default Priority: " + t.getPriority()); // Output: 5 (NORM_PRIORITY)
+                    }
+                }
+            ```
+
+_______________________________________________________________________________________
+
+*   Does higher Priority guarantee execution order ?
+
+>>  No, thread priority does not guarantee execution order.
+
+    The thread scheduler decides which thread gets CPU time based on priority and other 
+    factors like OS scheduling policies.
+
+    Even if a thread has a higher priority, it may not always execute first.
+
+    Example: 
+
+        MyThread.class:
+
+            ```
+                class MyThread extends Thread {
+
+                    public void run() {
+                        for (int i = 0; i < 5; i++) {
+                            System.out.println(Thread.currentThread().getName() + " is running...");
+                        }
+                    }
+                }
+            ```
+
+        Main.class:
+
+            ```
+                public class Main {
+                    public static void main(String[] args) {
+                        MyThread t1 = new MyThread();
+                        MyThread t2 = new MyThread();
+                        
+                        t1.setPriority(Thread.MIN_PRIORITY); // Priority = 1
+                        t2.setPriority(Thread.MAX_PRIORITY); // Priority = 10
+                        
+                        t1.start();
+                        t2.start();
+                    }
+                }
+            ```
+
+        Output (May Vary):
+
+            - Even though Thread-1 has higher priority, Thread-0 still runs due to 
+              thread scheduling behavior.
+
+            ```
+                Thread-0 is running...
+                Thread-1 is running...
+                Thread-1 is running...
+                Thread-1 is running...
+                Thread-0 is running...
+            ```
+
+_______________________________________________________________________________________
+
+*   How Thread scheduler uses Priority ?
+
+>>  The thread scheduler is part of the OS and JVM.
+
+    It uses two mechanisms to manage CPU time among threads:
+
+    (1) Preemptive Scheduling:
+
+        - The highest-priority thread gets CPU time whenever it is ready.
+
+        - If a higher-priority thread becomes available, it preempts (interrupts) 
+          lower-priority threads.
+
+    (2) Time-Slicing (Round-Robin):
+
+        - If multiple threads have the same priority, CPU time is divided equally 
+          among them in a round-robin fashion.
+
+        Example: 
+
+            MyThread.class:
+
+                ```
+                    class MyThread extends Thread {
+
+                        public void run() {
+                            for (int i = 0; i < 3; i++) {
+                                System.out.println(Thread.currentThread().getName() + " executing...");
+                            }
+                        }
+                    }
+                ```
+            
+            Main.class:
+
+                ```
+                    public class Main {
+                        public static void main(String[] args) {
+                            MyThread t1 = new MyThread();
+                            MyThread t2 = new MyThread();
+                            MyThread t3 = new MyThread();
+                            
+                            // All threads have the same priority
+                            t1.setPriority(Thread.NORM_PRIORITY);  
+                            t2.setPriority(Thread.NORM_PRIORITY);  
+                            t3.setPriority(Thread.NORM_PRIORITY);  
+                            
+                            t1.start();
+                            t2.start();
+                            t3.start();
+                        }
+                    }
+                ```
+
+            Output (May Vary):
+
+                - All threads have equal CPU time as they have the same priority.
+
+                ```
+                    Thread-0 executing...
+                    Thread-1 executing...
+                    Thread-2 executing...
+                    Thread-0 executing...
+                    Thread-1 executing...
+                    Thread-2 executing...
+                ```
+
+_______________________________________________________________________________________
+
+*   What are the best practices for using Thread Priority ?
+
+>>  Use priorities wisely. Don't rely on them to control execution order.
+
+    Do not assume high-priority threads will always execute first. Scheduling depends on
+    OS and JVM.
+
+    Prefer using Thread.NORM_PRIORITY (default priority) unless necessary.
+    
+    For critical tasks, use proper thread synchronization instead of priority.
+
+_______________________________________________________________________________________
+
