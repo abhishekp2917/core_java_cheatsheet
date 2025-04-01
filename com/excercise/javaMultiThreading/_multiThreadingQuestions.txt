@@ -419,7 +419,7 @@ ________________________________________________________________________________
 
 _______________________________________________________________________________________
 
-*   Which Methods Affect Thread States ?
+*   Which methods affect Thread states ?
 
 >>  (1) start(): 
 
@@ -736,3 +736,111 @@ ________________________________________________________________________________
 
 _______________________________________________________________________________________
 
+*   Explain join() method in detail.
+
+>>  The join() method is used to pause the execution of the current thread until the 
+    specified thread has completed its execution.
+
+    How it Works:
+        
+        - The calling thread pauses until the target thread completes.
+
+        - If a timeout is specified, the calling thread will resume after the given 
+          time even if the target thread hasn’t finished.
+
+        - If the target thread is already finished, join() returns immediately.
+
+        - It must be called on a started thread (t.start()), otherwise, it has no effect.
+
+    Example: Using join()
+
+        MyThread.class:
+
+            ```
+                class MyThread extends Thread {
+                    
+                    public void run() {
+                        for (int i = 1; i <= 3; i++) {
+                            System.out.println(Thread.currentThread().getName() + " - Count: " + i);
+                            try {
+                                Thread.sleep(1000);  // Simulate some work
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            ```
+
+        - Since t1.join() is called on Main thread, Main thread is a calling Thread and 
+          t1 is a target thread.
+
+        Main.class:
+
+            ```
+                public class Main {
+
+                    public static void main(String[] args) {
+                        MyThread t1 = new MyThread();
+                        MyThread t2 = new MyThread();
+
+                        t1.start();
+                        try {
+                            t1.join();  // Main thread waits for t1 to finish
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        // t2 starts only after t1 is finished since Main thread is waiting
+                        t2.start();  
+                    }
+                }
+            ```
+        
+        Output:
+
+            ```
+                Thread-0 - Count: 1
+                Thread-0 - Count: 2
+                Thread-0 - Count: 3
+                Thread-1 - Count: 1
+                Thread-1 - Count: 2
+                Thread-1 - Count: 3
+            ```
+
+    Example: Using join(long millis)
+
+        - Since join(2000) allows waiting only for 2 seconds, the main thread resumes 
+          execution before t1 is finished.
+
+        Main.class:
+    
+            ```
+                public class Main {
+                    public static void main(String[] args) {
+                        MyThread t1 = new MyThread();
+                        t1.start();
+
+                        try {
+                            t1.join(2000);  // Main thread waits at most 2 seconds for t1
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        System.out.println("Main thread resumes execution.");
+                    }
+                }
+            ```
+
+        Output:
+
+            ```
+                Thread-0 - Count: 1
+                Thread-0 - Count: 2
+                Main thread resumes execution.
+                Thread-0 - Count: 3
+                Thread-0 - Count: 4
+                Thread-0 - Count: 5
+            ```
+
+_______________________________________________________________________________________
