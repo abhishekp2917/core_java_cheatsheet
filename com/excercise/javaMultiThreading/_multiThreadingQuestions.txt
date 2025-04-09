@@ -2230,3 +2230,89 @@ ________________________________________________________________________________
             ```
 
 _______________________________________________________________________________________
+
+*   Explain ThreadLocal in detail.
+
+>>  ThreadLocal is a special class in Java (java.lang.ThreadLocal) that provides thread-local storage.
+
+    It allows you to create variables where each thread has its own separate copy of that variable.
+
+    No thread can see or modify another thread’s ThreadLocal variable.
+
+    Why do we need ThreadLocal:
+    
+        - In multi-threaded applications sometimes, you want to avoid sharing data between threads such as 
+        User session data, Transaction ID specific to a thread etc.
+
+        - Using ThreadLocal solves this without synchronization because each thread gets its own independent copy.
+
+    How it works:
+
+        - Each Thread object has a private ThreadLocalMap.
+
+        - When you call threadLocal.set(value), that value is stored inside the current thread's ThreadLocalMap.
+
+        - When you call threadLocal.get(), value is retrieved from that current thread’s ThreadLocalMap.
+
+    Example:
+
+        UserContext.class:
+
+            ```
+                class UserContext {
+                    private static ThreadLocal<String> userName = new ThreadLocal<>();
+
+                    public static void setUser(String name) {
+                        userName.set(name);  // Store user in current thread's ThreadLocalMap
+                    }
+
+                    public static String getUser() {
+                        return userName.get();  // Retrieve user from current thread's ThreadLocalMap
+                    }
+                }
+            ```
+
+        Main.class:
+        
+            ```
+                public class Main {
+                    public static void main(String[] args) {
+                        Runnable task1 = () -> {
+                            UserContext.setUser("Alice");
+                            System.out.println(Thread.currentThread().getName() + " User: " + UserContext.getUser());
+                        };
+
+                        Runnable task2 = () -> {
+                            UserContext.setUser("Bob");
+                            System.out.println(Thread.currentThread().getName() + " User: " + UserContext.getUser());
+                        };
+
+                        new Thread(task1, "Thread-1").start();
+                        new Thread(task2, "Thread-2").start();
+                    }
+                }
+            ```
+
+        - Even though userName is a static variable, both threads have different copies.
+        
+        Output:
+
+            ```
+                Thread-1 User: Alice
+                Thread-2 User: Bob
+            ```
+            
+_______________________________________________________________________________________
+
+
+
+
+
+
+
+
+
+
+
+
+
