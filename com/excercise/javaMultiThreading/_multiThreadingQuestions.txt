@@ -1304,3 +1304,876 @@ ________________________________________________________________________________
             ```
 
 _______________________________________________________________________________________
+
+*   Explain the Race conditions & Data inconsistency in detail.
+
+>>  A race condition occurs when two or more threads try to read, write, or update a 
+    shared resource concurrently, leading to unpredictable behavior.
+
+    This happens when operation is not atomic (executes completely or not at all).
+
+    Example:
+
+        Counter.class:
+
+            ```
+                class Counter {
+                    private int count = 0;
+
+                    public void increment() {
+                        count++;  // Not thread-safe
+                    }
+
+                    public int getCount() {
+                        return count;
+                    }
+                }
+            ```
+
+        Main.class:
+
+            - Since count++ is not an atomic operation, some increments are lost.
+
+            - The final result should be 2000, but due to the race condition, it is unpredictable.
+
+            ```
+                public class Main {
+                    public static void main(String[] args) {
+                        Counter counter = new Counter();
+
+                        // Thread 1 increments the counter 1000 times
+                        Thread t1 = new Thread(() -> {
+                            for (int i = 0; i < 1000; i++) {
+                                counter.increment();
+                            }
+                        });
+
+                        // Thread 2 increments the counter 1000 times
+                        Thread t2 = new Thread(() -> {
+                            for (int i = 0; i < 1000; i++) {
+                                counter.increment();
+                            }
+                        });
+
+                        t1.start();
+                        t2.start();
+
+                        try {
+                            t1.join();
+                            t2.join();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        // Expected: 2000, but output may vary due to race conditions
+                        System.out.println("Final Counter Value: " + counter.getCount());
+                    }
+                }
+            ```
+
+        Output:
+
+            ```
+                Final Counter Value: 1897  // (May vary)
+            ```
+
+_______________________________________________________________________________________
+
+*   How to Prevent Race Conditions & Data Inconsistency ?
+
+>>  (1) Using Synchronized Methods:
+
+        - Ensures only one thread at a time can access the method.
+
+        Example:
+
+            ```
+                class Counter {
+                    private int count = 0;
+
+                    public synchronized void increment() {
+                        count++;  // Now thread-safe
+                    }
+
+                    public int getCount() {
+                        return count;
+                    }
+                }
+            ```
+
+    (2) Using Synchronized Blocks:
+
+        - Allows fine-grained locking for specific parts of the code.
+
+        Example:
+
+            ```
+                class Counter {
+                    private int count = 0;
+
+                    public void increment() {
+                        synchronized (this) {
+                            count++;
+                        }
+                    }
+                }
+            ```
+
+    (3) Using Atomic Variables (Preferred for Performance):
+
+        - Uses AtomicInteger, which provides thread-safe atomic operations.
+
+        Example:
+
+            ```
+                import java.util.concurrent.atomic.AtomicInteger;
+
+                class Counter {
+                    private AtomicInteger count = new AtomicInteger(0);
+
+                    public void increment() {
+                        count.incrementAndGet();  // Atomic operation
+                    }
+
+                    public int getCount() {
+                        return count.get();
+                    }
+                }
+            ```
+    
+    (4) Using Locks (ReentrantLock):
+
+        - More flexible than synchronized, allows better control.
+
+        Example:
+
+            ```
+                import java.util.concurrent.locks.Lock;
+                import java.util.concurrent.locks.ReentrantLock;
+
+                class Counter {
+                    private int count = 0;
+                    private Lock lock = new ReentrantLock();
+
+                    public void increment() {
+                        lock.lock();
+                        try {
+                            count++;
+                        } finally {
+                            lock.unlock();
+                        }
+                    }
+                }
+            ```
+
+    (5) Using volatile (Only for Visibility, Not Atomicity):
+
+        - Ensures latest value is always visible across threads but does not solve 
+          race conditions.
+
+        Example:
+
+            ```
+                class SharedResource {
+                    private volatile boolean flag = false;
+
+                    public void setFlag() {
+                        flag = true;  // Latest value is visible across threads
+                    }
+                }
+            ```
+
+_______________________________________________________________________________________
+
+*   Explain synchronized keyword in detail and and how it prevents race condition and 
+    data inconsistency ?
+
+>>  The synchronized keyword is used to prevent race conditions and ensure thread safety 
+    by allowing only one thread at a time to execute a critical section of code.
+
+    It prevents multiple threads from reading and modifying the same variable simultaneously,
+    thereby resolving race condition and data inconsistency.
+
+    Types of Synchronization:
+
+        (1) Method Synchronization:
+            
+            - The synchronized keyword locks the entire method on the calling object, so only one 
+            thread can execute it at a time.
+
+            - If Thread A is executing increment(), Thread B must wait until Thread A finishes.
+
+            Example: 
+
+                ```
+                    class Counter {
+                        private int count = 0;
+
+                        public synchronized void increment() {  // Synchronized method
+                            count++;  
+                        }
+
+                        public int getCount() {
+                            return count;
+                        }
+                    }
+                ```
+
+        (2) Block Synchronization:
+
+            - Instead of locking the entire method, we lock only a critical section of the code.
+
+            - It is more efficient than method synchronization because it locks only the critical 
+              part of the code, allowing other non-synchronized methods to execute freely.
+
+            Example: 
+
+                - Thread-1 enters the synchronized (this) block → it locks the object (this).
+
+                - Thread-2 also wants to enter doSynchronizedWork() → must wait, because it's 
+                  trying to acquire the same lock (this).
+
+                - Thread-3 is calling an unsynchronized method, so it executes immediately — not 
+                  blocked, because it doesn’t try to acquire the lock.
+
+                MyTask.class:
+
+                    ```
+                        public class MyTask {
+
+                            public void unsynchronizedMethod() {
+                                System.out.println(Thread.currentThread().getName() + " is in unsynchronized method.");
+                            }
+
+                            public void doSynchronizedWork() {
+                                synchronized (this) {
+                                    System.out.println(Thread.currentThread().getName() + " entered synchronized block.");
+                                    try { Thread.sleep(2000); } catch (InterruptedException e) {}
+                                    System.out.println(Thread.currentThread().getName() + " exiting synchronized block.");
+                                }
+                            }
+                        }
+                    ```
+                
+                Main.class:
+
+                    ```
+                        public class Main {
+                            public static void main(String[] args) {
+                                MyTask task = new MyTask();
+
+                                Thread t1 = new Thread(() -> task.doSynchronizedWork(), "Thread-1");
+                                Thread t2 = new Thread(() -> task.doSynchronizedWork(), "Thread-2");
+                                Thread t3 = new Thread(() -> task.unsynchronizedMethod(), "Thread-3");
+
+                                t1.start();
+                                t2.start();
+                                t3.start();
+                            }
+                        }
+                    ```
+
+        (3) Static Synchronization:
+
+            - Used when multiple threads access a shared static resource.
+
+            - synchronized on a static method locks the entire class (SharedResource.class), not 
+              just an object instance.
+
+            Example: 
+
+                ```
+                    class SharedResource {
+                        private static int count = 0;
+
+                        public static synchronized void increment() {  // Static synchronized method
+                            count++;
+                        }
+
+                        public static int getCount() {
+                            return count;
+                        }
+                    }
+                ```
+
+    Limitations:
+
+        (1) Performance Overhead:
+
+            - Synchronization reduces performance due to locking and context switching.
+
+            - It is slower than atomic operations (AtomicInteger).
+
+        (2) Deadlocks:
+
+            - If two threads wait for each other to release a lock, a deadlock occurs.
+
+        (3) Fairness Issue:
+
+            - No guarantee of fairness—some threads may wait indefinitely while others 
+              keep acquiring locks.
+
+_______________________________________________________________________________________
+
+*   Explain Atomic Variables in detail.
+
+>>  Java provides atomic variables to perform thread-safe operations without using locks. 
+
+    Atomic variables provide a lock-free alternative using CPU-level atomic operations 
+    (like CAS – Compare And Swap).
+
+    It is recommended when only a single variable or field needs atomic updates, not complex ones.
+    
+    How it Works:
+        
+        - Atomic variables avoid race conditions using Compare And Swap (CAS):
+
+            - Read the current value
+            - Compute the new value
+            - Use CAS instruction to update the variable only if the value is still the same
+            - If another thread modifies the value before the CAS operation succeeds, it retries 
+              until successful.
+
+    How CAS Works:
+
+        - Here if another thread changes count before compareAndSet() succeeds, the loop retries until 
+          successful.
+
+        ```
+            while (true) {
+                int existingValue = count.get();  // Step 1: Read current value
+                int newValue = existingValue + 1; // Step 2: Compute new value
+                if (count.compareAndSet(existingValue, newValue)) { // Step 3: CAS operation
+                    break;
+                }
+            }
+        ```
+
+    Types of Atomic Variables:
+
+        - Java provides atomic classes for different primitive types and objects:
+
+            (1) AtomicInteger: Atomic operations for int values
+            
+            (2) AtomicLong: Atomic operations for long values
+            
+            (3) AtomicBoolean: Atomic operations for boolean values
+            
+            (4) AtomicReference<T>:	Atomic operations for objects of type T
+            
+            (5) AtomicIntegerArray: Atomic operations for an int[] array
+            
+            (6) AtomicLongArray: Atomic operations for a long[] array
+            
+            (7) AtomicReferenceArray<T>: Atomic operations for an array of objects
+
+    Example: AtomicInteger
+
+        Counter.class:
+
+            ```
+                import java.util.concurrent.atomic.AtomicInteger;
+
+                class Counter {
+                    private AtomicInteger count = new AtomicInteger(0);
+
+                    public void increment() {
+                        count.incrementAndGet();  // Atomic increment
+                    }
+
+                    public int getCount() {
+                        return count.get();
+                    }
+                }
+            ```
+
+        Main.class:
+
+            ```
+                public class Main {
+                    public static void main(String[] args) throws InterruptedException {
+                        Counter counter = new Counter();
+
+                        Thread t1 = new Thread(() -> {
+                            for (int i = 0; i < 1000; i++) counter.increment();
+                        });
+
+                        Thread t2 = new Thread(() -> {
+                            for (int i = 0; i < 1000; i++) counter.increment();
+                        });
+
+                        t1.start();
+                        t2.start();
+
+                        t1.join();
+                        t2.join();
+
+                        System.out.println("Final Count: " + counter.getCount());  // Always 2000
+                    }
+                }
+            ```
+
+    Example: AtomicReference
+
+        User.class:
+
+            ```
+                class User {
+                    String name;
+                    User(String name) { this.name = name; }
+                }
+            ```
+
+        Main.class:
+
+            ```
+                import java.util.concurrent.atomic.AtomicReference;
+
+                public class Main {
+                    public static void main(String[] args) {
+                        AtomicReference<User> userRef = new AtomicReference<>(new User("Alice"));
+
+                        // Atomically update reference
+                        userRef.compareAndSet(userRef.get(), new User("Bob"));
+
+                        System.out.println("Updated user: " + userRef.get().name); // Bob
+                    }
+                }
+            ```
+
+_______________________________________________________________________________________
+
+*   Explain Deadlocks in detail. 
+
+>>  A deadlock occurs when two or more threads are blocked forever because each thread 
+    is waiting for a resource held by another thread. 
+    
+    This results in an infinite wait, causing the program to hang.
+
+    Example:
+
+        (1) Thread-1:
+            
+            - Enters methodA().
+            - Locks resourceA (this).
+            - Goes to sleep for 1 second.
+
+        (2) During that sleep, Thread-2:
+            
+            - Enters methodB().
+            - Locks resourceB (this).
+            - Goes to sleep for 1 second.
+
+        (3) When both threads wake up:
+            
+            - Thread-1 tries to lock resourceB (but it's already locked by Thread-2).
+            - Thread-2 tries to lock resourceA (but it's already locked by Thread-1).
+            - Both threads are now waiting for each other’s locks leading to Deadlock.
+
+        Resource.class:
+
+            ```
+                class Resource {
+
+                    void methodA() {
+                        // resourceA is calling this method so resourceA (this) will be locked
+                        synchronized (this) {
+                 
+                            System.out.println(Thread.currentThread().getName() + " locked Resource-A");
+                            try { Thread.sleep(1000); } catch (InterruptedException e) {}
+                            
+                            // Thread will lock the object resourceB while executing below code
+                            synchronized (Main.resourceB) { 
+                                System.out.println(Thread.currentThread().getName() + " locked Resource-B");
+                            }
+                        }
+                    }
+
+                    void methodB() {
+                        // resourceB is calling this method so resourceB (this) will be locked
+                        synchronized (this) {
+
+                            System.out.println(Thread.currentThread().getName() + " locked Resource-B");
+                            try { Thread.sleep(1000); } catch (InterruptedException e) {}
+
+                            // Thread will lock the object resourceA while executing below code
+                            synchronized (Main.resourceA) { 
+                                System.out.println(Thread.currentThread().getName() + " locked Resource-A");
+                            }
+                        }
+                    }
+                }
+            ```
+        
+        Main.class:
+
+            ```
+                public class Main {
+                    static Resource resourceA = new Resource();
+                    static Resource resourceB = new Resource();
+
+                    public static void main(String[] args) {
+                        Thread t1 = new Thread(() -> resourceA.methodA(), "Thread-1");
+                        Thread t2 = new Thread(() -> resourceB.methodB(), "Thread-2");
+
+                        t1.start();
+                        t2.start();
+                    }
+                }
+            ```
+
+_______________________________________________________________________________________
+
+*   How to prevent Deadlocks ?
+
+>>  (1) Enforce Lock Ordering:
+
+        - Deadlocks occurs due to circular wait — one thread holds Lock A and waits 
+          for Lock B, while another holds Lock B and waits for Lock A.
+
+        - By always acquiring locks in a fixed order (e.g., always lock resourceA before resourceB), 
+          threads never end up in circular wait.
+
+        - Even if multiple threads try to access shared resources, they will all request the locks 
+          in the same order, avoiding conflict.
+
+        ```
+            class SafeResource {
+                void safeMethod() {
+                    // resourceA lock will always be acquired first before acquiring resourceB.
+                    synchronized (Main.resourceA) {
+                        System.out.println(Thread.currentThread().getName() + " locked Resource-A");
+
+                        synchronized (Main.resourceB) {
+                            System.out.println(Thread.currentThread().getName() + " locked Resource-B");
+                        }
+                    }
+                }
+            }
+
+    (2) Use tryLock() instead of synchronized:
+
+        - ReentrantLock.tryLock() is non-blocking — if the lock is not available, it immediately 
+          returns false, and the thread can take an alternate path (retry, log, skip, etc.).
+
+        - If lockB isn’t available, thread backs out without getting stuck.
+
+        SafeResource.class:
+
+            ```
+                class SafeResource {
+
+                    private static ReentrantLock lockA = new ReentrantLock();
+                    private static ReentrantLock lockB = new ReentrantLock();
+
+                    void safeMethod() {
+                        if (lockA.tryLock()) {
+                            try {
+                                System.out.println(Thread.currentThread().getName() + " locked Resource-A");
+                                
+                                if (lockB.tryLock()) {
+                                    try {
+                                        System.out.println(Thread.currentThread().getName() + " locked Resource-B");
+                                    } finally {
+                                        lockB.unlock();
+                                    }
+                                }
+                            } finally {
+                                lockA.unlock();
+                            }
+                        }
+                    }
+                }
+            ```
+
+    (3) Use a timeout on locks:
+
+        - Another way to avoid deadlocks is by setting a timeout for acquiring locks.
+
+        - If the lock cannot be acquired within the timeout, the thread exits instead 
+          of waiting forever.
+
+            ```
+                class SafeResource {
+                    private static ReentrantLock lockA = new ReentrantLock();
+                    private static ReentrantLock lockB = new ReentrantLock();
+
+                    void safeMethod() {
+                        if (lockA.tryLock(1, TimeUnit.SECONDS)) {
+                            try {
+                                // if lockB can't be acquired for 1 sec, then it will exit 
+                                if (lockB.tryLock(1, TimeUnit.SECONDS)) {
+                                    try {
+                                        System.out.println("Locked both resources safely");
+                                    } finally {
+                                        lockB.unlock();
+                                    }
+                                }
+                            } finally {
+                                lockA.unlock();
+                            }
+                        } else {
+                            System.out.println("Could not acquire locks, avoiding deadlock");
+                        }
+                    }
+                }
+            ```
+
+    (4) Use a single lock for related resources
+        
+        - By wrapping access to all related shared resources under a single lock, you 
+          eliminate the need for multiple locks entirely.
+        
+        - Since only one lock is used, no deadlock can occur.
+    
+        Example:
+
+            SingleLockResource.class:
+
+                ```
+                    class SingleLockResource {
+                        private final Object lock = new Object();
+
+                        void safeMethod() {
+                            synchronized (lock) {
+                                System.out.println(Thread.currentThread().getName() + " locked safely");
+                            }
+                        }
+                    }
+                ```
+
+_______________________________________________________________________________________
+
+*   Explain Lock in detail.
+
+>>  In Java, a Lock is an interface provided in the java.util.concurrent.locks package 
+    that offers more control over thread synchronization compared to synchronized blocks.
+
+    Instead of implicitly locking a block or method (synchronized), you explicitly 
+    acquire and release the lock.
+
+    Explain:
+
+        ```
+            class Shared {
+                private final ReentrantLock lock = new ReentrantLock();
+
+                public void safeMethod() {
+                    // explicitly acquiring a lock
+                    lock.lock();  
+                    try {
+                        System.out.println(Thread.currentThread().getName() + " is executing safely.");
+                    } finally {
+                        lock.unlock();  // always release lock in finally block
+                    }
+                }
+            }
+        ```
+
+_______________________________________________________________________________________
+
+*   Explain various types of Locks in Java.
+
+>>  (1) ReentrantLock (most commonly used):
+
+        ReentrantLock is a class in the java.util.concurrent.locks package that implements 
+        the Lock interface.
+
+        A reentrant lock means thread can acquire the same lock multiple times without 
+        getting blocked.
+
+        Always release the lock. If you forget to unlock, it may lead to deadlocks or 
+        threads starving forever.
+
+        Key Features:
+
+            (a) Explicit Locking:
+            
+                - Unlike synchronized, you must manually acquire and release the lock 
+                  using lock() and unlock().
+
+            (b) Reentrant Behavior: 
+            
+                - Same thread can lock multiple times without blocking itself.
+
+            (c) Try to Acquire:
+             
+                - tryLock() lets you attempt to acquire the lock without waiting.
+
+            (d) Timeout Support:
+            
+                - tryLock(timeout, unit) waits for the lock only up to a specified time.
+
+        Example:
+
+            SharedResource.class:
+
+                ```
+                    class SharedResource {
+                        private final ReentrantLock lock = new ReentrantLock();
+
+                        public void access() {
+                            lock.lock(); // acquire the lock
+                            try {
+                                System.out.println(Thread.currentThread().getName() + " is working...");
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            } finally {
+                                lock.unlock(); // always release the lock
+                            }
+                        }
+                    }
+                ```
+
+        Example (Reentrancy):
+
+            SharedResource.class:
+
+                ```
+                    class SharedResource {
+                        ReentrantLock lock = new ReentrantLock();
+
+                        public void outer() {
+                            lock.lock();
+                            try {
+                                System.out.println("Outer method");
+                                inner(); // same thread can call inner()
+                            } finally {
+                                lock.unlock();
+                            }
+                        }
+
+                        public void inner() {
+                            lock.lock(); // same thread can lock again
+                            try {
+                                System.out.println("Inner method");
+                            } finally {
+                                lock.unlock(); // must unlock for each lock()
+                            }
+                        }
+                    }
+                ```
+
+    (2) ReentrantReadWriteLock:
+    
+        ReentrantReadWriteLock provides a more flexible locking mechanism compared to 
+        synchronized or ReentrantLock by allowing multiple threads to read a resource 
+        simultaneously (if no thread is writing).
+
+        It allows only one thread to write (exclusive access), while blocking all readers 
+        and writers.
+
+        Using synchronized or ReentrantLock for both read & write blocks all threads,
+        even readers, which is inefficient when reads are more frequent than writes.
+
+        It supports fair locking as longest waiting thread gets the lock first.
+        
+        It allows Lock Downgrade i.e. acquiring read lock after write lock but not Lock Upgrade i.e
+        acquiring write lock after read lock.
+
+        How it Works:
+
+            - It has two locks internally
+            
+                (a) Read Lock (lock.readLock()):
+                    
+                    - Multiple threads can acquire read lock simultaneously as long as there
+                      is no active writer.
+
+                (b) Write Lock (lock.writeLock()):
+                    
+                    - Only one thread can acquire write lock and while writing, no other reader 
+                      and writer is allowed.
+
+        Example:
+
+            ```
+                class SharedResource {
+                    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+                    private int data = 0;
+
+                    // Reading data
+                    void readData() {
+                        lock.readLock().lock();
+                        try {
+                            System.out.println(Thread.currentThread().getName() + " reading: " + data);
+                            Thread.sleep(1000);  // Simulate read delay
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } finally {
+                            lock.readLock().unlock();
+                        }
+                    }
+
+                    // Writing data
+                    void writeData(int value) {
+                        lock.writeLock().lock();
+                        try {
+                            System.out.println(Thread.currentThread().getName() + " writing: " + value);
+                            Thread.sleep(1000);  // Simulate write delay
+                            data = value;
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } finally {
+                            lock.writeLock().unlock();
+                        }
+                    }
+                }
+            ```
+
+_______________________________________________________________________________________
+
+*   What are the differences between synchronized and lock ?
+
+>>  (1) Flexibility and Control:
+
+        - synchronized automatically acquires and releases the lock when the block/method
+          is entered and exited.
+
+        - Lock provides explicit locking and unlocking where developer can conditionally
+          acquiring and releasing locks. If not released, it may lead to deadlock.
+
+
+    (2) Try Locking Without Waiting:
+
+        - synchronized does not provide any mechanism to try acquiring a lock without waiting.
+
+        - Lock provides tryLock() method which allows a thread to attempt locking and 
+          if unsuccessful, thread can proceed without waiting indefinitely.
+
+    (3) Timeout Feature:
+
+        - synchronized does not support timeout for acquiring a lock.
+
+        - Lock provides tryLock(time, TimeUnit) where a thread waits for the specified 
+          time and fails if the lock is not acquired.
+
+    (4) Interruptible Locking:
+
+        - Threads waiting to acquire synchronized lock cannot be interrupted. They must wait.
+
+        - With Lock, lockInterruptibly() method allows a thread to respond to 
+          interruptions while waiting for the lock.
+
+    (5) Fairness Policy:
+
+        - Synchronized does not support fairness. Thread scheduling is done by JVM.
+
+        - Lock supports fairness by constructor. For e.g., new ReentrantLock(true) 
+          ensures FIFO locking.
+
+    (6) Read-Write Locks:
+
+        - Synchronized does not differentiate between read and write operations i.e. 
+          both block each other.
+
+        - Lock provides ReentrantReadWriteLock where multiple readers can access 
+          if no thread is writing.
+
+    (7) Reentrant Nature:
+        
+        - Both synchronized and ReentrantLock are reentrant, meaning the same thread can 
+          acquire the lock multiple times without getting blocked.
+
+_______________________________________________________________________________________
