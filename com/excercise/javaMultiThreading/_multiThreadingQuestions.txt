@@ -2177,3 +2177,56 @@ ________________________________________________________________________________
           acquire the lock multiple times without getting blocked.
 
 _______________________________________________________________________________________
+
+*   Explain volatile keyword in detail.
+
+>>  volatile is a keyword in Java used with instance variables in multi-threaded programming.
+
+    It ensures visibility of changes made by one thread to other threads immediately.
+
+    Use volatile when you want all threads to see the latest value of a variable but don’t need 
+    atomicity or complex synchronization.
+
+    Problem Without volatile:
+
+        - In a multi-threaded environment, every thread may keep a local copy of a 
+          variable for performance reasons.
+
+        - If one thread changes the variable, other threads might not see the updated value 
+          because they are reading their local cached copy — leading to data inconsistency.
+
+    How it Works:
+
+        - When a variable is declared as volatile its value is always read directly from 
+          the main memory (RAM).
+
+        - Its updated value is immediately written back to the main memory after modification.
+
+        - No caching happens — every read/write is from/to the main memory.
+
+    Example:
+            
+        - Without volatile, reader thread may never see updated flag.
+
+        - With volatile, change done by writer thread is visible immediately to reader thread.
+
+        SharedResource.class:
+
+            ```
+                class SharedResource {
+                    volatile boolean flag = false;
+
+                    void writer() {
+                        flag = true; // Written to main memory directly
+                    }
+
+                    void reader() {
+                        while (!flag) {  // Always reads latest value from main memory
+                            // Waiting for flag to become true
+                        }
+                        System.out.println("Flag is true, exiting loop.");
+                    }
+                }
+            ```
+
+_______________________________________________________________________________________
