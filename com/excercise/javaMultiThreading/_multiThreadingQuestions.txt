@@ -2529,7 +2529,85 @@ ________________________________________________________________________________
 
 _______________________________________________________________________________________
 
+*   Explain LiveLock in detail.
 
+>>  Livelock is a situation in multithreading where two or more threads keep responding 
+    to each other’s actions but are unable to make any progress in their execution.
+
+    Threads are "alive" and not blocked but they are continuously changing their state 
+    to avoid deadlock still no thread is able to proceed further.
+
+    Why does Livelock happen?
+
+        - They keep yielding or releasing resources for other threads, but because both 
+          are doing the same thing, no one moves forward.
+
+    Example:
+
+        SharedResource.class:
+
+            ```
+                class SharedResource {
+                    volatile boolean isAvailable = true;
+                }
+            ```
+        
+        Worker.class:
+
+            ```
+                class Worker implements Runnable {
+                    private SharedResource resource;
+
+                    Worker(SharedResource resource) {
+                        this.resource = resource;
+                    }
+
+                    public void run() {
+                        while (true) {
+                            if (resource.isAvailable) {
+                                System.out.println(Thread.currentThread().getName() + " doing work...");
+                                resource.isAvailable = false;
+
+                                try { Thread.sleep(100); } catch (InterruptedException e) {}
+
+                                resource.isAvailable = true; // Being polite, releasing for other thread
+                            } else {
+                                // Yield CPU for other thread
+                                Thread.yield();
+                            }
+                        }
+                    }
+                }
+            ```
+        
+        Main.class:
+        
+            ```
+                public class Main {
+                    public static void main(String[] args) {
+                        SharedResource resource = new SharedResource();
+
+                        Thread t1 = new Thread(new Worker(resource), "Thread-1");
+                        Thread t2 = new Thread(new Worker(resource), "Thread-2");
+
+                        t1.start();
+                        t2.start();
+                    }
+                }
+            ```
+        Output:
+
+            ```
+                Thread-1 doing work...
+                Thread-2 doing work...
+                Thread-1 doing work...
+                Thread-2 doing work...
+                .
+                .
+                (They keep releasing resource for each other forever but not doing meaningful work)
+            ```
+
+_______________________________________________________________________________________
 
 
 
