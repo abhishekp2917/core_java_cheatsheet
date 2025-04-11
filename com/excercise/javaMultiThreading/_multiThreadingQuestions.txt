@@ -2304,6 +2304,162 @@ ________________________________________________________________________________
             
 _______________________________________________________________________________________
 
+*   Explain in detail Thread Starvation.
+
+>>  Thread starvation occurs in multithreaded applications when a thread is permanently 
+    or for a very long time prevented from gaining access to shared resources, because 
+    other threads keep acquiring them.
+
+    Example:
+
+        SharedResource.class:
+
+            ```
+                class SharedResource {
+                    ReentrantLock lock = new ReentrantLock();  // unfair lock by default
+
+                    void accessResource() {
+                        lock.lock();
+                        try {
+                            System.out.println(Thread.currentThread().getName() + " acquired the lock");
+                            try { Thread.sleep(1000); } catch (InterruptedException e) {}
+                        } finally {
+                            lock.unlock();
+                        }
+                    }
+                }
+            ```
+        
+        Main.class:
+
+            ```
+                public class Main {
+                    public static void main(String[] args) {
+                        SharedResource resource = new SharedResource();
+
+                        // 1 High Priority Thread - Always acquiring lock
+                        Thread highPriorityThread = new Thread(() -> {
+                            while (true) {
+                                resource.accessResource();
+                            }
+                        }, "High-Priority-Thread");
+
+                        // 1 Low Priority Thread - Rarely gets a chance
+                        Thread lowPriorityThread = new Thread(() -> {
+                            while (true) {
+                                resource.accessResource();
+                            }
+                        }, "Low-Priority-Thread");
+
+                        highPriorityThread.setPriority(Thread.MAX_PRIORITY);
+                        lowPriorityThread.setPriority(Thread.MIN_PRIORITY);
+
+                        highPriorityThread.start();
+                        lowPriorityThread.start();
+                    }
+                }
+            ```
+        
+        Output:
+
+            ```
+                High-Priority-Thread acquired the lock
+                High-Priority-Thread acquired the lock
+                ...
+                ...
+                ( Low-Priority-Thread hardly gets a chance! )
+            ```
+
+    Common Causes of Starvation:
+
+        (1) Priority-based Scheduling:
+
+            - In some systems, high-priority threads are always scheduled first and get priority 
+              access to resources.
+
+            - Low-priority threads may never get CPU time and keep waiting endlessly because 
+              higher priority threads keep executing, lead to starvation.
+
+        (2) Improper Lock Usage:    
+            
+            - If a thread holds a lock for a long time or keeps acquiring the same lock repeatedly 
+              without releasing it soon enough, other threads get starved.
+
+            Example:
+
+                ```
+                    synchronized (sharedResource) {
+                        while(true) { 
+                            // long running code or infinite loop
+                        }
+                    }
+                ```
+        
+        (3) Writer Starvation in Read-Write Locks:
+
+            - Using ReentrantReadWriteLock if too many readers acquire the lock continuously, writer 
+              thread keeps waiting and Writer starvation happens.
+
+    How to Prevent Thread Starvation:
+
+        (1) Use Fair Locks:
+
+            - Java provides fair locking mechanisms that grant access to threads in the order 
+              they requested.
+
+            Example:
+
+                ```
+                    ReentrantLock lock = new ReentrantLock(true);  // true = fair lock
+                ```
+
+        (2) Avoid Priority-based Scheduling (Unless Required):
+
+            - Let the OS/Thread Scheduler handle it naturally.
+
+            - Don't assign extreme priorities unless really necessary.
+
+        (3) Release Locks Quickly:
+
+            - Keep synchronized blocks small and efficient.
+
+            - Never hold a lock for long-running tasks.
+
+_______________________________________________________________________________________
+
+*   What are the differences between Deadlock and Starvation ?
+
+>>  (1) Definition:
+
+        - Deadlock happens when two or more threads are waiting forever for each other’s 
+          lock and none of them proceeds.
+
+        - Starvation happens when a low priority thread keeps waiting because other high 
+          priority threads are always acquiring the required resource.
+
+    (2) Impact:
+    
+        - Due to Deadlock, no thread proceeds further and program freeze.
+
+        - Due to Starvation, some threads (usually low priority) don’t get 
+          CPU time or resource for a long time. Program still runs, but unfairly.
+
+    (3) Resource State:
+    
+        - Deadlock happens when resources are locked forever. No release.
+
+        - Starvation happens when resources are being released but low-priority threads 
+          don’t get a chance to acquire them.
+
+    (4) Prevention Techniques:
+        
+        - To prevent Deadlock, avoid nested Locks, Lock in same order and use tryLock() with timeout.
+
+        - To prevent Starvation, use Fair Lock (ReentrantLock with fairness = true).
+
+_______________________________________________________________________________________
+
+
 
 
 
