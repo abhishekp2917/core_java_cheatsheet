@@ -1049,6 +1049,76 @@ ________________________________________________________________________________
 
 _______________________________________________________________________________________
 
+*   Explain yield() method in detail.
+
+>>  yield() is a static method in the Thread class. 
+
+    It's a hint to the thread scheduler that the current thread is willing to pause and 
+    give a chance for other threads of the same priority to execute.
+
+    It’s important to note that yield() is just a request to the scheduler and not a guarantee.
+
+    What Actually Happens When We Call yield()?
+        
+        - The current running thread moves from Running state to Runnable state.
+
+        - The thread scheduler is free to pick any thread from the Runnable pool (could 
+          be the same thread again).
+
+        - No blocking or waiting as it's a very lightweight pause.
+
+    When is yield() Used?
+
+        - When you want to avoid starvation (letting other equal-priority threads run).
+
+        - For fine-tuning multi-threaded programs (but rarely used in practice).        
+
+    Example:
+
+        MyThread.class:
+
+            ```
+                class MyThread extends Thread {
+                    public void run() {
+                        for (int i = 1; i <= 5; i++) {
+                            System.out.println(Thread.currentThread().getName() + " : " + i);
+                            Thread.yield(); // Hint to scheduler
+                        }
+                    }
+                }
+            ```
+
+        Main.class:
+
+            ```
+                public class Main {
+                    public static void main(String[] args) {
+                        MyThread t1 = new MyThread();
+                        MyThread t2 = new MyThread();
+
+                        t1.start();
+                        t2.start();
+                    }
+                }
+            ```
+
+        Possible Output:
+
+            ```
+                Thread-0 : 1
+                Thread-1 : 1
+                Thread-0 : 2
+                Thread-1 : 2
+                Thread-0 : 3
+                Thread-1 : 3
+                Thread-0 : 4
+                Thread-1 : 4
+                Thread-0 : 5
+                Thread-1 : 5
+            ```
+
+_______________________________________________________________________________________
+
 *   What are the differences between join(), wait() and sleep() method ?
 
 >>  (1) Purpose:
