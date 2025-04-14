@@ -1,0 +1,422 @@
+*   Explain ExecutorService in detail.
+
+>>  ExecutorService is an interface in Java that provides a higher-level replacement for managing 
+    and controlling threads.
+
+    Before ExecutorService, developers used to create threads like this:
+
+        ```
+            Thread thread = new Thread(() -> {
+            // task
+            });
+            thread.start();
+        ```
+
+    This approach had many problems:
+
+        - Manual thread management
+
+        - No thread reuse leading to performance issues
+
+        - No easy way to manage a pool of threads
+
+        - No clean shutdown mechanism
+
+    Why ExecutorService?
+        
+        - It abstracts away thread management and provides:
+
+            - Thread pooling
+
+            - Task scheduling
+
+            - Graceful shutdown
+
+    Example:
+
+        Main.class:
+
+            ```
+                import java.util.concurrent.ExecutorService;
+                import java.util.concurrent.Executors;
+
+                public class Main {
+                    public static void main(String[] args) {
+                        // Create ExecutorService with 2 threads
+                        ExecutorService service = Executors.newFixedThreadPool(2);
+
+                        // Create tasks
+                        Runnable task1 = () -> System.out.println("Task 1 executed by " + Thread.currentThread().getName());
+                        Runnable task2 = () -> System.out.println("Task 2 executed by " + Thread.currentThread().getName());
+                        Runnable task3 = () -> System.out.println("Task 3 executed by " + Thread.currentThread().getName());
+
+                        // Submit tasks
+                        service.submit(task1);
+                        service.submit(task2);
+                        service.submit(task3);
+
+                        // Shutdown the service
+                        service.shutdown();
+                    }
+                }
+            ```
+        
+        Output:
+
+            ```
+                Task 1 executed by pool-1-thread-1
+                Task 2 executed by pool-1-thread-2
+                Task 3 executed by pool-1-thread-1
+            ```
+
+_______________________________________________________________________________________
+
+*   What are various types of ThreadPools ?
+
+>>  (1) Fixed Thread Pool
+
+    (2) Cached Thread Pool
+
+    (3) Single Thread Executor
+
+    (4) Scheduled Thread Pool
+    
+_______________________________________________________________________________________
+
+*   Explain Fixed Thread Pool in detail.
+
+>>  A Fixed Thread Pool is a thread pool with a fixed number of worker threads.
+
+    How it Works:
+
+        - You submit a task using submit() or execute().
+
+        - If fewer than nThreads are busy a thread picks up and runs the task.
+
+        - If all threads are busy, the task is placed in a queue.
+
+        - As threads finish current tasks, they pick new ones from the queue.
+
+        - Threads are never destroyed — they remain alive.
+
+    Example:
+
+        Main.class:
+
+            ```
+                import java.util.concurrent.ExecutorService;
+                import java.util.concurrent.Executors;
+
+                public class Main {
+                    public static void main(String[] args) {
+                        ExecutorService executor = Executors.newFixedThreadPool(2);
+
+                        for (int i = 1; i <= 4; i++) {
+                            int taskId = i;
+                            executor.submit(() -> {
+                                System.out.println("Task " + taskId + " is running on " + Thread.currentThread().getName());
+                                try {
+                                    Thread.sleep(2000); // Simulate task duration
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                System.out.println("Task " + taskId + " completed");
+                            });
+                        }
+                        executor.shutdown(); // Important: Initiates shutdown after tasks complete
+                    }
+                }
+            ```
+    Output:
+
+        ```
+            Task 1 is running on pool-1-thread-1
+            Task 2 is running on pool-1-thread-2
+            Task 3 is running on pool-1-thread-1
+            Task 1 completed
+            Task 4 is running on pool-1-thread-2
+            Task 2 completed
+            Task 3 completed
+            Task 4 completed
+        ...
+
+_______________________________________________________________________________________
+
+*   Explain Cached Thread Pool in detail.
+
+>>  A Cached Thread Pool is a thread pool that creates new threads as needed (no fixed size).
+
+    How it Works:
+
+        - You submit a task to the pool.
+
+        - If there's an idle thread, it executes the task.
+
+        - If no idle thread is available, it creates a new thread.
+
+        - After completing a task, threads are kept alive for 60 seconds.
+
+        - If they stay idle beyond that, they are terminated.
+
+    Example:
+
+        Main.class:
+
+            ```
+                import java.util.concurrent.ExecutorService;
+                import java.util.concurrent.Executors;
+
+                public class Main {
+                    public static void main(String[] args) {
+                        ExecutorService executor = Executors.newCachedThreadPool();
+
+                        for (int i = 1; i <= 5; i++) {
+                            int taskId = i;
+                            executor.submit(() -> {
+                                System.out.println("Task " + taskId + " running on " + Thread.currentThread().getName());
+                                try {
+                                    Thread.sleep(2000); // Simulate work
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                System.out.println("Task " + taskId + " completed");
+                            });
+                        }
+
+                        executor.shutdown();
+                    }
+                }
+            ```
+        
+        Output:
+
+            - All 5 tasks get their own threads immediately, unlike fixed thread pool 
+              where only N threads run at once.4
+
+            ```
+                Task 1 running on pool-1-thread-1
+                Task 2 running on pool-1-thread-2
+                Task 3 running on pool-1-thread-3
+                Task 4 running on pool-1-thread-4
+                Task 5 running on pool-1-thread-5
+            ```
+
+_______________________________________________________________________________________
+
+*   Explain Single Thread Executor in detail.
+
+>>  A Single Thread Executor is an implementation of ExecutorService that uses a single 
+    worker thread to execute tasks sequentially (FIFO).
+
+    How it Works:
+
+        - You submit tasks using submit() or execute().
+
+        - If no task is currently running the thread picks up and executes the task.
+
+        - If another task is running the task is placed into a queue.
+
+        - Tasks are executed one-by-one, in the order they were submitted.
+
+        - If the single thread dies due to an exception, it is replaced automatically.
+
+    Example:
+
+        Main.class:
+
+            ```
+                import java.util.concurrent.ExecutorService;
+                import java.util.concurrent.Executors;
+
+                public class Main {
+                    public static void main(String[] args) {
+                        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+                        for (int i = 1; i <= 3; i++) {
+                            int taskId = i;
+                            executor.submit(() -> {
+                                System.out.println("Task " + taskId + " is running on " + Thread.currentThread().getName());
+                                try {
+                                    Thread.sleep(1000); // simulate some work
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                System.out.println("Task " + taskId + " completed");
+                            });
+                        }
+
+                        executor.shutdown();
+                    }
+                }
+            ```
+        
+        Output:
+
+            ```
+                Task 1 is running on pool-1-thread-1
+                Task 1 completed
+                Task 2 is running on pool-1-thread-1
+                Task 2 completed
+                Task 3 is running on pool-1-thread-1
+                Task 3 completed
+            ```
+
+_______________________________________________________________________________________
+
+*   Explain Scheduled Thread Pool in detail.
+
+>>  A Scheduled Thread Pool is an implementation of ScheduledExecutorService that allows 
+    you to schedule tasks for one-time execution after a delay, or for repeated execution 
+    at fixed intervals. 
+    
+    It supports delayed tasks, periodic tasks, and fixed-rate or fixed-delay execution.
+
+    How it Works:
+
+        - You create it using Executors.newScheduledThreadPool(int nThreads).
+
+        - Tasks are submitted using methods like schedule(), scheduleAtFixedRate() or 
+          scheduleWithFixedDelay()
+
+        - Tasks are either:
+
+            - Delayed and executed once
+
+            - Repeated at fixed rate (based on start time)
+
+            - Repeated with fixed delay (based on end time)
+
+        - It uses a thread pool to execute tasks concurrently (if more than one thread is configured).
+
+        - Internally manages a priority queue based on scheduled times.
+
+    Example:
+        
+        Main.class:
+
+            ```
+                import java.util.concurrent.Executors;
+                import java.util.concurrent.ScheduledExecutorService;
+                import java.util.concurrent.TimeUnit;
+
+                public class Main {
+                    public static void main(String[] args) {
+                        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
+
+                        Runnable task = () -> {
+                            System.out.println("Running task on: " + Thread.currentThread().getName() + " at " + System.currentTimeMillis());
+                        };
+
+                        // Schedule task to run repeatedly with a fixed delay of 2 seconds after completion
+                        scheduler.scheduleWithFixedDelay(task, 0, 2, TimeUnit.SECONDS);
+
+                        // Optional: stop scheduler after some time
+                        scheduler.schedule(() -> {
+                            System.out.println("Shutting down...");
+                            scheduler.shutdown();
+                        }, 10, TimeUnit.SECONDS);
+                    }
+                }
+            ```
+        
+        Output:
+
+            ```
+                Running task on: pool-1-thread-1 at 1713098430000
+                Running task on: pool-1-thread-1 at 1713098432000
+                Running task on: pool-1-thread-1 at 1713098434000
+                Running task on: pool-1-thread-1 at 1713098436000
+                Running task on: pool-1-thread-1 at 1713098438000
+                Shutting down...
+            ```
+
+_______________________________________________________________________________________
+
+*   Explain Future in detail.
+
+>>  A Future represents the result of an asynchronous computation.
+    
+    It allows you to submit a task (via ExecutorService) and retrieve the result later, 
+    once the task is complete.
+
+    Key Features:
+
+        - Submit a task that runs in background.
+
+        - Call .get() to wait for the result.
+
+        - Use .isDone() to check if the task is finished.
+
+        - Use .cancel(true) or .cancel(false) to cancel the task.
+
+🔹 Methods in Future
+Method	Description
+V get()	Waits and gets the result of computation.
+V get(long timeout, TimeUnit unit)	Waits for a given time.
+boolean isDone()	Returns true if task completed.
+boolean isCancelled()	Was task cancelled?
+boolean cancel(boolean mayInterruptIfRunning)	Cancels the task
+
+
+🔹 How to get a Future object?
+Use ExecutorService.submit(Callable)
+Callable is preferred here over Runnable because it returns a value.
+
+🔹 Example: Using Future with Callable
+java
+Copy
+Edit
+import java.util.concurrent.*;
+
+public class FutureExample {
+    public static void main(String[] args) {
+        // Create an ExecutorService (thread pool)
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        // Create a Callable task (returns a value)
+        Callable<String> task = () -> {
+            Thread.sleep(3000); // simulate long task
+            return "Hello from Future!";
+        };
+
+        // Submit the task and get a Future
+        Future<String> future = executor.submit(task);
+
+        System.out.println("Task submitted...");
+
+        try {
+            // Do other stuff here if needed...
+
+            // Get the result (blocking)
+            String result = future.get();  // blocks until result is ready
+            System.out.println("Result: " + result);
+
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        } finally {
+            executor.shutdown(); // always shutdown the executor
+        }
+    }
+}
+🔹 Output:
+sql
+Copy
+Edit
+Task submitted...
+(wait 3 seconds)
+Result: Hello from Future!
+🔹 Real-World Use Cases
+Making parallel API calls and combining results.
+
+Doing heavy computations (like image processing, database operations).
+
+Submitting multiple background tasks using thread pool and waiting for all results.
+
+🔹 Pitfalls & Notes
+.get() is blocking, so don’t call it too early unless you want to wait.
+
+Prefer invokeAll() for running multiple tasks and collecting List<Future>.
+
+For advanced chaining, use CompletableFuture (Java 8+).
+
+_______________________________________________________________________________________

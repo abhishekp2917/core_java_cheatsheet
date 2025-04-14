@@ -234,6 +234,92 @@ ________________________________________________________________________________
 
 _______________________________________________________________________________________
 
+*   What are the differences between Callable and Runnable ?
+
+>>  (1) Functional Interface:
+
+        - Both are functional interfaces, so they can be used with lambda expressions.
+
+        - However, Callable is more suitable when you need to return a result or throw 
+          an exception.
+
+    (2) Return Type:
+
+        - Runnable does not return a result. Its run() method returns void.
+
+        - Callable returns a result. Its call() method returns a value of type V.
+
+    (3) Exception Handling:
+    
+        - Runnable cannot throw checked exceptions from the run() method.
+
+        - Callable can throw checked exceptions from the call() method.
+
+    (4) Use with ExecutorService:
+
+        - Runnable tasks submitted to an ExecutorService return a Future<?>, but the 
+          result is always null unless you manually set a result.
+
+        - Callable tasks return a Future<V>, where V is the result of the call() method.
+
+    (5) Use Case:
+
+        - Use Runnable when you just want to run a task in the background and don’t 
+          need a result.
+
+        - Use Callable when you want the task to produce a result or may throw an exception.
+
+    (6) Example:
+
+        - Runnable Example – No return, no checked exception
+
+            Main.class:
+
+                ```
+                    import java.util.concurrent.ExecutorService;
+                    import java.util.concurrent.Executors;
+
+                    public class Main {
+                        public static void main(String[] args) {
+                            Runnable task = () -> {
+                                System.out.println("Runnable is running...");
+                            };
+                            ExecutorService executor = Executors.newSingleThreadExecutor();
+                            executor.submit(task); // returns Future<?> but result is always null
+                            executor.shutdown();
+                        }
+                    }
+                ```
+        
+        - Callable Example – Returns result, can throw exception
+
+            Main.class:
+
+                ```
+                    import java.util.concurrent.*;
+
+                    public class Main {
+                        public static void main(String[] args) {
+                            Callable<String> task = () -> {
+                                Thread.sleep(2000); // simulate delay
+                                return "Callable completed!";
+                            };
+                            ExecutorService executor = Executors.newSingleThreadExecutor();
+                            Future<String> future = executor.submit(task);
+                            try {
+                                String result = future.get(); // blocks until result is available
+                                System.out.println("Result: " + result);
+                            } catch (InterruptedException | ExecutionException e) {
+                                e.printStackTrace();
+                            } finally {
+                                executor.shutdown();
+                            }
+                        }
+                    }
+                ```
+
+_______________________________________________________________________________________
+
 *   Explain Thread Lifecycle in detail.
 
 >>  A thread in Java goes through five states during its lifecycle:
