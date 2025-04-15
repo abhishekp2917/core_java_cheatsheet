@@ -1,0 +1,115 @@
+*   Explain Daemon thread in detail ?
+
+>>  A daemon thread is a background thread that provides support services to user threads.
+
+    It runs continuously in the background and automatically terminates when all user 
+    threads finish execution.
+
+    It is a Low-priority threads generally used for tasks like garbage collection, monitoring, 
+    logging, and background services.
+
+_______________________________________________________________________________________
+
+*   How to create a Daemon Thread ?
+
+>>  A thread can be converted into a daemon thread using the setDaemon(true) method 
+    before calling start().
+
+    Example: 
+
+        MyDaemonThread.class:
+
+            ```
+                class MyDaemonThread extends Thread {
+
+                    public void run() {
+
+                        // Infinite loop to simulate background work
+                        while (true) {  
+                            
+                            System.out.println("Daemon thread is running...");
+                            try {
+                                Thread.sleep(1000);  // Sleep for 1 second
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            ```
+
+        Main.class:
+
+            ```
+                public class Main {
+                    public static void main(String[] args) {
+
+                        MyDaemonThread daemonThread = new MyDaemonThread();
+                        daemonThread.setDaemon(true);  // Mark thread as daemon
+                        daemonThread.start();
+
+                        System.out.println("Main thread is running...");
+
+                        try {
+                            Thread.sleep(4000); // Main thread sleeps for 4 seconds
+                        } catch (InterruptedException e) {}
+
+                        // Daemon thread automatically stops when the main thread finishes execution.
+                        System.out.println("Main thread finished execution");
+                    }
+                }
+            ```
+        
+        Output:
+
+            ```
+                Main thread is running...
+                Daemon thread is running...
+                Daemon thread is running...
+                Daemon thread is running...
+                Daemon thread is running...
+                Main thread finished execution
+            ```
+
+_______________________________________________________________________________________
+
+*   What are the differences between User Thread and Daemon Thread.
+
+>>  (1) Purpose:
+        
+        - User Thread executes the main task of an application.
+
+        - Daemon Thread runs in the background to support user threads.
+
+    (2) JVM Behavior:
+
+        - JVM waits for all User Threads to finish before terminating.
+
+        - JVM terminates immediately if only daemon threads remain.
+
+    (3) Creation:
+
+        - User Thread are created by default when a new thread is instantiated.
+
+        - Daemon Thread must be explicitly set using setDaemon(true).
+
+    (4) Priority:
+
+        - User Thread usually has a higher priority.
+
+        - Daemon Thread has a lower priority than user threads.
+
+    (6) Lifespan:
+
+        - User Thread runs until its task is completely finished.
+
+        - Daemon Thread terminates immediately when all user threads finish execution.
+
+    (7) Example Use Cases:
+
+        - User Thread: Handling user requests, file processing, computations.
+
+        - Daemon Thread: Garbage collection (GC), logging, continuously monitor system health, 
+          automatically save progress in application.
+
+_______________________________________________________________________________________
