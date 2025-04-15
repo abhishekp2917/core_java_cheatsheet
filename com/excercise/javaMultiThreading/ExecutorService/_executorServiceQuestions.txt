@@ -527,7 +527,8 @@ ________________________________________________________________________________
 
         - Future cannot be executed directly. It's returned by ExecutorService methods.
 
-        - FutureTask can be executed directly by passing it to a Thread or ExecutorService.
+        - FutureTask can be executed directly by passing it to a Thread or ExecutorService since 
+          it implements Runnable interface.
 
     (3) Result Handling
 
