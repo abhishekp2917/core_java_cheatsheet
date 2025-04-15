@@ -1,5 +1,5 @@
 // Main class to run the program
-public class Main {
+public class Test {
     public static void main(String[] args) {
 
         // Create an instance of the custom thread
