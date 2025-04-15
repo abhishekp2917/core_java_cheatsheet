@@ -349,74 +349,330 @@ ________________________________________________________________________________
 
         - Use .cancel(true) or .cancel(false) to cancel the task.
 
-🔹 Methods in Future
-Method	Description
-V get()	Waits and gets the result of computation.
-V get(long timeout, TimeUnit unit)	Waits for a given time.
-boolean isDone()	Returns true if task completed.
-boolean isCancelled()	Was task cancelled?
-boolean cancel(boolean mayInterruptIfRunning)	Cancels the task
+    How to get a Future object:
 
+        - Use ExecutorService.submit(Callable)
+        
+        - Callable is preferred here over Runnable because it returns a value.
 
-🔹 How to get a Future object?
-Use ExecutorService.submit(Callable)
-Callable is preferred here over Runnable because it returns a value.
+    Example: 
+            
+        Main.class:
 
-🔹 Example: Using Future with Callable
-java
-Copy
-Edit
-import java.util.concurrent.*;
+            ```
+                import java.util.concurrent.*;
 
-public class FutureExample {
-    public static void main(String[] args) {
-        // Create an ExecutorService (thread pool)
-        ExecutorService executor = Executors.newSingleThreadExecutor();
+                public class Main {
+                    public static void main(String[] args) {
+                        // Create an ExecutorService (thread pool)
+                        ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        // Create a Callable task (returns a value)
-        Callable<String> task = () -> {
-            Thread.sleep(3000); // simulate long task
-            return "Hello from Future!";
-        };
+                        // Create a Callable task (returns a value)
+                        Callable<String> callable = () -> {
+                            Thread.sleep(3000); // simulate long task
+                            return "Hello from Future!";
+                        };
 
-        // Submit the task and get a Future
-        Future<String> future = executor.submit(task);
+                        // Submit the callable and get a Future
+                        Future<String> future = executor.submit(callable);
 
-        System.out.println("Task submitted...");
+                        System.out.println("Task submitted...");
 
-        try {
-            // Do other stuff here if needed...
+                        try {
+                            // Do other stuff here if needed...
 
-            // Get the result (blocking)
-            String result = future.get();  // blocks until result is ready
-            System.out.println("Result: " + result);
+                            // Get the result (blocking)
+                            String result = future.get();  // blocks until result is ready
+                            System.out.println("Result: " + result);
 
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        } finally {
-            executor.shutdown(); // always shutdown the executor
-        }
-    }
-}
-🔹 Output:
-sql
-Copy
-Edit
-Task submitted...
-(wait 3 seconds)
-Result: Hello from Future!
-🔹 Real-World Use Cases
-Making parallel API calls and combining results.
+                        } catch (InterruptedException | ExecutionException e) {
+                            e.printStackTrace();
+                        } finally {
+                            executor.shutdown(); // always shutdown the executor
+                        }
+                    }
+                }
+            ```
+        
+        Output:
 
-Doing heavy computations (like image processing, database operations).
+            ```
+                Task submitted...
+                (wait 3 seconds)
+                Result: Hello from Future!
+            ```
 
-Submitting multiple background tasks using thread pool and waiting for all results.
+    Use Cases:
+        
+        - Making parallel API calls and combining results.
 
-🔹 Pitfalls & Notes
-.get() is blocking, so don’t call it too early unless you want to wait.
+        - Submitting multiple background tasks using thread pool and waiting for all results.
 
-Prefer invokeAll() for running multiple tasks and collecting List<Future>.
+_______________________________________________________________________________________
 
-For advanced chaining, use CompletableFuture (Java 8+).
+*   Explain FutureTask in detail.
+
+>>  FutureTask is a concrete implementation of the Future interface that also implements 
+    Runnable, so it can be executed by a thread or an ExecutorService, and returns a 
+    result from a background computation.
+
+    Why use FutureTask?
+
+        - You want a Runnable task that returns a result.
+
+        - You want to start a task manually using Thread.
+
+        - You want more control (like cancel, re-checking result, or retrying).
+
+    How it works:
+
+        - You wrap a Callable inside a FutureTask.
+
+        - You submit it to a thread (via Thread or ExecutorService).
+
+        - Later, you call .get() to fetch the result.
+
+    Example Using FutureTask with Runnable: 
+
+        Main.class:
+
+            ```
+                import java.util.concurrent.*;
+
+                public class Main {
+                    public static void main(String[] args) {
+                        // Create a Callable task
+                        Callable<String> callable = () -> {
+                            Thread.sleep(2000);
+                            return "Result from Callable";
+                        };
+
+                        // Wrap it in a FutureTask
+                        FutureTask<String> futureTask = new FutureTask<>(callable);
+
+                        // Run it using a Thread (can also use ExecutorService)
+                        Thread thread = new Thread(futureTask);
+                        thread.start();
+
+                        try {
+                            System.out.println("Doing other work...");
+                            // Get result (blocking)
+                            String result = futureTask.get();
+                            System.out.println("FutureTask Result: " + result);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            ```
+        
+        Output:
+
+            ```
+                Doing other work...
+                (wait 2 seconds)
+                FutureTask Result: Result from Callable
+            ```
+            
+    Example Using FutureTask with Runnable + predefined result:
+
+        Main.class:
+
+            ```
+                import java.util.concurrent.*;
+
+                public class Main {
+                    public static void main(String[] args) {
+                        // Create a Runnable task
+                        Runnable runnable = () -> {
+                            System.out.println("Running a task...");
+                        };
+
+                        // Wrap it in a FutureTask with predefined result i.e. "DONE"
+                        FutureTask<String> futureTask = new FutureTask<>(runnable, "DONE");
+
+                        // Run it using a Thread (can also use ExecutorService)
+                        Thread thread = new Thread(futureTask);
+                        thread.start();
+
+                        try {
+                            // Get result (blocking)
+                            String result = futureTask.get();
+                            System.out.println("FutureTask Result: " + result);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            ```
+        
+        Output:
+
+            ```
+                Running a task...
+                FutureTask Result: DONE
+            ```
+
+_______________________________________________________________________________________
+
+*   What are the difference between Future and FutureTask ?
+
+>>  (1) Type:
+
+        - Future is an interface.
+        
+        - FutureTask is a concrete class that implements Future and Runnable.
+
+    (2) Execution:
+
+        - Future cannot be executed directly. It's returned by ExecutorService methods.
+
+        - FutureTask can be executed directly by passing it to a Thread or ExecutorService.
+
+    (3) Result Handling
+
+        - Future is just a handle to retrieve the result of a task.
+
+        - FutureTask handles both task execution and result storage.
+
+    (4) Reusability:
+
+        - Future objects are created by the executor — you don’t create them manually.
+
+        - FutureTask gives you control to create and reuse tasks if needed.
+
+    (5) Use Case:
+
+        - Use Future when you're submitting tasks via ExecutorService and only need the result.
+
+        - Use FutureTask when you want to manually create and control the task (e.g., 
+          run it in a thread, cancel, retry, etc.).
+
+_______________________________________________________________________________________
+
+*   Explain shutdown() and shutdownNow() methods in detail.
+
+>>  ExecutorService manages a pool of threads and To stop them, you use either shutdown()
+    or shutdownNow().
+
+    (1) shutdown():
+
+        - Initiates an orderly shutdown.
+
+        - Previously submitted tasks are executed, but no new tasks will be accepted.
+
+        - Does not forcibly stop running threads.
+
+        - Executor transitions to shutdown state, and eventually to terminated state 
+          once all tasks are finished.
+
+        Example:
+
+            Main.class:
+
+                ```
+                    import java.util.concurrent.ExecutorService;
+                    import java.util.concurrent.Executors;
+
+                    public class Main {
+                        public static void main(String[] args) {
+                            ExecutorService executor = Executors.newFixedThreadPool(2);
+
+                            // Submit 3 tasks
+                            for (int i = 1; i <= 3; i++) {
+                                final int taskId = i;
+
+                                executor.submit(() -> {
+                                    System.out.println("Task " + taskId + " started.");
+                                    try {
+                                        Thread.sleep(2000); // simulate work
+                                    } catch (InterruptedException e) {
+                                        System.out.println("Task " + taskId + " was interrupted.");
+                                    }
+                                    System.out.println("Task " + taskId + " finished.");
+                                });
+                            }
+
+                            // Initiates graceful shutdown
+                            executor.shutdown();
+
+                            System.out.println("Executor shutdown called.");
+                        }
+                    }
+                ```
+
+            Output:
+
+                ```
+                    Task 1 started.
+                    Task 2 started.
+                    Executor shutdown called.
+                    Task 1 finished.
+                    Task 3 started.
+                    Task 2 finished.
+                    Task 3 finished.
+                ```
+
+    (2) shutdownNow():
+
+        - Attempts to stop all actively executing tasks immediately.
+
+        - Returns a list of tasks that were submitted but not yet started.
+
+        - It interrupts all running threads, but actual interruption depends on how 
+          tasks handle InterruptedException.
+
+        Example: 
+
+            Main.class:
+
+                ```
+                    import java.util.List;
+                    import java.util.concurrent.ExecutorService;
+                    import java.util.concurrent.Executors;
+
+                    public class ShutdownNowExample {
+                        public static void main(String[] args) {
+                            ExecutorService executor = Executors.newFixedThreadPool(2);
+
+                            // Submit 3 tasks
+                            for (int i = 1; i <= 3; i++) {
+                                final int taskId = i;
+
+                                executor.submit(() -> {
+                                    System.out.println("Task " + taskId + " started.");
+                                    try {
+                                        Thread.sleep(5000); // simulate long-running task
+                                    } catch (InterruptedException e) {
+                                        System.out.println("Task " + taskId + " was interrupted.");
+                                    }
+                                    System.out.println("Task " + taskId + " finished.");
+                                });
+                            }
+
+                            // Wait a moment then force shutdown
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+
+                            List<Runnable> notStarted = executor.shutdownNow();
+                            System.out.println("shutdownNow() called. Pending tasks: " + notStarted.size());
+                        }
+                    }
+                ```
+
+            Output: 
+
+                ```
+                    Task 1 started.
+                    Task 2 started.
+                    shutdownNow() called. Pending tasks: 1
+                    Task 1 was interrupted.
+                    Task 2 was interrupted.
+                    Task 1 finished.
+                    Task 2 finished.
+                ```
 
 _______________________________________________________________________________________
