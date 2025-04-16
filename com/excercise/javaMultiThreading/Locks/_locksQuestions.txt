@@ -1,0 +1,233 @@
+*   Explain Lock in detail.
+
+>>  In Java, a Lock is an interface provided in the java.util.concurrent.locks package 
+    that offers more control over thread synchronization compared to synchronized blocks.
+
+    Instead of implicitly locking a block or method (synchronized), you explicitly 
+    acquire and release the lock.
+
+    Explain:
+
+        ```
+            class Shared {
+                private final ReentrantLock lock = new ReentrantLock();
+
+                public void safeMethod() {
+                    // explicitly acquiring a lock
+                    lock.lock();  
+                    try {
+                        System.out.println(Thread.currentThread().getName() + " is executing safely.");
+                    } finally {
+                        lock.unlock();  // always release lock in finally block
+                    }
+                }
+            }
+        ```
+
+_______________________________________________________________________________________
+
+*   Explain various types of Locks in Java.
+
+>>  (1) ReentrantLock (most commonly used):
+
+        ReentrantLock is a class in the java.util.concurrent.locks package that implements 
+        the Lock interface.
+
+        A reentrant lock means thread can acquire the same lock multiple times without 
+        getting blocked.
+
+        Always release the lock. If you forget to unlock, it may lead to deadlocks or 
+        threads starving forever.
+
+        Key Features:
+
+            (a) Explicit Locking:
+            
+                - Unlike synchronized, you must manually acquire and release the lock 
+                  using lock() and unlock().
+
+            (b) Reentrant Behavior: 
+            
+                - Same thread can lock multiple times without blocking itself.
+
+            (c) Try to Acquire:
+             
+                - tryLock() lets you attempt to acquire the lock without waiting.
+
+            (d) Timeout Support:
+            
+                - tryLock(timeout, unit) waits for the lock only up to a specified time.
+
+        Example:
+
+            SharedResource.class:
+
+                ```
+                    class SharedResource {
+                        private final ReentrantLock lock = new ReentrantLock();
+
+                        public void access() {
+                            lock.lock(); // acquire the lock
+                            try {
+                                System.out.println(Thread.currentThread().getName() + " is working...");
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            } finally {
+                                lock.unlock(); // always release the lock
+                            }
+                        }
+                    }
+                ```
+
+        Example (Reentrancy):
+
+            SharedResource.class:
+
+                ```
+                    class SharedResource {
+                        ReentrantLock lock = new ReentrantLock();
+
+                        public void outer() {
+                            lock.lock();
+                            try {
+                                System.out.println("Outer method");
+                                inner(); // same thread can call inner()
+                            } finally {
+                                lock.unlock();
+                            }
+                        }
+
+                        public void inner() {
+                            lock.lock(); // same thread can lock again
+                            try {
+                                System.out.println("Inner method");
+                            } finally {
+                                lock.unlock(); // must unlock for each lock()
+                            }
+                        }
+                    }
+                ```
+
+    (2) ReentrantReadWriteLock:
+    
+        ReentrantReadWriteLock provides a more flexible locking mechanism compared to 
+        synchronized or ReentrantLock by allowing multiple threads to read a resource 
+        simultaneously (if no thread is writing).
+
+        It allows only one thread to write (exclusive access), while blocking all readers 
+        and writers.
+
+        Using synchronized or ReentrantLock for both read & write blocks all threads,
+        even readers, which is inefficient when reads are more frequent than writes.
+
+        It supports fair locking as longest waiting thread gets the lock first.
+        
+        It allows Lock Downgrade i.e. acquiring read lock after write lock but not Lock Upgrade i.e
+        acquiring write lock after read lock.
+
+        How it Works:
+
+            - It has two locks internally
+            
+                (a) Read Lock (lock.readLock()):
+                    
+                    - Multiple threads can acquire read lock simultaneously as long as there
+                      is no active writer.
+
+                (b) Write Lock (lock.writeLock()):
+                    
+                    - Only one thread can acquire write lock and while writing, no other reader 
+                      and writer is allowed.
+
+        Example:
+
+            ```
+                class SharedResource {
+                    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+                    private int data = 0;
+
+                    // Reading data
+                    void readData() {
+                        lock.readLock().lock();
+                        try {
+                            System.out.println(Thread.currentThread().getName() + " reading: " + data);
+                            Thread.sleep(1000);  // Simulate read delay
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } finally {
+                            lock.readLock().unlock();
+                        }
+                    }
+
+                    // Writing data
+                    void writeData(int value) {
+                        lock.writeLock().lock();
+                        try {
+                            System.out.println(Thread.currentThread().getName() + " writing: " + value);
+                            Thread.sleep(1000);  // Simulate write delay
+                            data = value;
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } finally {
+                            lock.writeLock().unlock();
+                        }
+                    }
+                }
+            ```
+
+_______________________________________________________________________________________
+
+*   What are the differences between synchronized and lock ?
+
+>>  (1) Flexibility and Control:
+
+        - synchronized automatically acquires and releases the lock when the block/method
+          is entered and exited.
+
+        - Lock provides explicit locking and unlocking where developer can conditionally
+          acquiring and releasing locks. If not released, it may lead to deadlock.
+
+
+    (2) Try Locking Without Waiting:
+
+        - synchronized does not provide any mechanism to try acquiring a lock without waiting.
+
+        - Lock provides tryLock() method which allows a thread to attempt locking and 
+          if unsuccessful, thread can proceed without waiting indefinitely.
+
+    (3) Timeout Feature:
+
+        - synchronized does not support timeout for acquiring a lock.
+
+        - Lock provides tryLock(time, TimeUnit) where a thread waits for the specified 
+          time and fails if the lock is not acquired.
+
+    (4) Interruptible Locking:
+
+        - Threads waiting to acquire synchronized lock cannot be interrupted. They must wait.
+
+        - With Lock, lockInterruptibly() method allows a thread to respond to 
+          interruptions while waiting for the lock.
+
+    (5) Fairness Policy:
+
+        - Synchronized does not support fairness. Thread scheduling is done by JVM.
+
+        - Lock supports fairness by constructor. For e.g., new ReentrantLock(true) 
+          ensures FIFO locking.
+
+    (6) Read-Write Locks:
+
+        - Synchronized does not differentiate between read and write operations i.e. 
+          both block each other.
+
+        - Lock provides ReentrantReadWriteLock where multiple readers can access 
+          if no thread is writing.
+
+    (7) Reentrant Nature:
+        
+        - Both synchronized and ReentrantLock are reentrant, meaning the same thread can 
+          acquire the lock multiple times without getting blocked.
+
+_______________________________________________________________________________________

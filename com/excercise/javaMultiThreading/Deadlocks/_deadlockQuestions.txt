@@ -1,0 +1,435 @@
+*   Explain Deadlocks in detail. 
+
+>>  A deadlock occurs when two or more threads are blocked forever because each thread 
+    is waiting for a resource held by another thread. 
+    
+    This results in an infinite wait, causing the program to hang.
+
+    Example:
+
+        (1) Thread-1:
+            
+            - Enters methodA().
+            - Locks resourceA (this).
+            - Goes to sleep for 1 second.
+
+        (2) During that sleep, Thread-2:
+            
+            - Enters methodB().
+            - Locks resourceB (this).
+            - Goes to sleep for 1 second.
+
+        (3) When both threads wake up:
+            
+            - Thread-1 tries to lock resourceB (but it's already locked by Thread-2).
+            - Thread-2 tries to lock resourceA (but it's already locked by Thread-1).
+            - Both threads are now waiting for each other’s locks leading to Deadlock.
+
+        Resource.class:
+
+            ```
+                class Resource {
+
+                    void methodA() {
+                        // resourceA is calling this method so resourceA (this) will be locked
+                        synchronized (this) {
+                 
+                            System.out.println(Thread.currentThread().getName() + " locked Resource-A");
+                            try { Thread.sleep(1000); } catch (InterruptedException e) {}
+                            
+                            // Thread will lock the object resourceB while executing below code
+                            synchronized (Main.resourceB) { 
+                                System.out.println(Thread.currentThread().getName() + " locked Resource-B");
+                            }
+                        }
+                    }
+
+                    void methodB() {
+                        // resourceB is calling this method so resourceB (this) will be locked
+                        synchronized (this) {
+
+                            System.out.println(Thread.currentThread().getName() + " locked Resource-B");
+                            try { Thread.sleep(1000); } catch (InterruptedException e) {}
+
+                            // Thread will lock the object resourceA while executing below code
+                            synchronized (Main.resourceA) { 
+                                System.out.println(Thread.currentThread().getName() + " locked Resource-A");
+                            }
+                        }
+                    }
+                }
+            ```
+        
+        Main.class:
+
+            ```
+                public class Main {
+                    static Resource resourceA = new Resource();
+                    static Resource resourceB = new Resource();
+
+                    public static void main(String[] args) {
+                        Thread t1 = new Thread(() -> resourceA.methodA(), "Thread-1");
+                        Thread t2 = new Thread(() -> resourceB.methodB(), "Thread-2");
+
+                        t1.start();
+                        t2.start();
+                    }
+                }
+            ```
+
+_______________________________________________________________________________________
+
+*   How to prevent Deadlocks ?
+
+>>  (1) Enforce Lock Ordering:
+
+        - Deadlocks occurs due to circular wait — one thread holds Lock A and waits 
+          for Lock B, while another holds Lock B and waits for Lock A.
+
+        - By always acquiring locks in a fixed order (e.g., always lock resourceA before resourceB), 
+          threads never end up in circular wait.
+
+        - Even if multiple threads try to access shared resources, they will all request the locks 
+          in the same order, avoiding conflict.
+
+        ```
+            class SafeResource {
+                void safeMethod() {
+                    // resourceA lock will always be acquired first before acquiring resourceB.
+                    synchronized (Main.resourceA) {
+                        System.out.println(Thread.currentThread().getName() + " locked Resource-A");
+
+                        synchronized (Main.resourceB) {
+                            System.out.println(Thread.currentThread().getName() + " locked Resource-B");
+                        }
+                    }
+                }
+            }
+
+    (2) Use tryLock() instead of synchronized:
+
+        - ReentrantLock.tryLock() is non-blocking — if the lock is not available, it immediately 
+          returns false, and the thread can take an alternate path (retry, log, skip, etc.).
+
+        - If lockB isn’t available, thread backs out without getting stuck.
+
+        SafeResource.class:
+
+            ```
+                class SafeResource {
+
+                    private static ReentrantLock lockA = new ReentrantLock();
+                    private static ReentrantLock lockB = new ReentrantLock();
+
+                    void safeMethod() {
+                        if (lockA.tryLock()) {
+                            try {
+                                System.out.println(Thread.currentThread().getName() + " locked Resource-A");
+                                
+                                if (lockB.tryLock()) {
+                                    try {
+                                        System.out.println(Thread.currentThread().getName() + " locked Resource-B");
+                                    } finally {
+                                        lockB.unlock();
+                                    }
+                                }
+                            } finally {
+                                lockA.unlock();
+                            }
+                        }
+                    }
+                }
+            ```
+
+    (3) Use a timeout on locks:
+
+        - Another way to avoid deadlocks is by setting a timeout for acquiring locks.
+
+        - If the lock cannot be acquired within the timeout, the thread exits instead 
+          of waiting forever.
+
+            ```
+                class SafeResource {
+                    private static ReentrantLock lockA = new ReentrantLock();
+                    private static ReentrantLock lockB = new ReentrantLock();
+
+                    void safeMethod() {
+                        if (lockA.tryLock(1, TimeUnit.SECONDS)) {
+                            try {
+                                // if lockB can't be acquired for 1 sec, then it will exit 
+                                if (lockB.tryLock(1, TimeUnit.SECONDS)) {
+                                    try {
+                                        System.out.println("Locked both resources safely");
+                                    } finally {
+                                        lockB.unlock();
+                                    }
+                                }
+                            } finally {
+                                lockA.unlock();
+                            }
+                        } else {
+                            System.out.println("Could not acquire locks, avoiding deadlock");
+                        }
+                    }
+                }
+            ```
+
+    (4) Use a single lock for related resources
+        
+        - By wrapping access to all related shared resources under a single lock, you 
+          eliminate the need for multiple locks entirely.
+        
+        - Since only one lock is used, no deadlock can occur.
+    
+        Example:
+
+            SingleLockResource.class:
+
+                ```
+                    class SingleLockResource {
+                        private final Object lock = new Object();
+
+                        void safeMethod() {
+                            synchronized (lock) {
+                                System.out.println(Thread.currentThread().getName() + " locked safely");
+                            }
+                        }
+                    }
+                ```
+
+_______________________________________________________________________________________
+
+*   Explain LiveLock in detail.
+
+>>  Livelock is a situation in multithreading where two or more threads keep responding 
+    to each other’s actions but are unable to make any progress in their execution.
+
+    Threads are "alive" and not blocked but they are continuously changing their state 
+    to avoid deadlock still no thread is able to proceed further.
+
+    Why does Livelock happen?
+
+        - They keep yielding or releasing resources for other threads, but because both 
+          are doing the same thing, no one moves forward.
+
+    Example:
+
+        SharedResource.class:
+
+            ```
+                class SharedResource {
+                    volatile boolean isAvailable = true;
+                }
+            ```
+        
+        Worker.class:
+
+            ```
+                class Worker implements Runnable {
+                    private SharedResource resource;
+
+                    Worker(SharedResource resource) {
+                        this.resource = resource;
+                    }
+
+                    public void run() {
+                        while (true) {
+                            if (resource.isAvailable) {
+                                System.out.println(Thread.currentThread().getName() + " doing work...");
+                                resource.isAvailable = false;
+
+                                try { Thread.sleep(100); } catch (InterruptedException e) {}
+
+                                resource.isAvailable = true; // Being polite, releasing for other thread
+                            } else {
+                                // Yield CPU for other thread
+                                Thread.yield();
+                            }
+                        }
+                    }
+                }
+            ```
+        
+        Main.class:
+        
+            ```
+                public class Main {
+                    public static void main(String[] args) {
+                        SharedResource resource = new SharedResource();
+
+                        Thread t1 = new Thread(new Worker(resource), "Thread-1");
+                        Thread t2 = new Thread(new Worker(resource), "Thread-2");
+
+                        t1.start();
+                        t2.start();
+                    }
+                }
+            ```
+        Output:
+
+            ```
+                Thread-1 doing work...
+                Thread-2 doing work...
+                Thread-1 doing work...
+                Thread-2 doing work...
+                .
+                .
+                (They keep releasing resource for each other forever but not doing meaningful work)
+            ```
+
+_______________________________________________________________________________________
+
+*   Explain in detail Thread Starvation.
+
+>>  Thread starvation occurs in multithreaded applications when a thread is permanently 
+    or for a very long time prevented from gaining access to shared resources, because 
+    other threads keep acquiring them.
+
+    Example:
+
+        SharedResource.class:
+
+            ```
+                class SharedResource {
+                    ReentrantLock lock = new ReentrantLock();  // unfair lock by default
+
+                    void accessResource() {
+                        lock.lock();
+                        try {
+                            System.out.println(Thread.currentThread().getName() + " acquired the lock");
+                            try { Thread.sleep(1000); } catch (InterruptedException e) {}
+                        } finally {
+                            lock.unlock();
+                        }
+                    }
+                }
+            ```
+        
+        Main.class:
+
+            ```
+                public class Main {
+                    public static void main(String[] args) {
+                        SharedResource resource = new SharedResource();
+
+                        // 1 High Priority Thread - Always acquiring lock
+                        Thread highPriorityThread = new Thread(() -> {
+                            while (true) {
+                                resource.accessResource();
+                            }
+                        }, "High-Priority-Thread");
+
+                        // 1 Low Priority Thread - Rarely gets a chance
+                        Thread lowPriorityThread = new Thread(() -> {
+                            while (true) {
+                                resource.accessResource();
+                            }
+                        }, "Low-Priority-Thread");
+
+                        highPriorityThread.setPriority(Thread.MAX_PRIORITY);
+                        lowPriorityThread.setPriority(Thread.MIN_PRIORITY);
+
+                        highPriorityThread.start();
+                        lowPriorityThread.start();
+                    }
+                }
+            ```
+        
+        Output:
+
+            ```
+                High-Priority-Thread acquired the lock
+                High-Priority-Thread acquired the lock
+                ...
+                ...
+                ( Low-Priority-Thread hardly gets a chance! )
+            ```
+
+    Common Causes of Starvation:
+
+        (1) Priority-based Scheduling:
+
+            - In some systems, high-priority threads are always scheduled first and get priority 
+              access to resources.
+
+            - Low-priority threads may never get CPU time and keep waiting endlessly because 
+              higher priority threads keep executing, lead to starvation.
+
+        (2) Improper Lock Usage:    
+            
+            - If a thread holds a lock for a long time or keeps acquiring the same lock repeatedly 
+              without releasing it soon enough, other threads get starved.
+
+            Example:
+
+                ```
+                    synchronized (sharedResource) {
+                        while(true) { 
+                            // long running code or infinite loop
+                        }
+                    }
+                ```
+        
+        (3) Writer Starvation in Read-Write Locks:
+
+            - Using ReentrantReadWriteLock if too many readers acquire the lock continuously, writer 
+              thread keeps waiting and Writer starvation happens.
+
+    How to Prevent Thread Starvation:
+
+        (1) Use Fair Locks:
+
+            - Java provides fair locking mechanisms that grant access to threads in the order 
+              they requested.
+
+            Example:
+
+                ```
+                    ReentrantLock lock = new ReentrantLock(true);  // true = fair lock
+                ```
+
+        (2) Avoid Priority-based Scheduling (Unless Required):
+
+            - Let the OS/Thread Scheduler handle it naturally.
+
+            - Don't assign extreme priorities unless really necessary.
+
+        (3) Release Locks Quickly:
+
+            - Keep synchronized blocks small and efficient.
+
+            - Never hold a lock for long-running tasks.
+
+_______________________________________________________________________________________
+
+*   What are the differences between Deadlock and Starvation ?
+
+>>  (1) Definition:
+
+        - Deadlock happens when two or more threads are waiting forever for each other’s 
+          lock and none of them proceeds.
+
+        - Starvation happens when a low priority thread keeps waiting because other high 
+          priority threads are always acquiring the required resource.
+
+    (2) Impact:
+    
+        - Due to Deadlock, no thread proceeds further and program freeze.
+
+        - Due to Starvation, some threads (usually low priority) don’t get 
+          CPU time or resource for a long time. Program still runs, but unfairly.
+
+    (3) Resource State:
+    
+        - Deadlock happens when resources are locked forever. No release.
+
+        - Starvation happens when resources are being released but low-priority threads 
+          don’t get a chance to acquire them.
+
+    (4) Prevention Techniques:
+        
+        - To prevent Deadlock, avoid nested Locks, Lock in same order and use tryLock() with timeout.
+
+        - To prevent Starvation, use Fair Lock (ReentrantLock with fairness = true).
+
+_______________________________________________________________________________________
